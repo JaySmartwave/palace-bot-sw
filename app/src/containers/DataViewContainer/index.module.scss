@@ -1,0 +1,9 @@
+.search {
+  flex: 1;
+}
+
+.filterBar {
+  @media screen and (max-width: 768px) {
+    align-items: flex-end !important;
+  }
+}
