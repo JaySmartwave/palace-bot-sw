@@ -16,12 +16,11 @@ module.exports = {
   entry: [
     path.resolve(ROOT_PATH,'app/src/index')
   ],
-  node: {                 // Nageerror nung niiimport ko na yung http client na gawa ko
-    console: 'empty',     // Kaya dinagdag ko tong block nato
-    fs: 'empty',          //
-    net: 'empty',         //
-    tls: 'empty'          //
-  },                      // Hanggang dito
+  node: {      // Nageerror nung niiimport ko na yung http client na gawa ko// Kaya dinagdag ko tong block nato
+    fs: "empty",    //
+    net: "empty",   //
+    tls: "empty"    //
+  },              // Hanggang dito
   module: {
     preLoaders: [
       {

@@ -88,7 +88,7 @@
     "minimist": "^1.2.0",
     "morgan": "^1.7.0",
     "node-sass": "^3.4.2",
-    "partybot-http-client": "0.0.1-beta-3",
+    "partybot-http-client": "0.0.1-beta-5",
     "react": "^15.3.1",
     "react-addons-css-transition-group": "^15.2.1",
     "react-addons-update": "^15.3.2",

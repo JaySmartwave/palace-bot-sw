@@ -20,8 +20,33 @@ class VenuesPage extends Component {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.state = {
-      isMobile: false
+      isMobile: false,
+      venues: []
     };
+
+  }
+  componentWillMount () {
+    // Naka Set timeout lang muna to kasi may error  yung API ni sir JC nung ginagawa ko
+    // setTimeout(function() {
+    //   this.setState({venues: [ 
+    //   { _id: 1, name: "Jeirene", slug: "jeirene"},
+    //   { _id: 2, name: "Jay", slug: "jay"},
+    //   { _id: 3, name: "Oscar", slug: "pogi"},
+    //   { _id: 4, name: "Pepe", slug: "ngwasak"}
+    //   ] });
+    // }.bind(this), 3000); // Importante yung .bind(this) sa callback function para may access ng callback sa this ng current scope
+
+    // Yung '57f3a270f760e4f8ad97eec4' organisationId id sya.. Dalihin niyo nalang sa route para makuha yung id
+
+    PartyBot.venues.getAllInOrganisation('57f3a270f760e4f8ad97eec4', function(err, response, body) {
+      console.log("Error: "+err);
+      console.log("Status Code: "+response.statusCode);
+      console.log(body);
+      if(!err && response.statusCode == 200) {
+        this.setState({venues: body.venues});
+      }
+      
+    }.bind(this));
   }
   componentDidMount() {
     if (typeof window !== 'undefined') {
@@ -31,7 +56,7 @@ class VenuesPage extends Component {
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
       window.removeEventListener('resize', this.handleMobile);
-    }
+    }    
   }
   handleMobile() {
     const isMobile = window.innerWidth <= 768;
@@ -86,20 +111,11 @@ class VenuesPage extends Component {
 			    </tr>
 			  </thead>
 			  <tbody>
-			    {/*<tr>
-			      <td>
-			        {this.state.venueName}
-			      </td>
-			      <td>
-			        <Image size="small" src={this.state.venueImgUrl} />
-			      </td>
-			      <td>
-			        {this.state.venueAddress}
-			      </td>
-  			      <td>
-			        <Button onClick={this.testFunc} icon={<EditIcon />} label="Edit" />
-			      </td>
-			    </tr>*/}
+          {this.state.venues.map((result) => (
+            <tr key={result._id}>{/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
+              <td>{result.name}</td><td>Some Image</td><td>{result.slug}</td>
+            </tr>
+          ))}
 			  </tbody>
 			</Table>
       </div>
@@ -109,5 +125,6 @@ class VenuesPage extends Component {
 
 VenuesPage.contextTypes = {
   router: PropTypes.object.isRequired,
+  venues: PropTypes.array
 };
 export default cssModules(VenuesPage, styles);
