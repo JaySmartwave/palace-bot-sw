@@ -1,3 +1,4 @@
+import PartyBot from 'partybot-http-client'; // Bots http client
 import React, { PropTypes, Component } from 'react';
 import cssModules from 'react-css-modules';
 import styles from './index.module.scss';
@@ -19,11 +20,7 @@ class VenuesPage extends Component {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.state = {
-      isMobile: false,
-		venueId: "001",
-		venueName: "Valkyrie",
-		venueAddress: "BGC",
-		venueImgUrl: "http://placehold.it/150x150"
+      isMobile: false
     };
   }
   componentDidMount() {
@@ -46,12 +43,8 @@ class VenuesPage extends Component {
   	console.log("test! ");
   }
   render() {
-    const {
-      router,
-    } = this.context;
-    const {
-      isMobile,
-    } = this.state;
+    const { router, } = this.context;
+    const { isMobile, } = this.state;
     return (
       <div className={styles.container}>
         <Box pad={{ vertical: 'medium' }}>
@@ -93,7 +86,7 @@ class VenuesPage extends Component {
 			    </tr>
 			  </thead>
 			  <tbody>
-			    <tr>
+			    {/*<tr>
 			      <td>
 			        {this.state.venueName}
 			      </td>
@@ -106,7 +99,7 @@ class VenuesPage extends Component {
   			      <td>
 			        <Button onClick={this.testFunc} icon={<EditIcon />} label="Edit" />
 			      </td>
-			    </tr>
+			    </tr>*/}
 			  </tbody>
 			</Table>
       </div>
