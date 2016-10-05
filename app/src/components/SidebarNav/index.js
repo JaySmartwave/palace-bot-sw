@@ -15,7 +15,7 @@ class SidebarNav extends Component {
       onToggleNav,
     } = this.props;
     return (
-      <Sidebar size="medium" colorIndex="neutral-1" fixed seperator="right">
+      <Sidebar size="medium" colorIndex="light-2" fixed seperator="right">
         <AppHeader {...this.props} />
         <Menu primary>
           <IndexLink
@@ -25,20 +25,6 @@ class SidebarNav extends Component {
           >
             Home
           </IndexLink>
-          <Link
-            to="geo-spatial"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            Geospatial View
-          </Link>
-          <Link
-            to="key-metrics"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            Key Metrics
-          </Link>
           <Link
             to="data"
             activeClassName="active"
@@ -53,13 +39,15 @@ class SidebarNav extends Component {
           >
             About
           </Link>
+          <Menu separator="bottom"/>
           <Link
             to="events"
             activeClassName="active"
             onClick={() => onToggleNav()}
           >
             Events
-          </Link>          
+          </Link>
+          <Menu separator="bottom"/>          
           <Link
             to="venues"
             activeClassName="active"
@@ -88,12 +76,42 @@ class SidebarNav extends Component {
           >
             Promoters
           </Link>
+          <Menu separator="bottom"/>
           <Link
             to="alerts"
             activeClassName="active"
             onClick={() => onToggleNav()}
           >
             Alerts
+          </Link>
+          <Menu separator="bottom"/>
+          <Link
+            to="manageVenues"
+            activeClassName="active"
+            onClick={() => onToggleNav()}
+          >
+            Add/Edit Venues
+          </Link>
+          <Link
+            to="manageTables"
+            activeClassName="active"
+            onClick={() => onToggleNav()}
+          >
+            Add/Edit Tables
+          </Link>
+          <Link
+            to="manageEvents"
+            activeClassName="active"
+            onClick={() => onToggleNav()}
+          >
+            Add/Edit Events
+          </Link>
+          <Link
+            to="managePromoters"
+            activeClassName="active"
+            onClick={() => onToggleNav()}
+          >
+            Add/Edit Promoters
           </Link>
         </Menu>
       </Sidebar>

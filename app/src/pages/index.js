@@ -1,4 +1,8 @@
 /* Assemble all pages for export */
+export ManagePromotersPage from './ManagePromotersPage/index';
+export ManageEventsPage from './ManageEventsPage/index';
+export ManageTablesPage from './ManageTablesPage/index';
+export ManageVenuesPage from './ManageVenuesPage/index';
 export AlertsPage from './AlertsPage/index';
 export PromoterPage from './PromoterPage/index';
 export SchedulePage from './SchedulePage/index';

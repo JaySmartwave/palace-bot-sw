@@ -14,7 +14,7 @@ class Main extends Component {
     super();
     this.handleToggleNav = this.handleToggleNav.bind(this);
     this.state = {
-      navIsActive: true,
+      navIsActive: false,
     };
   }
   componentDidMount() {

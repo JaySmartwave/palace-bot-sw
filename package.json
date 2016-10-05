@@ -93,6 +93,7 @@
     "react-addons-update": "^15.3.2",
     "react-apollo": "^0.5.5",
     "react-dom": "^15.0.1",
+    "react-dropzone": "^3.6.0",
     "react-foundation": "^0.6.8",
     "react-intl": "^2.1.3",
     "react-redux": "^4.4.5",

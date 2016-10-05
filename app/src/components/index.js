@@ -1,4 +1,5 @@
 /* Assemble all components for export */
+export ImageDropzone from './ImageDropzone';
 export Slider from './Slider';
 export OpenIssues from './OpenIssues';
 export BarChart from './BarChart';

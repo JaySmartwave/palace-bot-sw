@@ -24,6 +24,10 @@ const routes = (
         <Route path="/schedules" component={Pages.SchedulePage} />
         <Route path="/promoters" component={Pages.PromoterPage} />
         <Route path="/alerts" component={Pages.AlertsPage} />
+        <Route path="/manageVenues" component={Pages.ManageVenuesPage} />
+        <Route path="/manageTables" component={Pages.ManageTablesPage} />
+        <Route path="/manageEvents" component={Pages.ManageEventsPage} />
+        <Route path="/managePromoters" component={Pages.ManagePromotersPage} />
         <Route path="*" component={Pages.NotFoundPage} />
       </Route>
     </Router>

@@ -42,27 +42,12 @@ class LandingPage extends Component {
       <div className={styles.container}>
         <Box pad={{ vertical: 'medium' }}>
           <Heading align="center">
-            Welcome!
+            The Palace Manila
           </Heading>
           <Heading align="center" tag="h3">
-            Choose a Page to Get Started
+            Probably "Events" Pages
           </Heading>
         </Box>
-        <Footer>
-          <Box align="center" justify="center" full="horizontal">
-            <Menu direction={isMobile ? 'column' : 'row'} responsive={false}> {/* eslint-disable */}
-              <Button onClick={() => router.push('/geo-spatial')}>
-                Geospatial
-              </Button>
-              <Button onClick={(e) => router.push('/key-metrics')}>
-                Key Metrics
-              </Button>
-              <Button onClick={(e) => router.push('/data')}>
-                Data
-              </Button> {/* eslint-enable */}
-            </Menu>
-          </Box>
-        </Footer>
       </div>
     );
   }
