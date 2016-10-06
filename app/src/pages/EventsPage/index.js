@@ -42,16 +42,12 @@ class EventsPage extends Component {
 		}, function(err, response, body) {
 			console.log('Error: ' + err);
 			console.log('Status Code: ' + response.statusCode);
-	      // console.log("Body :"+JSON.stringify(body));
+			console.log(body);
+			if(!err && response.statusCode == 200) {
+				this.setState({events: body.events});
+			}
 
-	      // console.log("Error: "+err);
-	      // console.log("Status Code: "+response.statusCode);
-	      console.log(body);
-	      if(!err && response.statusCode == 200) {
-	        this.setState({events: body.events});
-	    }
-
-	}.bind(this));
+		}.bind(this));
 
 	}
 	componentDidMount() {
@@ -108,17 +104,18 @@ class EventsPage extends Component {
 			</tr>
 			</thead>
 			<tbody>
-			{this.state.events.map((result) => (
-			<tr key={result._id}>{/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
+		{/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
+		{this.state.events.map((result) => (
+			<tr key={result._id}>
 			<td> {result.name} </td>
 			<td> {result.description} </td>
 			<td> {result.slug} </td>
 			</tr>
 			))}
-			</tbody>
-			</Table>
-			</div>
-			);
+		</tbody>
+		</Table>
+		</div>
+		);
 
 	}
 
