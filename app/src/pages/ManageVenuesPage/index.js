@@ -13,6 +13,7 @@ import DateTime from 'grommet/components/DateTime';
 
 import Dropzone from 'react-dropzone';
 
+// static muna
 const organisationId = '57f3a270f760e4f8ad97eec4';
 
 class ManageVenuesPage extends Component {
@@ -31,8 +32,8 @@ class ManageVenuesPage extends Component {
       files: [],
       venueId: null, // id mock test
       calendar: "10/17/2016",
-      name: null,
-      description: null
+      name: '',
+      description: ''
     };
   }
   componentDidMount() {
@@ -99,6 +100,10 @@ class ManageVenuesPage extends Component {
       console.log(response.statusCode);
       console.log(body);
       console.log(err);
+
+      if(response.statusCode == 201) {
+        alert('Venue Created.');
+      }
 
     });
   }
