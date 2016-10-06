@@ -72,54 +72,54 @@ class VenuesPage extends Component {
     const { isMobile, } = this.state;
     return (
       <div className={styles.container}>
-        <Box pad={{ vertical: 'medium' }}>
-          <Heading align="center">
-            Venues Setup
-          </Heading>
-        </Box>
-			<Header justify="between">
-				<Menu icon={<FilterIcon />} label="Filter">
-					  <Anchor href="#" className="active">
-					    First action
-					  </Anchor>
-					  <Anchor href="#">
-					    Second action
-					  </Anchor>
-					  <Anchor href="#">
-					    Third action
-					  </Anchor>
-				</Menu>
-				  <Menu direction="row" align="center" responsive={false}>
-				    <Search dropAlign={{"right": "right"}} />
-				  </Menu>
-				</Header>
-        	<Table selectable={false}>
-			  <thead>
-			    <tr>
-			      <th>
-			        Venue Name
-			      </th>
-			      <th>
-			        Picture
-			      </th>
-  			      <th>
-			        Address
-			      </th>
-			      <th>
-			        
-			      </th>
-			    </tr>
-			  </thead>
-			  <tbody>
-          {this.state.venues.map((result) => (
-            <tr key={result._id}>{/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
-              <td>{result.name}</td><td>Some Image</td><td>{result.slug}</td>
-            </tr>
-          ))}
-			  </tbody>
-			</Table>
+      <Box pad={{ vertical: 'medium' }}>
+      <Heading align="center">
+      Venues Setup
+      </Heading>
+      </Box>
+      <Header justify="between">
+      <Menu icon={<FilterIcon />} label="Filter">
+      <Anchor href="#" className="active">
+      First action
+      </Anchor>
+      <Anchor href="#">
+      Second action
+      </Anchor>
+      <Anchor href="#">
+      Third action
+      </Anchor>
+      </Menu>
+      <Menu direction="row" align="center" responsive={false}>
+      <Search dropAlign={{"right": "right"}} />
+      </Menu>
+      </Header>
+      <Table selectable={false}>
+      <thead>
+      <tr>
+      <th>
+      Venue Name
+      </th>
+      <th>
+      Picture
+      </th>
+      <th>
+      Address
+      </th>
+      <th>
+
+      </th>
+      </tr>
+      </thead>
+      <tbody>
+      {this.state.venues.map((result) => (
+      <tr key={result._id}>{/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
+      <td>{result.name}</td><td>Some Image</td><td>{result.slug}</td>
+      </tr>
+      ))}
+      </tbody>
+      </Table>
       </div>
-    );
+      );
   }
 }
 
