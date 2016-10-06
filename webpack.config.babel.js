@@ -16,11 +16,16 @@ module.exports = {
   entry: [
     path.resolve(ROOT_PATH,'app/src/index')
   ],
+  node: {      // Nageerror nung niiimport ko na yung http client na gawa ko// Kaya dinagdag ko tong block nato
+    fs: "empty",    //
+    net: "empty",   //
+    tls: "empty"    //
+  },              // Hanggang dito
   module: {
     preLoaders: [
       {
         test: /\.jsx?$/,
-        loaders: isProduction ? [] : ['eslint'],
+        loaders: isProduction ? [] : [], // Naka autoload yung 'eslint' sa Second Bracket inalis ko muna. Badtrip eh
         include: path.resolve(ROOT_PATH, './app')
       }
     ],
