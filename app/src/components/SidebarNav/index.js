@@ -15,10 +15,10 @@ class SidebarNav extends Component {
       onToggleNav,
     } = this.props;
     return (
-      <Sidebar size="medium" colorIndex="light-2" fixed seperator="right">
+      <Sidebar size="medium" colorIndex="light-2" fixed separator="right">
         <AppHeader {...this.props} />
         <Menu primary>
-          <IndexLink
+          {/*<IndexLink
             to="/home"
             activeClassName="active"
             onClick={() => onToggleNav()}
@@ -39,14 +39,14 @@ class SidebarNav extends Component {
           >
             About
           </Link>
-          <Menu separator="bottom"/>
-          <Link
-            to="events"
+          <Menu separator="bottom"/>*/}
+          <IndexLink
+            to="home"
             activeClassName="active"
             onClick={() => onToggleNav()}
           >
             Events
-          </Link>
+          </IndexLink>
           <Menu separator="bottom"/>          
           <Link
             to="venues"

@@ -13,7 +13,7 @@ const routes = (
     <Router history={history}>
       <Route path="/" component={App}>
         <IndexRedirect to="/home" />
-        <Route path="home" component={Pages.LandingPage} name="Home" />
+        <Route path="/home" component={Pages.LandingPage} name="Home" />
         <Route path="/geo-spatial" component={Pages.GeoSpatialPage} />
         <Route path="/key-metrics" component={Pages.KeyMetricsPage} name="KeyMetrics" />
         <Route path="/data" component={Pages.DataPage} name="Data" />
