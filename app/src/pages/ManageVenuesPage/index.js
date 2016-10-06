@@ -20,7 +20,7 @@ class ManageVenuesPage extends Component {
     this.state = {
       isMobile: false,
       files: [],
-      venueId: "001" // id mock test
+      venueId: null // id mock test
     };
   }
   componentDidMount() {

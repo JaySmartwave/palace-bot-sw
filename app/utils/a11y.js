@@ -1,9 +1,9 @@
-const DEFAULT_PAGE_TITLE = 'Corporate Dashboard';
+const DEFAULT_PAGE_TITLE = 'The Palace';
 
 export function updatePageTitle(title) {
   if (document) {
     if (title) {
-      document.title = `${title} | ${DEFAULT_PAGE_TITLE}`;
+      document.title = DEFAULT_PAGE_TITLE;
     } else {
       document.title = DEFAULT_PAGE_TITLE;
     }

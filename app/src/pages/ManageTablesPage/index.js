@@ -20,7 +20,7 @@ class ManageTablesPage extends Component {
     this.state = {
       isMobile: false,
       files: [],
-      tableId: "001" // id mock test
+      tableId: null // id mock test
     };
   }
   componentDidMount() {
@@ -39,6 +39,18 @@ class ManageTablesPage extends Component {
       isMobile,
     });
   }
+
+  onChange(event) {
+    var id = event.nativeEvent.target.selectedIndex;
+    alert('native: ' + event.nativeEvent.target[id].value);
+  }
+
+  getVenueOptions(){
+    return ["Valkyrie","Pool Club","Revel","Naya"].map(function (item) {
+        return <option key={item} value={item}>Label {item}</option>;
+    }.bind(this));
+  }
+
   testFunc() {
   	console.log("test! ");
   }
@@ -83,7 +95,7 @@ class ManageTablesPage extends Component {
 						</select>
 					  </FormField>
 					  <FormField label="Table Type" htmlFor="tableType">
-					    <select>
+					    <select id="tableType">
 						  <option value="couch">Couch</option>
 						  <option value="cabana">Cabana</option>
 						  <option value="magnumCouch">Magnum Couch</option>
@@ -98,8 +110,7 @@ class ManageTablesPage extends Component {
 					  </FormField>
 					  {
 					  //Dynamic Price/Event Component
-					  //Dynamic Price/Event Component
-					  //Dynamic Price/Event Component
+
 					  }  
 						  <FormField label="Picture">
 						   <Box direction="row" justify="center" align="center">
@@ -115,7 +126,7 @@ class ManageTablesPage extends Component {
 					</fieldset>
 				</FormFields>
 				  <Footer pad={{"vertical": "medium"}}>
-			  	        {this.state.venueId !== null ? 
+			  	        {this.state.tableId !== null ? 
 				    	<Heading align="center">
 				            <Button label="Save Changes" primary={true} onClick={this.testFunc} />
 				        </Heading>
