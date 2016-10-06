@@ -15,7 +15,7 @@ class SidebarNav extends Component {
       onToggleNav,
     } = this.props;
     return (
-      <Sidebar size="medium" colorIndex="light-2" fixed seperator="right">
+      <Sidebar size="medium" colorIndex="light-2" fixed separator="right">
         <AppHeader {...this.props} />
         <Menu primary>
           {/*<IndexLink
