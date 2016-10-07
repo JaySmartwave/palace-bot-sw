@@ -46,37 +46,37 @@ class ManageTablesPage extends Component {
 
   onVenueChange(event) {
     var id = event.nativeEvent.target.selectedIndex;
-    console('Selected Event' + event.nativeEvent.target[id].value);
+    console.log('Selected Event' + event.nativeEvent.target[id].value);
     //this.setState or props
   }
 
   getVenueOptions(){
     return ["Valkyrie","Pool Club","Revel","Naya"].map(function (item) {
-        return <option key={item} value={item}>{item}</option>;
+      return <option key={item} value={item}>{item}</option>;
     }.bind(this));
   }
 
   onTypeChange(event) {
     var id = event.nativeEvent.target.selectedIndex;
-    alert('Selected Table:' + event.nativeEvent.target[id].value);
+    console.log('Selected Table:' + event.nativeEvent.target[id].value);
     //this.setState
   }
 
   getTypeOptions(){
     return ["Couch","Cabana","Magnum Couch","Skybox"].map(function (item) {
-        return <option key={item} value={item}>{item}</option>;
+      return <option key={item} value={item}>{item}</option>;
     }.bind(this));
   }
 
   testFunc() {
   	console.log("test! ");
   }
-  	onDrop(files) {
+  onDrop(files) {
   	this.setState({
-    	files: files
-	  });
+     files: files
+   });
   	console.log(files)
-	}
+  }
   render() {
     const {
       router,
@@ -120,38 +120,38 @@ class ManageTablesPage extends Component {
 					  <FormField label="No. of Pax" htmlFor="tablePax">
 					    <NumberInput id="tablePax" value={0} min={0} max={20} />
 					  </FormField>
-					  {
+				  {
 					  //Dynamic Price/Event Component
-					  }  
-            
-						  <FormField label="Picture">
-						   <Box direction="row" justify="center" align="center">
-							   	<Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
-				                    Drop image here or click to select image to upload. 
-				                </Dropzone>
-			                </Box>
-			                {this.state.files.length > 0 ? <div>
-			                Preview:
-			                <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
-			                </div> : null}
-					  </FormField>
-					</fieldset>
-				</FormFields>
-				  <Footer pad={{"vertical": "medium"}}>
-			  	        {this.state.tableId !== null ? 
-				    	<Heading align="center">
-				            <Button label="Save Changes" primary={true} onClick={this.testFunc} />
-				        </Heading>
-				        : 
-				    	<Heading align="center">
-				            <Button label="Create Table" primary={true} onClick={this.testFunc} />
-				        </Heading>
-				    	}
-				  </Footer>
-				</Form>
-			</Box>
-      </div>
-    );
+          }  
+         
+         <FormField label="Picture">
+         <Box direction="row" justify="center" align="center">
+         <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
+         Drop image here or click to select image to upload. 
+         </Dropzone>
+         </Box>
+         {this.state.files.length > 0 ? <div>
+           Preview:
+           <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
+           </div> : null}
+           </FormField>
+           </fieldset>
+           </FormFields>
+           <Footer pad={{"vertical": "medium"}}>
+           {this.state.tableId !== null ? 
+             <Heading align="center">
+             <Button label="Save Changes" primary={true} onClick={this.testFunc} />
+             </Heading>
+             : 
+             <Heading align="center">
+             <Button label="Create Table" primary={true} onClick={this.testFunc} />
+             </Heading>
+           }
+           </Footer>
+           </Form>
+           </Box>
+           </div>
+           );
   }
 }
 

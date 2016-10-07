@@ -14,6 +14,7 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
 import FilterIcon from 'grommet/components/icons/base/Filter';
+import Select from 'react-select';
 
 class VenuesPage extends Component {
   constructor() {
@@ -39,8 +40,8 @@ class VenuesPage extends Component {
     // Yung '57f3a270f760e4f8ad97eec4' organisationId id sya.. Dalihin niyo nalang sa route para makuha yung id
 
     PartyBot.venues.getAllInOrganisation('57f3a270f760e4f8ad97eec4', function(err, response, body) {
-      console.log("Error: "+err);
-      console.log("Status Code: "+response.statusCode);
+      console.log('Error: ' + err);
+      console.log('Status Code: ' + response.statusCode);      
       console.log(body);
       if(!err && response.statusCode == 200) {
         this.setState({venues: body.venues});
@@ -65,60 +66,53 @@ class VenuesPage extends Component {
     });
   }
   testFunc() {
-  	console.log("test! ");
+  	console.log('test');
   }
   render() {
     const { router, } = this.context;
     const { isMobile, } = this.state;
     return (
       <div className={styles.container}>
-        <Box pad={{ vertical: 'medium' }}>
-          <Heading align="center">
-            Venues Setup
-          </Heading>
-        </Box>
-			<Header justify="between">
-				<Menu icon={<FilterIcon />} label="Filter">
-					  <Anchor href="#" className="active">
-					    First action
-					  </Anchor>
-					  <Anchor href="#">
-					    Second action
-					  </Anchor>
-					  <Anchor href="#">
-					    Third action
-					  </Anchor>
-				</Menu>
-				  <Menu direction="row" align="center" responsive={false}>
-				    <Search dropAlign={{"right": "right"}} />
-				  </Menu>
-				</Header>
-        	<Table selectable={false}>
-			  <thead>
-			    <tr>
-			      <th>
-			        Venue Name
-			      </th>
-			      <th>
-			        Picture
-			      </th>
-  			      <th>
-			        Address
-			      </th>
-			      <th>
-			        
-			      </th>
-			    </tr>
-			  </thead>
-			  <tbody>
-          {this.state.venues.map((result) => (
-            <tr key={result._id}>{/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
-              <td>{result.name}</td><td>Some Image</td><td>{result.slug}</td>
-            </tr>
-          ))}
-			  </tbody>
-			</Table>
-      </div>
+      <Box pad={{ vertical: 'medium' }}>
+      <Heading align='center'> Venues Setup </Heading>
+      </Box>
+      <Header justify='between'>
+      <Menu icon={<FilterIcon />} label='Filter'>
+      <Anchor href='#' className='active'>   
+      First action
+      </Anchor>
+      <Anchor href='#'>
+      Second action
+      </Anchor>
+      <Anchor href='#'>
+      Third action
+      </Anchor>
+      </Menu>
+      <Menu direction='row' align='center' responsive={false}>
+      <Search dropAlign={{'right': 'right'}} />
+      </Menu>
+      </Header>
+      <Table selectable={false}>
+      <thead>
+      <tr>
+      <th> Venue Name </th>
+      <th> Picture </th>
+      <th> Address </th>
+      <th> </th>
+      </tr>
+      </thead>
+      <tbody>
+    {/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
+    {this.state.venues.map((result) => (
+      <tr key={result._id}>
+      <td> {result.name} </td>
+      <td> Some Image </td>
+      <td> {result.slug} </td>
+      </tr>
+      ))}
+    </tbody>
+    </Table>
+    </div>
     );
   }
 }
