@@ -61,7 +61,7 @@ class Main extends Component {
             :
               <Title onClick={this.handleToggleNav} a11yTitle="Open Menu Left">
                 <Logo inverse={false} />
-                The Palace
+                Party Bot
               </Title>
             }
             <Title onClick={this.handleToggleNav} a11yTitle="Open Menu Right">

@@ -12,14 +12,6 @@ import NumberInput from 'grommet/components/NumberInput';
 
 import Dropzone from 'react-dropzone';
 
-class head1hello extends Component {
-    render() {
-        return(
-            <h1> hellohe </h1>
-            );
-    }
-}
-
 class ManageTablesPage extends Component {
   constructor() {
     super();
@@ -109,7 +101,6 @@ class ManageTablesPage extends Component {
     	}
           </Box>
 			<Box direction="row" justify="center" align="center" wrap={true} pad="small	" margin="small">
-                  <head1hello> Hi </head1hello>
 				<Form>
 				<FormFields>
 					<fieldset>

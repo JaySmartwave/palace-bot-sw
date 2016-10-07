@@ -42,10 +42,7 @@ class LandingPage extends Component {
       <div className={styles.container}>
         <Box pad={{ vertical: 'medium' }}>
           <Heading align="center">
-            The Palace Manila
-          </Heading>
-          <Heading align="center" tag="h3">
-            Probably "Events" Pages
+            Party Bot
           </Heading>
         </Box>
       </div>
