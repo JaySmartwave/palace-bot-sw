@@ -1,4 +1,7 @@
 /* Assemble all pages for export */
+export TableBookingsPage from './TableBookingsPage/index';
+export GuestListPage from './GuestListPage/index';
+export EditTablesPage from './EditTablesPage/index';
 export ManagePromotersPage from './ManagePromotersPage/index';
 export ManageEventsPage from './ManageEventsPage/index';
 export ManageTablesPage from './ManageTablesPage/index';

@@ -97,9 +97,8 @@ class EventsPage extends Component {
 			<Table selectable={false}>
 			<thead>
 			<tr>
-			<th> Event Name </th>
-			<th> Description </th>
-			<th> Slug </th>
+			<th> </th>
+			<th> </th>
 			<th> </th>
 			</tr>
 			</thead>
@@ -107,9 +106,22 @@ class EventsPage extends Component {
 		{/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
 		{this.state.events.map((result) => (
 			<tr key={result._id}>
-			<td> {result.name} </td>
-			<td> {result.description} </td>
-			<td> {result.slug} </td>
+			<td> Some Picture</td>
+			<td>
+			<Box justify="center" align="center">
+				{result.name} 
+				<br/>
+				{result.description} 
+				<br/>
+				{result.slug}
+			</Box> 
+			</td>
+			<td>
+			<Box justify="center" align="center">
+				<Button className={styles.button} label="Guest List" onClick={this.testFunc} />
+				<Button className={styles.button} label="Table Bookings" onClick={this.testFunc} />
+			</Box>
+			</td>
 			</tr>
 			))}
 		</tbody>

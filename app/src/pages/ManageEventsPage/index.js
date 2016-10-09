@@ -11,17 +11,36 @@ import FormField from 'grommet/components/FormField';
 import FormFields from 'grommet/components/FormFields';
 import CheckBox from 'grommet/components/CheckBox';
 import DateTime from 'grommet/components/DateTime';
+import Select from 'react-select';
+import CloseIcon from 'grommet/components/icons/base/Close';
 
 import Dropzone from 'react-dropzone';
 
 // static muna
 const organisationId = '57f3a270f760e4f8ad97eec4';
+const VENUES = [ // GET all events
+    { value: '001', label: 'Valkyrie' }, // value = venue.id // label = venue.name?
+    { value: '002', label: 'Pool Club' },
+    { value: '003', label: 'Revel'},
+    { value: '004', label: 'Naya'}
+    ];
+const DAYS = [ 
+    { value: '001', label: 'Sunday' }, 
+    { value: '002', label: 'Monday' },
+    { value: '003', label: 'Tuesday'},
+    { value: '004', label: 'Wednesday'},
+    { value: '005', label: 'Thursday'},
+    { value: '006', label: 'Friday'},
+    { value: '007', label: 'Saturday'}
+    ];
 
 class ManageEventsPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.handleRecurring = this.handleRecurring.bind(this);
+    this.onVenueAdd = this.onVenueAdd.bind(this);
+    this.onDayAdd = this.onDayAdd.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.setName = this.setName.bind(this);
     this.setDescription = this.setDescription.bind(this);
@@ -33,8 +52,12 @@ class ManageEventsPage extends Component {
       files: [],
       eventId: null, // id mock test
       name: '',
-      description: ''
+      description: '',
       // venueId: ''
+      venues: VENUES,
+      days: DAYS,
+      value: [],
+      selectedDays: []
     };
   }
   componentDidMount() {
@@ -66,6 +89,17 @@ class ManageEventsPage extends Component {
    });
   	console.log(files)
   }
+
+  onVenueAdd(value) {
+    console.log('You\'ve selected:', value);
+    this.setState({ value });
+  }
+
+  onDayAdd(selectedDays) {
+    console.log('You\'ve selected:', selectedDays);
+    this.setState({ selectedDays });
+  }
+
   setName(event) {
     this.setState({name: event.target.value});
   }
@@ -110,6 +144,7 @@ class ManageEventsPage extends Component {
     } = this.state;
     return (
       <div className={styles.container}>
+      <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
       <Box pad={{ vertical: 'medium' }}>
       {this.state.eventId !== null ? 
        <Heading align="center">
@@ -125,18 +160,21 @@ class ManageEventsPage extends Component {
      <Form>
      <FormFields>
      <fieldset>
+      <Box separator="all">
+      <FormField label="Venue" htmlFor="tableVenue" />
+      <Select 
+        name="venueEvent"
+        options={this.state.venues}
+        value={this.state.value}
+        onChange={this.onVenueAdd} 
+        multi={true}
+      />
+      </Box>
      <FormField label="Event Name" htmlFor="eventName">
      <input id="eventName" type="text" onChange={this.setName}/>
      </FormField>
      <FormField label="Description" htmlFor="venueDescription">
      <input id="venueAddress" type="text" onChange={this.setDescription}/>
-     </FormField>
-     <FormField label="Venue" htmlFor="tableVenue">
-     <select>
-     <option value="valkyrie">Valkyrie</option>
-     <option value="poolclub">Pool Club</option>
-     <option value="revel">Revel</option>
-     </select>
      </FormField>
      <FormField htmlFor="checkboxes">
      <CheckBox id="isGuestList" onChange={this.testFunc} label="Guest List" />
@@ -156,17 +194,16 @@ class ManageEventsPage extends Component {
      <CheckBox id="isRecurring" onChange={this.handleRecurring} label="Recurring" />
      </FormField>
      {this.state.isRecurring !== false ? 
-       <FormField label="Repeats" htmlFor="repeatingDays">
-       <select>
-       <option value="sunday">Sunday</option>
-       <option value="monday">Monday</option>
-       <option value="tuesday">Tuesday</option>
-       <option value="wednesday">Wednesday</option>
-       <option value="thursday">Thursday</option>
-       <option value="friday">Friday</option>
-       <option value="saturday">Saturday</option>
-       </select>
-       </FormField>
+      <Box separator="all">
+      <FormField label="Days" htmlFor="eventDays" />
+      <Select 
+        name="eventDays"
+        options={this.state.days}
+        value={this.state.selectedDays}
+        onChange={this.onDayAdd} 
+        multi={true}
+      />
+      </Box>
        : null
      }
      <FormField label="Picture">

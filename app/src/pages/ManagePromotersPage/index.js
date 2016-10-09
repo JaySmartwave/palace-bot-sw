@@ -8,16 +8,37 @@ import Button from 'grommet/components/Button';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import FormFields from 'grommet/components/FormFields';
+import Select from 'react-select';
 
+//is this organisation?
+
+const VENUES = [ // GET all events
+    { value: '001', label: 'Valkyrie' }, // value = venue.id // label = venue.name?
+    { value: '002', label: 'Pool Club' },
+    { value: '003', label: 'Revel'},
+    { value: '004', label: 'Naya'}
+    ];
+const EVENTS = [ 
+    { value: '001', label: 'Girls Just Wanna Have Fun' }, 
+    { value: '002', label: 'Overtime' },
+    { value: '003', label: 'Kate Mess'},
+    { value: '004', label: 'Game On'},
+    ];
 
 class ManagePromotersPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
+    this.onEventAdd = this.onEventAdd.bind(this);
+    this.onVenueAdd = this.onVenueAdd.bind(this);
     this.state = {
       isMobile: false,
       files: [],
-      promoterId: null // id mock test
+      promoterId: null, // id mock test
+      venues: VENUES,
+      events: EVENTS,
+      selectedVenues: [],
+      selectedEvents: []
     };
   }
   componentDidMount() {
@@ -36,6 +57,15 @@ class ManagePromotersPage extends Component {
       isMobile,
     });
   }
+  onVenueAdd(selectedVenues) {
+    console.log('You\'ve selected:', selectedVenues);
+    this.setState({ selectedVenues });
+  }
+
+  onEventAdd(selectedEvents) {
+    console.log('You\'ve selected:', selectedEvents);
+    this.setState({ selectedEvents });
+  }
   testFunc() {
   	console.log("test! ");
   }
@@ -46,11 +76,9 @@ class ManagePromotersPage extends Component {
     const {
       isMobile,
     } = this.state;
-    const {
-      files,
-    } = this.state;
     return (
       <div className={styles.container}>
+      <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
         <Box pad={{ vertical: 'medium' }}>
         {this.state.promoterId !== null ? 
     	<Heading align="center">
@@ -66,27 +94,36 @@ class ManagePromotersPage extends Component {
 				<Form>
 				<FormFields>
 					<fieldset>
-					  <FormField label="Promoter Name" htmlFor="promoterName">
+					  <FormField label="Name" htmlFor="promoterName">
 					    <input id="promoterName" type="text"/>
 					  </FormField>
-					  <FormField label="Promoter Code" htmlFor="promoterCode">
+					  <FormField label="Code" htmlFor="promoterCode">
 					    <input id="promoterCode" type="text"/>
 					  </FormField>
-  					  <FormField label="Venue" htmlFor="promoterVenue">
-					    <select>
-						  <option value="valkyrie">Valkyrie</option>
-						  <option value="poolclub">Pool Club</option>
-						  <option value="revel">Revel</option>
-						</select>
-					  </FormField>
-  					  <FormField label="Event" htmlFor="promoterEvent">
-					    <select>
-						  <option value="gjwhf">Girls Just Wanna Have Fun</option>
-						  <option value="gameOn">Game On</option>
-						  <option value="kateMess">Kate Mess</option>
-						  <option value="overtime">Overtime</option>
-						</select>
-					  </FormField>
+            <FormField label="Description" htmlFor="promoterDesc">
+              <input id="promoterCode" type="text"/>
+            </FormField>
+    	       <Box separator="all">
+                <FormField label="Venue" htmlFor="promoterVenue" />
+                <Select 
+                  name="promoterVenue"
+                  options={this.state.venues}
+                  value={this.state.selectedVenues}
+                  onChange={this.onVenueAdd} 
+                  multi={true}
+                  />
+            </Box>
+            <br/>
+            <Box separator="all">
+              <FormField label="Event" htmlFor="promoterEvent" />
+              <Select 
+                name="promoterEvent"
+                options={this.state.events}
+                value={this.state.selectedEvents}
+                onChange={this.onEventAdd} 
+                multi={true}
+                />
+            </Box>
 					</fieldset>
 				</FormFields>
 				  <Footer pad={{"vertical": "medium"}}>

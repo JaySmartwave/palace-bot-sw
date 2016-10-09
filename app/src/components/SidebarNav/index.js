@@ -41,12 +41,26 @@ class SidebarNav extends Component {
           </Link>
           <Menu separator="bottom"/>*/}
           <IndexLink
-            to="home"
+            to="events"
             activeClassName="active"
             onClick={() => onToggleNav()}
           >
             Events
           </IndexLink>
+          <Link
+            to="guestList"
+            activeClassName="active"
+            onClick={() => onToggleNav()}
+          >
+            Guest List
+          </Link>
+          <Link
+            to="tableBookings"
+            activeClassName="active"
+            onClick={() => onToggleNav()}
+          >
+            Table Bookings
+          </Link>
           <Menu separator="bottom"/>          
           <Link
             to="venues"
@@ -90,28 +104,35 @@ class SidebarNav extends Component {
             activeClassName="active"
             onClick={() => onToggleNav()}
           >
-            Add/Edit Venues
+            Manage Venues
           </Link>
           <Link
             to="manageTables"
             activeClassName="active"
             onClick={() => onToggleNav()}
           >
-            Add/Edit Tables
+            Manage Tables
           </Link>
           <Link
             to="manageEvents"
             activeClassName="active"
             onClick={() => onToggleNav()}
           >
-            Add/Edit Events
+            Manage Events
           </Link>
           <Link
             to="managePromoters"
             activeClassName="active"
             onClick={() => onToggleNav()}
           >
-            Add/Edit Promoters
+            Manage Promoters
+          </Link>
+          <Link
+            to="editTables"
+            activeClassName="active"
+            onClick={() => onToggleNav()}
+          >
+            Edit Tables 
           </Link>
         </Menu>
       </Sidebar>
