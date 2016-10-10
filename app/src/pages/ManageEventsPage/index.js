@@ -13,7 +13,6 @@ import CheckBox from 'grommet/components/CheckBox';
 import DateTime from 'grommet/components/DateTime';
 import Select from 'react-select';
 import CloseIcon from 'grommet/components/icons/base/Close';
-
 import Dropzone from 'react-dropzone';
 
 // static muna
@@ -40,7 +39,11 @@ class ManageEventsPage extends Component {
     this.handleMobile = this.handleMobile.bind(this);
     this.handleRecurring = this.handleRecurring.bind(this);
     this.onVenueAdd = this.onVenueAdd.bind(this);
+    this.onVenueChange = this.onVenueChange.bind(this);
+    this.getVenueOptions = this.getVenueOptions.bind(this);
     this.onDayAdd = this.onDayAdd.bind(this);
+    this.testFunc = this.testFunc.bind(this);
+    this.onRemoveImage = this.onRemoveImage.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.setName = this.setName.bind(this);
     this.setDescription = this.setDescription.bind(this);
@@ -57,7 +60,8 @@ class ManageEventsPage extends Component {
       venues: VENUES,
       days: DAYS,
       value: [],
-      selectedDays: []
+      selectedDays: [],
+      selectedVenue: ''
     };
   }
   componentDidMount() {
@@ -83,6 +87,17 @@ class ManageEventsPage extends Component {
     });
     console.log(isRecurring)
   }
+
+  testFunc() { // TEST functions here
+    console.log('test');
+  }
+
+  onRemoveImage() {
+    this.setState({
+      files: []
+    });
+  }
+
   onDrop(files) {
   	this.setState({
      files: files
@@ -98,6 +113,21 @@ class ManageEventsPage extends Component {
   onDayAdd(selectedDays) {
     console.log('You\'ve selected:', selectedDays);
     this.setState({ selectedDays });
+  }
+
+  getVenueOptions(){
+    return VENUES.map(function (item) {
+      return <option key={item.value} value={item.value}> {item.label} </option>;
+    }.bind(this));
+  }
+
+  onVenueChange(event) {
+    let venueId = event.nativeEvent.target.selectedIndex;
+    let venueCode = event.nativeEvent.target[venueId].value;
+    console.log('Selected Venue: ' + venueCode);
+    this.setState({
+      selectedVenue: venueCode
+    });
   }
 
   setName(event) {
@@ -162,14 +192,21 @@ class ManageEventsPage extends Component {
      <fieldset>
       <Box separator="all">
       <FormField label="Venue" htmlFor="tableVenue" />
-      <Select 
+      {/* *** MULTIPLE ***
+        <Select 
         name="venueEvent"
         options={this.state.venues}
         value={this.state.value}
         onChange={this.onVenueAdd} 
         multi={true}
-      />
-      </Box>
+      /> */}
+      <select
+        name="ticketEvent"
+        onChange={this.onVenueChange}
+      >
+        {this.getVenueOptions()}
+      </select>
+      </Box> 
      <FormField label="Event Name" htmlFor="eventName">
      <input id="eventName" type="text" onChange={this.setName}/>
      </FormField>
@@ -206,16 +243,20 @@ class ManageEventsPage extends Component {
       </Box>
        : null
      }
-     <FormField label="Picture">
-     <Box direction="row" justify="center" align="center">
-     <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
-     Drop image here or click to select image to upload. 
-     </Dropzone>
-     </Box>
-     {this.state.files.length > 0 ? <div>
-       Preview:
-       <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
-       </div> : null}
+      <FormField label="Image">
+      {this.state.files.length > 0 ? 
+        <Box align="center" justify="center">
+         <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
+          <Box>
+          <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>
+          </Box>
+        </Box> :
+        <Box align="center" justify="center">
+        <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
+          Drop image here or click to select image to upload. 
+        </Dropzone>
+        </Box>
+      }
        </FormField>
        </fieldset>
        </FormFields>

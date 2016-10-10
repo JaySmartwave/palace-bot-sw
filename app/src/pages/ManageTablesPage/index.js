@@ -9,13 +9,15 @@ import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import FormFields from 'grommet/components/FormFields';
 import NumberInput from 'grommet/components/NumberInput';
-
+import CloseIcon from 'grommet/components/icons/base/Close';
 import Dropzone from 'react-dropzone';
 
 class ManageTablesPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
+    this.testFunc = this.testFunc.bind(this);
+    this.onRemoveImage = this.onRemoveImage.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.onTypeChange = this.onTypeChange.bind(this);
     this.getTypeOptions = this.getTypeOptions.bind(this);
@@ -68,8 +70,13 @@ class ManageTablesPage extends Component {
     }.bind(this));
   }
 
-  testFunc() {
-  	console.log("test! ");
+  testFunc() { // TEST functions here
+    console.log('test');
+  }
+  onRemoveImage() {
+    this.setState({
+      files: []
+    });
   }
   onDrop(files) {
   	this.setState({
@@ -124,17 +131,21 @@ class ManageTablesPage extends Component {
 					  //Dynamic Price/Event Component
           }  
          
-         <FormField label="Picture">
-         <Box direction="row" justify="center" align="center">
-         <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
-         Drop image here or click to select image to upload. 
-         </Dropzone>
-         </Box>
-         {this.state.files.length > 0 ? <div>
-           Preview:
-           <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
-           </div> : null}
-           </FormField>
+      <FormField label="Image">
+      {this.state.files.length > 0 ? 
+        <Box align="center" justify="center">
+         <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
+          <Box>
+          <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>
+          </Box>
+        </Box> :
+        <Box align="center" justify="center">
+        <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
+          Drop image here or click to select image to upload. 
+        </Dropzone>
+        </Box>
+      }
+       </FormField>
            </fieldset>
            </FormFields>
            <Footer pad={{"vertical": "medium"}}>

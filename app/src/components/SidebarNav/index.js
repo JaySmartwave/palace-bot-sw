@@ -77,6 +77,13 @@ class SidebarNav extends Component {
             Tables
           </Link>
           <Link
+            to="tickets"
+            activeClassName="active"
+            onClick={() => onToggleNav()}
+          >
+            Tables
+          </Link>
+          <Link
             to="schedules"
             activeClassName="active"
             onClick={() => onToggleNav()}
@@ -112,6 +119,13 @@ class SidebarNav extends Component {
             onClick={() => onToggleNav()}
           >
             Manage Tables
+          </Link>
+         <Link
+            to="manageTickets"
+            activeClassName="active"
+            onClick={() => onToggleNav()}
+          >
+            Manage Tickets
           </Link>
           <Link
             to="manageEvents"
