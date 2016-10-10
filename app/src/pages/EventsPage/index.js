@@ -44,7 +44,7 @@ class EventsPage extends Component {
 			console.log('Status Code: ' + response.statusCode);
 			console.log(body);
 			if(!err && response.statusCode == 200) {
-				this.setState({events: body.events});
+				this.setState({events: body});
 			}
 
 		}.bind(this));
