@@ -1,4 +1,4 @@
-const DEFAULT_PAGE_TITLE = 'The Palace';
+const DEFAULT_PAGE_TITLE = 'Party Bot';
 
 export function updatePageTitle(title) {
   if (document) {

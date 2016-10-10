@@ -12,14 +12,6 @@ import NumberInput from 'grommet/components/NumberInput';
 
 import Dropzone from 'react-dropzone';
 
-class head1hello extends Component {
-  render() {
-    return(
-      <h1> hellohe </h1>
-      );
-  }
-}
-
 class ManageTablesPage extends Component {
   constructor() {
     super();
@@ -54,7 +46,7 @@ class ManageTablesPage extends Component {
 
   onVenueChange(event) {
     var id = event.nativeEvent.target.selectedIndex;
-    console('Selected Event' + event.nativeEvent.target[id].value);
+    console.log('Selected Event' + event.nativeEvent.target[id].value);
     //this.setState or props
   }
 
@@ -66,7 +58,7 @@ class ManageTablesPage extends Component {
 
   onTypeChange(event) {
     var id = event.nativeEvent.target.selectedIndex;
-    alert('Selected Table:' + event.nativeEvent.target[id].value);
+    console.log('Selected Table:' + event.nativeEvent.target[id].value);
     //this.setState
   }
 
@@ -97,40 +89,40 @@ class ManageTablesPage extends Component {
     } = this.state;
     return (
       <div className={styles.container}>
-      <Box pad={{ vertical: 'medium' }}>
-      {this.state.tableId !== null ? 
-       <Heading align="center">
-       Edit Table
-       </Heading>
-       : 
-       <Heading align="center">
-       Add Table
-       </Heading>
-     }
-     </Box>
-     <Box direction="row" justify="center" align="center" wrap={true} pad="small	" margin="small">
-     <Form>
-     <FormFields>
-     <fieldset>
-     <FormField label="Venue" htmlFor="tableVenue">
-     <select id="tableVenue" onChange={this.onVenueChange}>
-     {this.getVenueOptions()}
-     </select>
-     </FormField>
-     <FormField label="Table Type" htmlFor="tableType">
-     <select id="tableType" onChange={this.onTypeChange}>
-     {this.getTypeOptions()}
-     </select>
-     </FormField>
-     <FormField label="Table Name" htmlFor="tableName">
-     <input id="tableName" type="text"/>
-     </FormField>
-     <FormField label="No. of Pax" htmlFor="tablePax">
-     <NumberInput id="tablePax" value={0} min={0} max={20} />
-     </FormField>
-     {
+        <Box pad={{ vertical: 'medium' }}>
+        {this.state.tableId !== null ? 
+    	<Heading align="center">
+            Edit Table
+        </Heading>
+        : 
+    	<Heading align="center">
+            Add Table
+        </Heading>
+    	}
+          </Box>
+			<Box direction="row" justify="center" align="center" wrap={true} pad="small	" margin="small">
+				<Form>
+				<FormFields>
+					<fieldset>
+					  <FormField label="Venue" htmlFor="tableVenue">
+					    <select id="tableVenue" onChange={this.onVenueChange}>
+                {this.getVenueOptions()}
+						  </select>
+					  </FormField>
+					  <FormField label="Table Type" htmlFor="tableType">
+					    <select id="tableType" onChange={this.onTypeChange}>
+						    {this.getTypeOptions()}
+						  </select>
+					  </FormField>
+					  <FormField label="Table Name" htmlFor="tableName">
+					    <input id="tableName" type="text"/>
+					  </FormField>
+					  <FormField label="No. of Pax" htmlFor="tablePax">
+					    <NumberInput id="tablePax" value={0} min={0} max={20} />
+					  </FormField>
+				  {
 					  //Dynamic Price/Event Component
-         }  
+          }  
          
          <FormField label="Picture">
          <Box direction="row" justify="center" align="center">

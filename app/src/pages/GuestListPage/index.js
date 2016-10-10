@@ -9,45 +9,25 @@ import Button from 'grommet/components/Button';
 import Box from 'grommet/components/Box';
 import Menu from 'grommet/components/Menu';
 import Image from 'grommet/components/Image';
-import EditIcon from 'grommet/components/icons/base/Edit';
+import CheckmarkIcon from 'grommet/components/icons/base/Checkmark';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
 import FilterIcon from 'grommet/components/icons/base/Filter';
 import Select from 'react-select';
 
-class VenuesPage extends Component {
+class GuestListPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.state = {
       isMobile: false,
-      venues: []
+      guestList: []
     };
 
   }
   componentWillMount () {
-    // Naka Set timeout lang muna to kasi may error  yung API ni sir JC nung ginagawa ko
-    // setTimeout(function() {
-    //   this.setState({venues: [ 
-    //   { _id: 1, name: "Jeirene", slug: "jeirene"},
-    //   { _id: 2, name: "Jay", slug: "jay"},
-    //   { _id: 3, name: "Oscar", slug: "pogi"},
-    //   { _id: 4, name: "Pepe", slug: "ngwasak"}
-    //   ] });
-    // }.bind(this), 3000); // Importante yung .bind(this) sa callback function para may access ng callback sa this ng current scope
 
-    // Yung '57f3a270f760e4f8ad97eec4' organisationId id sya.. Dalihin niyo nalang sa route para makuha yung id
-
-    PartyBot.venues.getAllInOrganisation('57f3a270f760e4f8ad97eec4', function(err, response, body) {
-      console.log('Error: ' + err);
-      console.log('Status Code: ' + response.statusCode);      
-      console.log(body);
-      if(!err && response.statusCode == 200) {
-        this.setState({venues: body.venues});
-      }
-      
-    }.bind(this));
   }
   componentDidMount() {
     if (typeof window !== 'undefined') {
@@ -74,7 +54,12 @@ class VenuesPage extends Component {
     return (
       <div className={styles.container}>
       <Box pad={{ vertical: 'medium' }}>
-      <Heading align='center'> Venues Setup </Heading>
+  	   	<Heading align="center">
+            Event Name
+        </Heading>
+        <Heading align="center" tag="h3">
+            Guest List
+      	</Heading>
       </Box>
       <Header justify='between'>
       <Menu icon={<FilterIcon />} label='Filter'>
@@ -95,26 +80,57 @@ class VenuesPage extends Component {
       <Table selectable={false}>
       <thead>
       <tr>
-      <th> Venue Name </th>
-      <th> Picture </th>
-      <th> Address </th>
+      <th> Name </th>
+      <th> Promoter</th>
+      <th> Status </th>
       <th> </th>
       </tr>
       </thead>
       <tbody>
-    {/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
-    {this.state.venues.map((result) => (
-      <tr key={result._id}>
-      <td> {result.name} </td>
-      <td> Some Image </td>
-      <td> {result.slug} </td>
+    {/*this.state.venues.map((result) => (
+      <tr key={id}>
+      <td> {name} </td>
+      <td> {promoter} </td>
+      <td> {status} </td>
       <td>
-        <Box justify="center" align="center">
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-        </Box>  
+      	<Box justify="center" align="center">
+    		{this.guest.status !== 'Approved' ? 
+				<Button label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
+	        : 
+		        null
+	    	}
+      	</Box>
       </td>
       </tr>
-      ))}
+      ))*/}
+      <tr>
+      <td> name </td>
+      <td> promoter </td>
+      <td> status </td>
+      <td>
+      	<Box justify="center" align="center">
+          <Button label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
+      	</Box>
+      </td>
+      </tr>
+      <tr>
+      <td> name </td>
+      <td> promoter </td>
+      <td> status </td>
+      <td>
+
+      </td>
+      </tr>
+      <tr>
+      <td> name </td>
+      <td> promoter </td>
+      <td> status </td>
+      <td>
+      	<Box justify="center" align="center">
+          <Button label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
+      	</Box>
+      </td>
+      </tr>
     </tbody>
     </Table>
     </div>
@@ -122,8 +138,9 @@ class VenuesPage extends Component {
   }
 }
 
-VenuesPage.contextTypes = {
+GuestListPage.contextTypes = {
   router: PropTypes.object.isRequired,
-  venues: PropTypes.array
+  guestList: PropTypes.array
 };
-export default cssModules(VenuesPage, styles);
+
+export default cssModules(GuestListPage, styles);

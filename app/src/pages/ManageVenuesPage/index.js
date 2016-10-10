@@ -10,31 +10,43 @@ import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import FormFields from 'grommet/components/FormFields';
 import DateTime from 'grommet/components/DateTime';
+import Select from 'react-select';
+import CloseIcon from 'grommet/components/icons/base/Close';
 
 import Dropzone from 'react-dropzone';
 
 // static muna
 const organisationId = '57f3a270f760e4f8ad97eec4';
 
-class ManageVenuesPage extends Component {
-  constructor() {
-    super();
-    this.handleMobile = this.handleMobile.bind(this);
-    this.handleCalendar = this.handleCalendar.bind(this);
-    this.onEventChange = this.onEventChange.bind(this);
-    this.onDrop = this.onDrop.bind(this);
-    this.setName = this.setName.bind(this);
-    this.setDescription = this.setDescription.bind(this);
-    this.submitCreate = this.submitCreate.bind(this);
+    /*const EVENTS = [ // GET all events
+    { value: '001', label: 'Girls Just Wanna Have Fun' }, // value = event.id // label = event.name?
+    { value: '002', label: 'Kate Mess' },
+    { value: '003', label: 'Game On'},
+    { value: '004', label: 'Overtime'}
+    ];*/
 
-    this.state = {
-      isMobile: false,
-      files: [],
-      venueId: null, // id mock test
-      calendar: "10/17/2016",
-      name: '',
-      description: ''
-    };
+    class ManageVenuesPage extends Component {
+      constructor() {
+        super();
+        this.handleMobile = this.handleMobile.bind(this);
+        this.handleCalendar = this.handleCalendar.bind(this);
+        this.onEventChange = this.onEventChange.bind(this);
+        this.onDrop = this.onDrop.bind(this);
+        this.testFunc = this.testFunc.bind(this);
+        this.setName = this.setName.bind(this);
+        this.setDescription = this.setDescription.bind(this);
+        this.submitCreate = this.submitCreate.bind(this);
+
+        this.state = {
+          isMobile: false,
+          files: [],
+          venueId: null, // id mock test
+          calendar: "10/17/2016",
+          name: '',
+          description: '',
+          //events: EVENTS,
+          //value: []
+          };
   }
   componentDidMount() {
     if (typeof window !== 'undefined') {
@@ -46,27 +58,20 @@ class ManageVenuesPage extends Component {
       window.removeEventListener('resize', this.handleMobile);
     }
   }
+  testFunc() { // TEST functions here
+    this.setState({
+      files: []
+    });
+  }
   handleMobile() {
     const isMobile = window.innerWidth <= 768;
     this.setState({
       isMobile,
     });
   }
-  onEventChange(event) {
-    var id = event.nativeEvent.target.selectedIndex;
-    console.log('Selected Venue: ' + event.nativeEvent.target[id].value);
-    // alert('Selected Venue' + event.nativeEvent.target[id].value);
-    //this.setState
-  }
-  getEventOptions(){
-    return [
-    'Girls Just Wanna Have Fun',
-    'Kate Mess',
-    'Game On',
-    'Overtime'
-    ].map(function (item) {
-      return <option key={item} value={item}> {item} </option>;
-    }.bind(this));
+  onEventChange(value) {
+    console.log('You\'ve selected:', value);
+    this.setState({ value });
   }
   handleCalendar(event) {
   	this.setState({calendar: event.target.value});
@@ -75,7 +80,6 @@ class ManageVenuesPage extends Component {
   	this.setState({
      files: files
    });
-  	console.log(files[0])
   }
   setName(event) {
     this.setState({name: event.target.value});
@@ -119,6 +123,7 @@ class ManageVenuesPage extends Component {
     } = this.state;
     return (
       <div className={styles.container}>
+      <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
       <Box pad={{ vertical: 'medium' }}>
       {this.state.venueId !== null ? 
         <Heading align='center'>
@@ -149,30 +154,36 @@ class ManageVenuesPage extends Component {
       <FormField label="Latitude" htmlFor="venueLat">
       <input id="venueLat" type="number"/>
       </FormField>
+      {/*<Box separator="all">
+      <FormField label="Events" htmlFor="venueEvent"/>
+      <Select 
+          name="eventVenue"
+          options={this.state.events}
+          value={this.state.value}
+          onChange={this.onEventChange} 
+          multi={true}
+      />
+      </Box>
       <FormField label="Starts At" htmlFor="venueStarts">
       <DateTime id="venueStarts" format="M/D/YYYY" onChange={this.handleCalendar} value={this.state.calendar} />
       </FormField>
       <FormField label="Ends At" htmlFor="venueEnds">
       <DateTime id="venueEnds" format="M/D/YYYY" onChange={this.handleCalendar} value={this.state.calendar} />
-      </FormField>
-      <FormField label="Events" htmlFor="venueEvent">
-      { 
-        /*will change to multiple select*/ 
-      }
-      <select id="venueEvent" onChange={this.onEventChange}>
-      {this.getEventOptions()}
-      </select>
-      </FormField>
+      </FormField> */}
       <FormField label="Picture">
-      <Box direction="row" justify="center" align="center">
-      <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
-      Drop image here or click to select image to upload. 
-      </Dropzone>
-      </Box>
-      {this.state.files.length > 0 ? <div>
-       Preview:
-       <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
-       </div> : null}
+      {this.state.files.length > 0 ? 
+        <Box align="center" justify="center">
+         <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
+          <Box>
+          <Button label="Cancel" onClick={this.testFunc} plain={true} icon={<CloseIcon />}/>
+          </Box>
+        </Box> :
+        <Box align="center" justify="center">
+        <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
+          Drop image here or click to select image to upload. 
+        </Dropzone>
+        </Box>
+      }
        </FormField>
        </fieldset>
        </FormFields>
