@@ -13,7 +13,6 @@ import CheckBox from 'grommet/components/CheckBox';
 import DateTime from 'grommet/components/DateTime';
 import Select from 'react-select';
 import CloseIcon from 'grommet/components/icons/base/Close';
-
 import Dropzone from 'react-dropzone';
 
 // static muna
@@ -42,7 +41,11 @@ class ManageEventsPage extends Component {
     this.getEventOptions = this.getEventOptions.bind(this);
     this.onVenueChange = this.onVenueChange.bind(this);
     this.onVenueAdd = this.onVenueAdd.bind(this);
+    this.onVenueChange = this.onVenueChange.bind(this);
+    this.getVenueOptions = this.getVenueOptions.bind(this);
     this.onDayAdd = this.onDayAdd.bind(this);
+    this.testFunc = this.testFunc.bind(this);
+    this.onRemoveImage = this.onRemoveImage.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.onRemoveImage = this.onRemoveImage.bind(this);
     this.setName = this.setName.bind(this);
@@ -61,7 +64,7 @@ class ManageEventsPage extends Component {
       days: DAYS,
       value: [],
       selectedDays: [],
-      selectedVenue: null
+      selectedVenue: ''
     };
   }
   componentDidMount() {
@@ -90,12 +93,6 @@ class ManageEventsPage extends Component {
 
   testFunc() { // TEST functions here
     console.log("test");
-  }
-
-  getEventOptions(){
-    return VENUES.map(function (item) {
-      return <option key={item.value} value={item.value}> {item.label} </option>;
-    }.bind(this));
   }
 
   onVenueChange(event) {
@@ -128,6 +125,21 @@ class ManageEventsPage extends Component {
   onDayAdd(selectedDays) {
     console.log('You\'ve selected:', selectedDays);
     this.setState({ selectedDays });
+  }
+
+  getVenueOptions(){
+    return VENUES.map(function (item) {
+      return <option key={item.value} value={item.value}> {item.label} </option>;
+    }.bind(this));
+  }
+
+  onVenueChange(event) {
+    let venueId = event.nativeEvent.target.selectedIndex;
+    let venueCode = event.nativeEvent.target[venueId].value;
+    console.log('Selected Venue: ' + venueCode);
+    this.setState({
+      selectedVenue: venueCode
+    });
   }
 
   setName(event) {
@@ -193,24 +205,23 @@ class ManageEventsPage extends Component {
      <fieldset>
       <Box separator="all">
       <FormField label="Venue" htmlFor="tableVenue" />
-      {//multiple
-      }
-      <Select 
+      {/* *** MULTIPLE ***
+        <Select 
         name="venueEvent"
         options={this.state.venues}
         value={this.state.value}
         onChange={this.onVenueAdd} 
         multi={true}
-      />
+      />*/}
       {//single
       }
       <select
         name="venueEvent"
         onChange={this.onVenueChange}
       >
-          {this.getEventOptions()}
+        {this.getVenueOptions()}
       </select>
-      </Box>
+      </Box> 
      <FormField label="Event Name" htmlFor="eventName">
      <input id="eventName" type="text" onChange={this.setName}/>
      </FormField>
@@ -285,4 +296,5 @@ class ManageEventsPage extends Component {
 ManageEventsPage.contextTypes = {
   router: PropTypes.object.isRequired,
 };
+
 export default cssModules(ManageEventsPage, styles);

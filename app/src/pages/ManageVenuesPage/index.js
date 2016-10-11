@@ -12,7 +12,6 @@ import FormFields from 'grommet/components/FormFields';
 import DateTime from 'grommet/components/DateTime';
 import Select from 'react-select';
 import CloseIcon from 'grommet/components/icons/base/Close';
-
 import Dropzone from 'react-dropzone';
 
 // static muna
@@ -32,6 +31,7 @@ const organisationId = '57f3a270f760e4f8ad97eec4';
         this.handleCalendar = this.handleCalendar.bind(this);
         this.onEventChange = this.onEventChange.bind(this);
         this.onDrop = this.onDrop.bind(this);
+        this.testFunc = this.testFunc.bind(this);
         this.onRemoveImage = this.onRemoveImage.bind(this);
         this.setName = this.setName.bind(this);
         this.setDescription = this.setDescription.bind(this);

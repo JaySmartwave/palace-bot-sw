@@ -9,13 +9,15 @@ import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import FormFields from 'grommet/components/FormFields';
 import NumberInput from 'grommet/components/NumberInput';
-
+import CloseIcon from 'grommet/components/icons/base/Close';
 import Dropzone from 'react-dropzone';
 
 class ManageTablesPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
+    this.testFunc = this.testFunc.bind(this);
+    this.onRemoveImage = this.onRemoveImage.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.onRemoveImage = this.onRemoveImage.bind(this);
     this.onTypeChange = this.onTypeChange.bind(this);
@@ -68,9 +70,8 @@ class ManageTablesPage extends Component {
       return <option key={item} value={item}>{item}</option>;
     }.bind(this));
   }
-
-  testFunc() {
-    console.log("test");
+  testFunc() { // TEST functions here
+    console.log('test');
   }
   onDrop(files) {
   	this.setState({
