@@ -44,7 +44,7 @@ class VenuesPage extends Component {
       console.log('Status Code: ' + response.statusCode);      
       console.log(body);
       if(!err && response.statusCode == 200) {
-        this.setState({venues: body.venues});
+        this.setState({venues: body});
       }
       
     }.bind(this));
