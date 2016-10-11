@@ -38,7 +38,6 @@ class ManageEventsPage extends Component {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.handleRecurring = this.handleRecurring.bind(this);
-    this.getEventOptions = this.getEventOptions.bind(this);
     this.onVenueChange = this.onVenueChange.bind(this);
     this.onVenueAdd = this.onVenueAdd.bind(this);
     this.onVenueChange = this.onVenueChange.bind(this);
