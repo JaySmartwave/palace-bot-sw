@@ -9,42 +9,27 @@ import Button from 'grommet/components/Button';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import FormFields from 'grommet/components/FormFields';
-import CheckBox from 'grommet/components/CheckBox';
-import DateTime from 'grommet/components/DateTime';
 import Select from 'react-select';
+import NumberInput from 'grommet/components/NumberInput';
+
 import CloseIcon from 'grommet/components/icons/base/Close';
 
-import Dropzone from 'react-dropzone';
 
-// static muna
-const organisationId = '57f3a270f760e4f8ad97eec4';
-const VENUES = [ // GET all events
+const EVENTS = [ // static muna kuno //GET all events
     { value: '001', label: 'Valkyrie' }, // value = venue.id // label = venue.name?
     { value: '002', label: 'Pool Club' },
     { value: '003', label: 'Revel'},
     { value: '004', label: 'Naya'}
     ];
-const DAYS = [ 
-    { value: '001', label: 'Sunday' }, 
-    { value: '002', label: 'Monday' },
-    { value: '003', label: 'Tuesday'},
-    { value: '004', label: 'Wednesday'},
-    { value: '005', label: 'Thursday'},
-    { value: '006', label: 'Friday'},
-    { value: '007', label: 'Saturday'}
-    ];
 
-class ManageEventsPage extends Component {
+class ManageTicketsPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.handleRecurring = this.handleRecurring.bind(this);
     this.getEventOptions = this.getEventOptions.bind(this);
-    this.onVenueChange = this.onVenueChange.bind(this);
-    this.onVenueAdd = this.onVenueAdd.bind(this);
-    this.onDayAdd = this.onDayAdd.bind(this);
-    this.onDrop = this.onDrop.bind(this);
-    this.onRemoveImage = this.onRemoveImage.bind(this);
+    this.onEventChange = this.onEventChange.bind(this);
+    this.onPriceChange = this.onPriceChange.bind(this);
     this.setName = this.setName.bind(this);
     this.setDescription = this.setDescription.bind(this);
     this.submitCreate = this.submitCreate.bind(this);
@@ -52,16 +37,12 @@ class ManageEventsPage extends Component {
     this.state = {
       isMobile: false,
       isRecurring: false,
-      files: [],
-      eventId: null, // id mock test
+      variants: [],
+      ticketId: null, // id mock test
       name: '',
       description: '',
-      // venueId: ''
-      venues: VENUES,
-      days: DAYS,
-      value: [],
-      selectedDays: [],
-      selectedVenue: null
+      events: EVENTS,
+      priceValue: 0
     };
   }
   componentDidMount() {
@@ -93,31 +74,25 @@ class ManageEventsPage extends Component {
   }
 
   getEventOptions(){
-    return VENUES.map(function (item) {
+    return EVENTS.map(function (item) {
       return <option key={item.value} value={item.value}> {item.label} </option>;
     }.bind(this));
   }
 
-  onVenueChange(event) {
-    let venueId = event.nativeEvent.target.selectedIndex;
-    let venueCode = event.nativeEvent.target[venueId].value;
-    console.log('Selected Venue: ' + venueCode);
-    this.setState({
-      selectedVenue: venueCode
-    });
-   console.log(this.state.selectedVenue);
+  onEventChange(event) {
+   //  let venueId = event.nativeEvent.target.selectedIndex;
+   //  let venueCode = event.nativeEvent.target[venueId].value;
+   //  console.log('Selected Venue: ' + venueCode);
+   //  this.setState({
+   //    selectedVenue: venueCode
+   //  });
+   // console.log(this.state.selectedVenue);
   }
 
-  onDrop(files) {
+  onPriceChange(value) {
   	this.setState({
-     files: files
-   });
-  }
-
-  onRemoveImage() {
-    this.setState({
-      files: []
-    });
+  		priceValue: value
+  	})
   }
 
   onVenueAdd(value) {
@@ -177,13 +152,13 @@ class ManageEventsPage extends Component {
       <div className={styles.container}>
       <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
       <Box pad={{ vertical: 'medium' }}>
-      {this.state.eventId !== null ? 
+      {this.state.ticketId !== null ? 
        <Heading align="center">
-       Edit Event
+       Edit Ticket
        </Heading>
        : 
        <Heading align="center">
-       Add Event
+       Add Ticket
        </Heading>
      }
      </Box>
@@ -193,85 +168,36 @@ class ManageEventsPage extends Component {
      <fieldset>
       <Box separator="all">
       <FormField label="Venue" htmlFor="tableVenue" />
-      {//multiple
-      }
-      <Select 
-        name="venueEvent"
-        options={this.state.venues}
-        value={this.state.value}
-        onChange={this.onVenueAdd} 
-        multi={true}
-      />
-      {//single
-      }
       <select
-        name="venueEvent"
-        onChange={this.onVenueChange}
+        name="ticketEvent"
+        onChange={this.onEventChange}
       >
-          {this.getEventOptions()}
+      	{this.getEventOptions()}
       </select>
       </Box>
-     <FormField label="Event Name" htmlFor="eventName">
-     <input id="eventName" type="text" onChange={this.setName}/>
-     </FormField>
-     <FormField label="Description" htmlFor="venueDescription">
-     <input id="venueAddress" type="text" onChange={this.setDescription}/>
-     </FormField>
-     <FormField htmlFor="checkboxes">
-     <CheckBox id="isGuestList" onChange={this.testFunc} label="Guest List" />
-     <CheckBox id="isTableBoookings" onChange={this.testFunc} label="Table Bookings" />
-     <CheckBox id="isTickets" onChange={this.testFunc} label="Tickets" />
-     </FormField>
-     <FormField label="Cutoff" htmlFor="cutOff">
-     <DateTime id="cutOff" name="name" format="h:mm:ss a" step={10} onChange={this.testFunc} />
-     </FormField>
-     <FormField label="Starts At" htmlFor="startsAt">
-     <DateTime id="startsAt" onChange={this.testFunc} />
-     </FormField>
-     <FormField label="Ends At" htmlFor="endsAt">
-     <DateTime id="endsAt" onChange={this.testFunc} />
-     </FormField>
-     <FormField htmlFor="isRecurring">
-     <CheckBox id="isRecurring" onChange={this.handleRecurring} label="Recurring" />
-     </FormField>
-     {this.state.isRecurring !== false ? 
-      <Box separator="all">
-      <FormField label="Days" htmlFor="eventDays" />
-      <Select 
-        name="eventDays"
-        options={this.state.days}
-        value={this.state.selectedDays}
-        onChange={this.onDayAdd} 
-        multi={true}
-      />
-      </Box>
-       : null
-     }
-      <FormField label="Image">
-      {this.state.files.length > 0 ? 
-        <Box align="center" justify="center">
-         <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
-          <Box>
-          <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>
-          </Box>
-        </Box> :
-        <Box align="center" justify="center">
-        <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
-          Drop image here or click to select image to upload. 
-        </Dropzone>
-        </Box>
-      }
-       </FormField>
+	      {//variant
+	      }
+	     <FormField label="Name" htmlFor="ticketName">
+	     <input id="ticketName" type="text" onChange={this.setName}/>
+	     </FormField>
+	     <FormField label="Description" htmlFor="ticketDescription">
+	     <input id="ticketDescription" type="text" onChange={this.setDescription}/>
+	     </FormField>
+	     <FormField label="Price(Php)" htmlFor="ticketDescription">
+	     <NumberInput id="ticketPrice" value={this.state.priceValue} min={0} step={100} onChange={this.onPriceChange}/>
+	     </FormField>
+		  {//variant
+	      }
        </fieldset>
        </FormFields>
        <Footer pad={{"vertical": "medium"}}>
-       {this.state.eventId !== null ? 
+       {this.state.ticketId !== null ? 
          <Heading align="center">
          <Button label="Save Changes" primary={true} onClick={this.submitSave} />
          </Heading>
          : 
          <Heading align="center">
-         <Button label="Create Event" primary={true} onClick={this.submitCreate} />
+         <Button label="Create Ticket" primary={true} onClick={this.submitCreate} />
          </Heading>
        }
        </Footer>
@@ -282,7 +208,8 @@ class ManageEventsPage extends Component {
   }
 }
 
-ManageEventsPage.contextTypes = {
+ManageTicketsPage.contextTypes = {
   router: PropTypes.object.isRequired,
 };
-export default cssModules(ManageEventsPage, styles);
+
+export default cssModules(ManageTicketsPage, styles);

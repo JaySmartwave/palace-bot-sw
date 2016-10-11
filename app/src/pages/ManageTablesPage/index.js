@@ -17,6 +17,7 @@ class ManageTablesPage extends Component {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.onDrop = this.onDrop.bind(this);
+    this.onRemoveImage = this.onRemoveImage.bind(this);
     this.onTypeChange = this.onTypeChange.bind(this);
     this.getTypeOptions = this.getTypeOptions.bind(this);
     this.onVenueChange = this.onVenueChange.bind(this);
@@ -69,13 +70,17 @@ class ManageTablesPage extends Component {
   }
 
   testFunc() {
-  	console.log("test! ");
+    console.log("test");
   }
   onDrop(files) {
   	this.setState({
      files: files
    });
-  	console.log(files)
+  }
+  onRemoveImage() {
+    this.setState({
+      files: []
+    });
   }
   render() {
     const {
@@ -123,17 +128,20 @@ class ManageTablesPage extends Component {
 				  {
 					  //Dynamic Price/Event Component
           }  
-         
-         <FormField label="Picture">
-         <Box direction="row" justify="center" align="center">
-         <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
-         Drop image here or click to select image to upload. 
-         </Dropzone>
-         </Box>
-         {this.state.files.length > 0 ? <div>
-           Preview:
-           <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
-           </div> : null}
+          <FormField label="Image">
+          {this.state.files.length > 0 ? 
+            <Box align="center" justify="center">
+             <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
+              <Box>
+              <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>
+              </Box>
+            </Box> :
+            <Box align="center" justify="center">
+            <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
+              Drop image here or click to select image to upload. 
+            </Dropzone>
+            </Box>
+          }
            </FormField>
            </fieldset>
            </FormFields>
