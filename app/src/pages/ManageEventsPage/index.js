@@ -38,6 +38,7 @@ class ManageEventsPage extends Component {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.handleRecurring = this.handleRecurring.bind(this);
+    this.onVenueChange = this.onVenueChange.bind(this);
     this.onVenueAdd = this.onVenueAdd.bind(this);
     this.onVenueChange = this.onVenueChange.bind(this);
     this.getVenueOptions = this.getVenueOptions.bind(this);
@@ -45,6 +46,7 @@ class ManageEventsPage extends Component {
     this.testFunc = this.testFunc.bind(this);
     this.onRemoveImage = this.onRemoveImage.bind(this);
     this.onDrop = this.onDrop.bind(this);
+    this.onRemoveImage = this.onRemoveImage.bind(this);
     this.setName = this.setName.bind(this);
     this.setDescription = this.setDescription.bind(this);
     this.submitCreate = this.submitCreate.bind(this);
@@ -89,20 +91,29 @@ class ManageEventsPage extends Component {
   }
 
   testFunc() { // TEST functions here
-    console.log('test');
+    console.log("test");
   }
 
-  onRemoveImage() {
+  onVenueChange(event) {
+    let venueId = event.nativeEvent.target.selectedIndex;
+    let venueCode = event.nativeEvent.target[venueId].value;
+    console.log('Selected Venue: ' + venueCode);
     this.setState({
-      files: []
+      selectedVenue: venueCode
     });
+   console.log(this.state.selectedVenue);
   }
 
   onDrop(files) {
   	this.setState({
      files: files
    });
-  	console.log(files)
+  }
+
+  onRemoveImage() {
+    this.setState({
+      files: []
+    });
   }
 
   onVenueAdd(value) {
@@ -171,6 +182,7 @@ class ManageEventsPage extends Component {
     } = this.state;
     const {
       files,
+      selectedVenue
     } = this.state;
     return (
       <div className={styles.container}>
@@ -199,9 +211,11 @@ class ManageEventsPage extends Component {
         value={this.state.value}
         onChange={this.onVenueAdd} 
         multi={true}
-      /> */}
+      />*/}
+      {//single
+      }
       <select
-        name="ticketEvent"
+        name="venueEvent"
         onChange={this.onVenueChange}
       >
         {this.getVenueOptions()}
@@ -281,4 +295,5 @@ class ManageEventsPage extends Component {
 ManageEventsPage.contextTypes = {
   router: PropTypes.object.isRequired,
 };
+
 export default cssModules(ManageEventsPage, styles);

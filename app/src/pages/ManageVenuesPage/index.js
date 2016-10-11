@@ -59,12 +59,7 @@ const organisationId = '57f3a270f760e4f8ad97eec4';
     }
   }
   testFunc() { // TEST functions here
-    console.log('test');
-  }
-  onRemoveImage() {
-    this.setState({
-      files: []
-    });
+    console.log("test");
   }
   handleMobile() {
     const isMobile = window.innerWidth <= 768;
@@ -83,6 +78,11 @@ const organisationId = '57f3a270f760e4f8ad97eec4';
   	this.setState({
      files: files
    });
+  }
+  onRemoveImage() {
+    this.setState({
+      files: []
+    });
   }
   setName(event) {
     this.setState({name: event.target.value});

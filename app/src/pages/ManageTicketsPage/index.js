@@ -15,34 +15,33 @@ import NumberInput from 'grommet/components/NumberInput';
 import CloseIcon from 'grommet/components/icons/base/Close';
 
 
-const EVENTS = [ // static muna kuno //GET all events
-    { value: '001', label: 'Valkyrie' }, // value = venue.id // label = venue.name?
-    { value: '002', label: 'Pool Club' },
-    { value: '003', label: 'Revel'},
-    { value: '004', label: 'Naya'}
+const EVENTS = [ 
+    { value: '001', label: 'Girls Just Wanna Have Fun' }, 
+    { value: '002', label: 'Overtime' },
+    { value: '003', label: 'Kate Mess'},
+    { value: '004', label: 'Game On'},
     ];
 
 class ManageTicketsPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
-    this.handleRecurring = this.handleRecurring.bind(this);
     this.getEventOptions = this.getEventOptions.bind(this);
     this.onEventChange = this.onEventChange.bind(this);
-    this.onPriceChange = this.onPriceChange.bind(this);
     this.setName = this.setName.bind(this);
     this.setDescription = this.setDescription.bind(this);
+    this.setPrice = this.setPrice.bind(this);
     this.submitCreate = this.submitCreate.bind(this);
 
     this.state = {
       isMobile: false,
-      isRecurring: false,
       variants: [],
       ticketId: null, // id mock test
       name: '',
       description: '',
       events: EVENTS,
-      priceValue: 0
+      selectedEvent: '',
+      price: 0
     };
   }
   componentDidMount() {
@@ -61,13 +60,6 @@ class ManageTicketsPage extends Component {
       isMobile,
     });
   }
-  handleRecurring() {
-  	var active = !this.state.isRecurring;
-    this.setState({
-      isRecurring: active,
-    });
-    console.log(isRecurring)
-  }
 
   testFunc() { // TEST functions here
     console.log("test");
@@ -80,29 +72,12 @@ class ManageTicketsPage extends Component {
   }
 
   onEventChange(event) {
-   //  let venueId = event.nativeEvent.target.selectedIndex;
-   //  let venueCode = event.nativeEvent.target[venueId].value;
-   //  console.log('Selected Venue: ' + venueCode);
-   //  this.setState({
-   //    selectedVenue: venueCode
-   //  });
-   // console.log(this.state.selectedVenue);
-  }
-
-  onPriceChange(value) {
-  	this.setState({
-  		priceValue: value
-  	})
-  }
-
-  onVenueAdd(value) {
-    console.log('You\'ve selected:', value);
-    this.setState({ value });
-  }
-
-  onDayAdd(selectedDays) {
-    console.log('You\'ve selected:', selectedDays);
-    this.setState({ selectedDays });
+    let eventId = event.nativeEvent.target.selectedIndex;
+    let eventCode = event.nativeEvent.target[eventId].value;
+    console.log('Selected Venue: ' + eventCode);
+    this.setState({
+      selectedEvent: eventCode
+    });
   }
 
   setName(event) {
@@ -111,31 +86,11 @@ class ManageTicketsPage extends Component {
   setDescription(event) {
     this.setState({description: event.target.value});
   }
+  setPrice(event) {
+    this.setState({price: event.target.value});
+  }
   submitCreate() {
-
-    var objState = this.state;
-    console.log(objState);
-    let venueId = '57f4681dbb6c3c23633eecc2';
-
-    var createParams = {
-      _venue_id: venueId,
-      _organisation_id: organisationId,
-      name: objState.name,
-      description: objState.description
-    };
-
-    console.log(venueId);
-
-    PartyBot.events.create(createParams, function(err, response, body) {
-      console.log(response.statusCode);
-      console.log(body);
-      console.log(err);
-
-      if(response.statusCode == 201) {
-        alert('Event Created.');
-      }
-    });
-
+    console.log('Ticket Created!')
   }
   render() {
     const {
@@ -167,7 +122,7 @@ class ManageTicketsPage extends Component {
      <FormFields>
      <fieldset>
       <Box separator="all">
-      <FormField label="Venue" htmlFor="tableVenue" />
+      <FormField label="Event" htmlFor="ticketEvent" />
       <select
         name="ticketEvent"
         onChange={this.onEventChange}
@@ -183,8 +138,8 @@ class ManageTicketsPage extends Component {
 	     <FormField label="Description" htmlFor="ticketDescription">
 	     <input id="ticketDescription" type="text" onChange={this.setDescription}/>
 	     </FormField>
-	     <FormField label="Price(Php)" htmlFor="ticketDescription">
-	     <NumberInput id="ticketPrice" value={this.state.priceValue} min={0} step={100} onChange={this.onPriceChange}/>
+	     <FormField label="Price(Php)" htmlFor="tickePrice">
+	     <input id="tickePrice" type="number" onChange={this.setPrice}/>
 	     </FormField>
 		  {//variant
 	      }
