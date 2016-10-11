@@ -15,11 +15,13 @@ import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
 import FilterIcon from 'grommet/components/icons/base/Filter';
 import Select from 'react-select';
+import { Link } from 'react-router'
 
 class VenuesPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
+
     this.state = {
       isMobile: false,
       venues: []
@@ -95,26 +97,27 @@ class VenuesPage extends Component {
       <Table selectable={false}>
       <thead>
       <tr>
-      <th> Venue Name </th>
-      <th> Picture </th>
-      <th> Address </th>
-      <th> </th>
+      <th>Venue Name</th>
+      <th>Picture</th>
+      <th>Address</th>
+      <th></th>
       </tr>
       </thead>
       <tbody>
     {/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
-    {this.state.venues.map((result) => (
-      <tr key={result._id}>
-      <td> {result.name} </td>
+    {this.state.venues.map((venueData, i) => (
+      <tr key={i}>
+      <td> {venueData.name} </td>
       <td> Some Image </td>
-      <td> {result.slug} </td>
+      <td> {venueData.slug} </td>
       <td>
-        <Box justify="center" align="center">
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-        </Box>  
-      </td>
-      </tr>
-      ))}
+      <Box justify="center" align="center">
+      <Link to={'manageVenues/' + venueData._id} activeClassName="active"> Edit </Link>
+    {/* <Button label="Edit" icon={<EditIcon />} onClick={this.editVenue.bind(null, venueData._id)} /> */}
+    </Box>  
+    </td>
+    </tr>
+    ))}
     </tbody>
     </Table>
     </div>

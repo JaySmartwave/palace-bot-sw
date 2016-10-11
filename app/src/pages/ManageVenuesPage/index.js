@@ -49,9 +49,11 @@ const organisationId = '57f3a270f760e4f8ad97eec4';
           };
   }
   componentDidMount() {
+    console.log(this.props.params.venueId);
+
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
-    }
+    }    
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
