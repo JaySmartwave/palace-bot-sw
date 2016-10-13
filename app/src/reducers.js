@@ -3,7 +3,7 @@ import { routerReducer } from 'react-router-redux';
 import { reducer as formReducer } from 'redux-form';
 
 // Import all of your reducers here:
-import employees from 'containers/GeoSpatialViewContainer/reducer';
+import employees from 'containers/GeospatialViewContainer/reducer';
 import keyMetrics from 'containers/KeyMetricsViewContainer/reducer';
 import dataView from 'containers/DataViewContainer/reducer';
 import issueKeyMetrics from 'containers/IssueKeyMetricsContainer/reducer';
