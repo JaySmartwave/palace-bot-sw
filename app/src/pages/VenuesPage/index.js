@@ -41,7 +41,7 @@ class VenuesPage extends Component {
 
     // Yung '57f3a270f760e4f8ad97eec4' organisationId id sya.. Dalihin niyo nalang sa route para makuha yung id
 
-    PartyBot.venues.getAllInOrganisation('57f3a270f760e4f8ad97eec4', function(err, response, body) {
+    PartyBot.venues.getAllInOrganisation('57f3a273f760e4f8ad97eec5', function(err, response, body) {
       console.log('Error: ' + err);
       console.log('Status Code: ' + response.statusCode);      
       console.log(body);

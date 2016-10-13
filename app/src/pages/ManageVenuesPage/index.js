@@ -15,7 +15,7 @@ import CloseIcon from 'grommet/components/icons/base/Close';
 import Dropzone from 'react-dropzone';
 
 // static muna
-const organisationId = '57f3a270f760e4f8ad97eec4';
+const organisationId = '57f3a273f760e4f8ad97eec5';
 
     /*const EVENTS = [ // GET all events
     { value: '001', label: 'Girls Just Wanna Have Fun' }, // value = event.id // label = event.name?
@@ -39,51 +39,51 @@ const organisationId = '57f3a270f760e4f8ad97eec4';
 
         this.state = {
           isMobile: false,
-          files: [],
+          image: [],
           venueId: null, // id mock test
           name: '',
           description: '',
           //events: EVENTS,
           //value: []
-          };
-  }
+        };
+      }
 
-  componentWillMount(){
+      componentWillMount(){
 
-    let venue = this.props.params.venueId
+        let venue = this.props.params.venueId
 
-    console.log(venue)
+        console.log(venue)
 
-    if (venue !== 'undefined') {
+        if (venue != null) {
 
           // Get Venue with Organisation Id and Venue Id 
-      PartyBot.venues.getWithOriganisationIdAndVenueId(organisationId, venue, function(err, response, body) {
-        
+          PartyBot.venues.getWithOriganisationIdAndVenueId(organisationId, venue, function(err, response, body) {
+
             console.log(response.statusCode);
             console.log(body);
             console.log(err);
 
             if(!err && response.statusCode == 200) {
               this.setState({
-                    name: body.name,
-                    description: body.description,
-                    venueId: venue
-                  })
+                name: body.name,
+                description: body.description,
+                venueId: venue
+              })
             }
-      }.bind(this));
-    }
-  }
+          }.bind(this));
+        }
+      }
 
-  componentDidMount() {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', this.handleMobile);
-    }   
-  }
-  componentWillUnmount() {
-    if (typeof window !== 'undefined') {
-      window.removeEventListener('resize', this.handleMobile);
-    }
-  }
+      componentDidMount() {
+        if (typeof window !== 'undefined') {
+          window.addEventListener('resize', this.handleMobile);
+        }   
+      }
+      componentWillUnmount() {
+        if (typeof window !== 'undefined') {
+          window.removeEventListener('resize', this.handleMobile);
+        }
+      }
   testFunc() { // TEST functions here
     console.log("test");
   }
@@ -98,16 +98,18 @@ const organisationId = '57f3a270f760e4f8ad97eec4';
     this.setState({ value });
   }
   handleCalendar(event) {
-  	this.setState({calendar: event.target.value});
+    this.setState({calendar: event.target.value});
   }
-  onDrop(files) {
-  	this.setState({
-     files: files
+  onDrop(file) {
+    this.setState({
+     image: file
    });
+
+    console.log(file[0]);
   }
   onRemoveImage() {
     this.setState({
-      files: []
+      image: []
     });
   }
   setName(event) {
@@ -125,7 +127,8 @@ const organisationId = '57f3a270f760e4f8ad97eec4';
     var params = {
       organisationId: organisationId,
       name: objState.name,
-      description: objState.description
+      description: objState.description,
+      image: objState.image[0].preview
     };
 
     PartyBot.venues.create(params, function(err, response, body) {
@@ -148,8 +151,11 @@ const organisationId = '57f3a270f760e4f8ad97eec4';
       isMobile,
     } = this.state;
     const {
-      files,
+      image,
     } = this.state;
+
+    // console.log(image);
+
     return (
       <div className={styles.container}>
       <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
@@ -182,7 +188,7 @@ const organisationId = '57f3a270f760e4f8ad97eec4';
       </FormField>
       <FormField label="Latitude" htmlFor="venueLat">
       <input id="venueLat" type="number"/>
-      </FormField>*/}
+    </FormField>*/}
       {/*<Box separator="all">
       <FormField label="Events" htmlFor="venueEvent"/>
       <Select 
@@ -198,39 +204,48 @@ const organisationId = '57f3a270f760e4f8ad97eec4';
       </FormField>
       <FormField label="Ends At" htmlFor="venueEnds">
       <DateTime id="venueEnds" format="M/D/YYYY" onChange={this.handleCalendar} value={this.state.calendar} />
-      </FormField> */}
-      <FormField label="Image">
-      {this.state.files.length > 0 ? 
-        <Box align="center" justify="center">
-         <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
-          <Box>
-          <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>
-          </Box>
-        </Box> :
-        <Box align="center" justify="center">
-        <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
-          Drop image here or click to select image to upload. 
-        </Dropzone>
-        </Box>
+    </FormField> */}
+    <FormField label="Image">
+    {image.length > 0 ? 
+      <Box align="center" justify="center">
+    {/* commented out */}
+    {
+        /*
+        <div>{image.map((file) => <img src={file.preview} /> )}</div>
+        */
       }
-       </FormField>
-       </fieldset>
-       </FormFields>
-       <Footer pad={{"vertical": "medium"}}>
-       {this.state.venueId !== null ? 
-         <Heading align="center">
-         <Button label="Save Changes" primary={true} onClick={this.submitSave} />
-         </Heading>
-         : 
-         <Heading align="center">
-         <Button label="Create Venue" primary={true} onClick={this.submitCreate} />
-         </Heading>
-       }
-       </Footer>
-       </Form>
-       </Box>
-       </div>
-       );
+    {/* commented out */}
+    <div> 
+    <img src={image[0].preview} />
+    </div>
+    <Box>
+    <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>
+    </Box>
+    </Box> :
+    <Box align="center" justify="center">
+    <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
+    Drop image here or click to select image to upload. 
+    </Dropzone>
+    </Box>
+  }
+  </FormField>
+  </fieldset>
+  </FormFields>
+  <Footer pad={{"vertical": "medium"}}>
+  {this.state.venueId !== null ? 
+   <Heading align="center">
+   <Button label="Save Changes" primary={true} onClick={this.submitSave} />
+   </Heading>
+   : 
+   <Heading align="center">
+   <Button label="Create Venue" primary={true} onClick={this.submitCreate} />
+   </Heading>
+ }
+ </Footer>
+ </Form>
+ </Box>
+ </div>
+ );
   }
 }
 
