@@ -8,30 +8,29 @@ import Button from 'grommet/components/Button';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import FormFields from 'grommet/components/FormFields';
+import CheckBox from 'grommet/components/CheckBox';
 
 const TABLES = [
-                { tableName: "TableType1",
+                { tableName: "Cocktail Table",
                   tableCount:
                     [
-                      {tableId: "T1A", isAvailable: false},
-                      {tableId: "T1B", isAvailable: true},
-                      {tableId: "T1C", isAvailable: false},
+                      {tableId: "CT1", isAvailable: true},
                     ]
                 },
-                { tableName: "TableType2",
+                { tableName: "West Couch",
                   tableCount:
                     [
-                      {tableId: "T2A", isAvailable: false},
-                      {tableId: "T2B", isAvailable: false},
-                      {tableId: "T2C", isAvailable: false},
+                      {tableId: "West 1", isAvailable: false},
+                      {tableId: "West 2", isAvailable: false},
+                      {tableId: "West 3", isAvailable: false},
                     ]
                 },
-                { tableName: "TableType3",
+                { tableName: "East Couch",
                   tableCount: 
                     [
-                      {tableId: "T3A", isAvailable: true},
-                      {tableId: "T3B", isAvailable: true},
-                      {tableId: "T3C", isAvailable: true},
+                      {tableId: "East 1", isAvailable: true},
+                      {tableId: "East 2", isAvailable: true},
+                      {tableId: "East 3", isAvailable: true},
                     ]
                 },
               ]
@@ -40,10 +39,13 @@ class EditTablesPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
+    this.getTables = this.getTables.bind(this);
+    this.getTableCount = this.getTableCount.bind(this);
     this.state = {
       isMobile: false,
       eventId: null, // identifier
-      tables: TABLES
+      tables: TABLES,
+      currentItem: []
     };
   }
   componentDidMount() {
@@ -65,6 +67,25 @@ class EditTablesPage extends Component {
   }
   testFunc() {
     console.log(this.state.Tables)
+  }
+  getTables(){
+    return this.state.tables.map(function (item) {
+      return <div>
+                <FormField key={item.tableName} label={item.tableName}>
+                  {
+                  //<CheckBox id="isGuestList" onChange={this.testFunc} label={item.tableName + " 1"} />
+                  }
+                </FormField>
+              </div>
+    }.bind(this));
+  }
+  getTableCount(){
+    console.log(this.state.currentItem)
+    return this.state.currentItem.map(function (item) {
+      return <div key={item.tableId}>
+          <CheckBox id="isGuestList" onChange={this.testFunc} label={item.tableId} />
+        </div>
+    }.bind(this));
   }
   render() {
     const {
@@ -90,12 +111,7 @@ class EditTablesPage extends Component {
 				<FormFields>
 					<fieldset>
             {
-              this.state.tables.map(function(table) {
-                return
-                <FormField key={table.tableName} label={table.tableName} htmlFor={table.tableName}>
-                  {table.tableName}
-                </FormField>;
-              })
+              this.getTables()
             }
 					</fieldset>
 				</FormFields>

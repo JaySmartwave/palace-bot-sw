@@ -13,15 +13,9 @@ import EditIcon from 'grommet/components/icons/base/Edit';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
-import FilterIcon from 'grommet/components/icons/base/Filter';
+import { Link } from 'react-router'
 
 // Pages map directly to Routes, i.e. one page equals on Route
-
-// const EventsPage = (props) => (
-//   <div className={styles.container}>
-//     Hello from EventsPage !
-//   </div>
-// );
 
 class EventsPage extends Component {
 
@@ -76,24 +70,8 @@ class EventsPage extends Component {
 		return (
 			<div className={styles.container}>
 			<Box pad={{ vertical: 'medium' }}>
-			<Heading align='center'> Events Setup </Heading>
+			<Heading align='center'> Events </Heading>
 			</Box>
-
-			<Header justify='between'>
-			<Menu icon={<FilterIcon />} label='Filter'>
-			<Anchor href='#' className='active'>
-			First action
-			</Anchor>
-			<Anchor href='#'>
-			Second action
-			</Anchor>
-			</Menu>
-
-			<Menu direction='row' align='center' responsive={false}>
-			<Search dropAlign={{'right': 'right'}} />
-			</Menu>
-
-			</Header>
 			<Table selectable={false}>
 			<thead>
 			<tr>
@@ -106,11 +84,14 @@ class EventsPage extends Component {
 		{/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
 		{this.state.events.map((result) => (
 			<tr key={result._id}>
-			<td> Some Picture</td>
+			<td> 
+				<Box justify="center" align="center">
+					<img src="http://place-hold.it/240/1E90FF/ffffff&text=Placeholder&fontsize=28" height="200" alt="Smiley face" />
+				</Box>
+			</td>
 			<td>
 			<Box justify="center" align="center">
-				{result.name} 
-				<br/>
+				<Heading align='center' tag="h3"> {result.name} </Heading>
 				{result.description} 
 				<br/>
 				{result.slug}
@@ -118,8 +99,13 @@ class EventsPage extends Component {
 			</td>
 			<td>
 			<Box justify="center" align="center">
+       			<Link to={'guestList'}>
 				<Button className={styles.button} label="Guest List" onClick={this.testFunc} />
+				</Link>
+				<br/>
+				<Link to={'tableBookings'}>
 				<Button className={styles.button} label="Table Bookings" onClick={this.testFunc} />
+				</Link>
 			</Box>
 			</td>
 			</tr>

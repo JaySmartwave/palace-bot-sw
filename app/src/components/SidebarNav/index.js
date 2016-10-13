@@ -18,28 +18,6 @@ class SidebarNav extends Component {
       <Sidebar size="medium" colorIndex="light-2" fixed separator="right">
         <AppHeader {...this.props} />
         <Menu primary>
-          {/*<IndexLink
-            to="/home"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            Home
-          </IndexLink>
-          <Link
-            to="data"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            Data
-          </Link>
-          <Link
-            to="about"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            About
-          </Link>
-          <Menu separator="bottom"/>*/}
           <IndexLink
             to="events"
             activeClassName="active"
@@ -76,13 +54,13 @@ class SidebarNav extends Component {
           >
             Tables
           </Link>
-          <Link
+          {/*<Link
             to="tickets"
             activeClassName="active"
             onClick={() => onToggleNav()}
           >
             Tickets
-          </Link>
+          </Link> */}
           <Link
             to="schedules"
             activeClassName="active"
@@ -106,55 +84,6 @@ class SidebarNav extends Component {
             Alerts
           </Link>
           <Menu separator="bottom"/>
-          <Link
-            to="manageTickets"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            Manage Tickets
-          </Link>
-          <Link
-            to="manageVenues"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            Manage Venues
-          </Link>
-          <Link
-            to="manageTables"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            Manage Tables
-          </Link>
-         <Link
-            to="manageTickets"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            Manage Tickets
-          </Link>
-          <Link
-            to="manageEvents"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            Manage Events
-          </Link>
-          <Link
-            to="managePromoters"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            Manage Promoters
-          </Link>
-          <Link
-            to="editTables"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            Edit Tables 
-          </Link>
         </Menu>
       </Sidebar>
     );

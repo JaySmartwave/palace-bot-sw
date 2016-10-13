@@ -13,8 +13,9 @@ import EditIcon from 'grommet/components/icons/base/Edit';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
-import FilterIcon from 'grommet/components/icons/base/Filter';
+import AddIcon from 'grommet/components/icons/base/Add';
 import Select from 'react-select';
+import { Link } from 'react-router'
 
 class PromoterPage extends Component {
   constructor() {
@@ -57,19 +58,11 @@ class PromoterPage extends Component {
       <Heading align='center'> Promoters Setup </Heading>
       </Box>
       <Header justify='between'>
-      <Menu icon={<FilterIcon />} label='Filter'>
-      <Anchor href='#' className='active'>   
-      First action
-      </Anchor>
-      <Anchor href='#'>
-      Second action
-      </Anchor>
-      <Anchor href='#'>
-      Third action
-      </Anchor>
-      </Menu>
+      <Heading> </Heading>
       <Menu direction='row' align='center' responsive={false}>
-      <Search dropAlign={{'right': 'right'}} />
+        <Link to={'managePromoters'} activeClassName="active">
+          <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
+        </Link>
       </Menu>
       </Header>
       <Table selectable={false}>
@@ -95,9 +88,9 @@ class PromoterPage extends Component {
       </tr>
       ))*/}
       <tr>
-      <td> name </td>
-      <td> venue </td>
-      <td> code </td>
+      <td> Pam Lee </td>
+      <td> Pool Club </td>
+      <td> PAM143 </td>
       <td>
       	<Box justify="center" align="center">
           <Button label="Edit Promoter" icon={<EditIcon />} onClick={this.testFunc} />
@@ -105,9 +98,9 @@ class PromoterPage extends Component {
       </td>
       </tr>
       <tr>
-      <td> name </td>
-      <td> venue </td>
-      <td> code </td>
+      <td> Denise Yao </td>
+      <td> Valkyrie </td>
+      <td> DEN123 </td>
       <td>
       	<Box justify="center" align="center">
           <Button label="Edit Promoter" icon={<EditIcon />} onClick={this.testFunc} />
@@ -115,13 +108,23 @@ class PromoterPage extends Component {
       </td>
       </tr>
       <tr>
-      <td> name </td>
-      <td> venue </td>
-      <td> code </td>
+      <td> Ara Adriatico </td>
+      <td> Revel </td>
+      <td> ARA789 </td>
       <td>
       	<Box justify="center" align="center">
           <Button label="Edit Promoter" icon={<EditIcon />} onClick={this.testFunc} />
       	</Box>
+      </td>
+      </tr>
+      <tr>
+      <td> Marie Shindo </td>
+      <td> Valkyrie </td>
+      <td> MAR888 </td>
+      <td>
+        <Box justify="center" align="center">
+          <Button label="Edit Promoter" icon={<EditIcon />} onClick={this.testFunc} />
+        </Box>
       </td>
       </tr>
     </tbody>

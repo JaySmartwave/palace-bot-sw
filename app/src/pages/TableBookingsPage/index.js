@@ -62,22 +62,6 @@ class TableBookingsPage extends Component {
             Table Bookings
       	</Heading>
       </Box>
-      <Header justify='between'>
-      <Menu icon={<FilterIcon />} label='Filter'>
-      <Anchor href='#' className='active'>   
-      First action
-      </Anchor>
-      <Anchor href='#'>
-      Second action
-      </Anchor>
-      <Anchor href='#'>
-      Third action
-      </Anchor>
-      </Menu>
-      <Menu direction='row' align='center' responsive={false}>
-      <Search dropAlign={{'right': 'right'}} />
-      </Menu>
-      </Header>
       <Table selectable={false}>
       <thead>
       <tr>

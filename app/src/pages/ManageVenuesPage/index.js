@@ -41,19 +41,43 @@ const organisationId = '57f3a270f760e4f8ad97eec4';
           isMobile: false,
           files: [],
           venueId: null, // id mock test
-          calendar: "10/17/2016",
           name: '',
           description: '',
           //events: EVENTS,
           //value: []
           };
   }
-  componentDidMount() {
-    console.log(this.props.params.venueId);
 
+  componentWillMount(){
+
+    let venue = this.props.params.venueId
+
+    console.log(venue)
+
+    if (venue !== 'undefined') {
+
+          // Get Venue with Organisation Id and Venue Id 
+      PartyBot.venues.getWithOriganisationIdAndVenueId(organisationId, venue, function(err, response, body) {
+        
+            console.log(response.statusCode);
+            console.log(body);
+            console.log(err);
+
+            if(!err && response.statusCode == 200) {
+              this.setState({
+                    name: body.name,
+                    description: body.description,
+                    venueId: venue
+                  })
+            }
+      }.bind(this));
+    }
+  }
+
+  componentDidMount() {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
-    }    
+    }   
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -145,12 +169,12 @@ const organisationId = '57f3a270f760e4f8ad97eec4';
       <FormFields>
       <fieldset>
       <FormField label="Name" htmlFor="venueName">
-      <input id="venueName" type="text" onChange={this.setName}/>
+      <input id="venueName" type="text" onChange={this.setName} value={this.state.name} />
       </FormField>
-      <FormField label="Description" htmlFor="venueDescription">
-      <input id="venueAddress" type="text" onChange={this.setDescription}/>
+      <FormField label="Address" htmlFor="venueDescription">
+      <input id="venueAddress" type="text" onChange={this.setDescription} value={this.state.description}/>
       </FormField>
-      <FormField label="Location" htmlFor="venueLocation">
+      {/*<FormField label="Location" htmlFor="venueLocation">
       <input id="venueAddress" type="text"/>
       </FormField>
       <FormField label="Longitude" htmlFor="venueLon">
@@ -158,7 +182,7 @@ const organisationId = '57f3a270f760e4f8ad97eec4';
       </FormField>
       <FormField label="Latitude" htmlFor="venueLat">
       <input id="venueLat" type="number"/>
-      </FormField>
+      </FormField>*/}
       {/*<Box separator="all">
       <FormField label="Events" htmlFor="venueEvent"/>
       <Select 

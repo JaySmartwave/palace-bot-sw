@@ -13,7 +13,7 @@ import EditIcon from 'grommet/components/icons/base/Edit';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
-import FilterIcon from 'grommet/components/icons/base/Filter';
+import AddIcon from 'grommet/components/icons/base/Add';
 import Select from 'react-select';
 import { Link } from 'react-router'
 
@@ -79,19 +79,11 @@ class VenuesPage extends Component {
       <Heading align='center'> Venues Setup </Heading>
       </Box>
       <Header justify='between'>
-      <Menu icon={<FilterIcon />} label='Filter'>
-      <Anchor href='#' className='active'>   
-      First action
-      </Anchor>
-      <Anchor href='#'>
-      Second action
-      </Anchor>
-      <Anchor href='#'>
-      Third action
-      </Anchor>
-      </Menu>
+      <Heading> </Heading>
       <Menu direction='row' align='center' responsive={false}>
-      <Search dropAlign={{'right': 'right'}} />
+        <Link to={'manageVenues'} activeClassName="active">
+          <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
+        </Link>
       </Menu>
       </Header>
       <Table selectable={false}>
@@ -112,8 +104,9 @@ class VenuesPage extends Component {
       <td> {venueData.slug} </td>
       <td>
       <Box justify="center" align="center">
-      <Link to={'manageVenues/' + venueData._id} activeClassName="active"> Edit </Link>
-    {/* <Button label="Edit" icon={<EditIcon />} onClick={this.editVenue.bind(null, venueData._id)} /> */}
+      <Link to={'manageVenues/' + venueData._id} activeClassName="active">
+      <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
+     </Link>
     </Box>  
     </td>
     </tr>
