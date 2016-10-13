@@ -12,22 +12,37 @@ import NumberInput from 'grommet/components/NumberInput';
 import CloseIcon from 'grommet/components/icons/base/Close';
 import Dropzone from 'react-dropzone';
 
+const VARIANTS =[
+                  { 
+                    eventId: '001',
+                    eventName: 'Game On',
+                    tablePrice: 3000
+                  },
+                  // { 
+                  //   eventId: '002',
+                  //   eventName: 'Overtime',
+                  //   tablePrice: 2000
+                  // }
+                ] 
+
 class ManageTablesPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.testFunc = this.testFunc.bind(this);
-    this.onRemoveImage = this.onRemoveImage.bind(this);
+    this.getTableVariants = this.getTableVariants.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.onRemoveImage = this.onRemoveImage.bind(this);
     this.onTypeChange = this.onTypeChange.bind(this);
     this.getTypeOptions = this.getTypeOptions.bind(this);
     this.onVenueChange = this.onVenueChange.bind(this);
     this.getVenueOptions = this.getVenueOptions.bind(this);
+    this.getEventOptions = this.getEventOptions.bind(this);
     this.state = {
       isMobile: false,
       files: [],
-      tableId: null // id mock test
+      tableId: null, // id mock test
+      variants: VARIANTS
     };
   }
   componentDidMount() {
@@ -59,6 +74,18 @@ class ManageTablesPage extends Component {
     }.bind(this));
   }
 
+  getVenueOptions(){
+    return ["Valkyrie","Pool Club","Revel","Naya"].map(function (item) {
+      return <option key={item} value={item}>{item}</option>;
+    }.bind(this));
+  }
+
+  getEventOptions(){
+    return ["Overtime","Game On","Kate Mess"].map(function (item) {
+      return <option key={item} value={item}>{item}</option>;
+    }.bind(this));
+  }
+
   onTypeChange(event) {
     var id = event.nativeEvent.target.selectedIndex;
     console.log('Selected Table:' + event.nativeEvent.target[id].value);
@@ -73,6 +100,26 @@ class ManageTablesPage extends Component {
   testFunc() { // TEST functions here
     console.log('test');
   }
+
+  getTableVariants(){
+    return this.state.variants.map(function (item) {
+      return <div key={item.eventId}>
+                <FormField label="Event" htmlFor="tableName">
+                  <input id="tableName" type="text" value={item.eventName} onChange={this.testFunc}/>
+                </FormField>
+                <FormField label="Price(Php)" htmlFor="tablePrice">
+                  <input id="tablePrice" type="number" value={item.tablePrice} onChange={this.testFunc}/>
+                </FormField>
+                <Footer pad={{"vertical": "small"}}>
+                   <Heading align="center">
+                   <Button className={styles.eventButton} label="Update" primary={true} onClick={this.testFunc} />
+                   <Button className={styles.eventButton} label="Remove" onClick={this.testFunc} />
+                   </Heading>
+                 </Footer>
+             </div>;
+    }.bind(this));
+  }
+
   onDrop(files) {
   	this.setState({
      files: files
@@ -92,6 +139,7 @@ class ManageTablesPage extends Component {
     } = this.state;
     const {
       files,
+      variants,
     } = this.state;
     return (
       <div className={styles.container}>
@@ -126,9 +174,10 @@ class ManageTablesPage extends Component {
 					  <FormField label="No. of Pax" htmlFor="tablePax">
 					    <NumberInput id="tablePax" value={0} min={0} max={20} />
 					  </FormField>
-				  {
-					  //Dynamic Price/Event Component
-          }  
+            {
+            //Dynamic Price/Event Component
+            //this.getTableVariants()
+            }
           <FormField label="Image">
           {this.state.files.length > 0 ? 
             <Box align="center" justify="center">
@@ -146,6 +195,29 @@ class ManageTablesPage extends Component {
            </FormField>
            </fieldset>
            </FormFields>
+            <br/>
+            <Box>
+            Pricing:
+            </Box>
+            <Button label="Add Event" primary={true} onClick={this.testFunc} />
+            <br/>
+            <br/>
+            <FormField label="Event" htmlFor="tableName">
+              <select id="tableVenue" onChange={this.onVenueChange}>
+                {this.getEventOptions()}
+              </select>
+            </FormField>
+            <FormField label="Price(Php)" htmlFor="tablePrice">
+              <input id="tablePrice" type="number" value={0} onChange={this.testFunc}/>
+            </FormField>
+            <FormField>
+              <Footer>
+               <Heading align="center">
+               <Button className={styles.eventButton} label="Save" primary={true} onClick={this.testFunc} />
+               <Button className={styles.eventButton} label="Remove" onClick={this.testFunc} />
+               </Heading>
+             </Footer>
+            </FormField>
            <Footer pad={{"vertical": "medium"}}>
            {this.state.tableId !== null ? 
              <Heading align="center">
@@ -157,7 +229,7 @@ class ManageTablesPage extends Component {
              </Heading>
            }
            </Footer>
-           </Form>
+				   </Form>
            </Box>
            </div>
            );

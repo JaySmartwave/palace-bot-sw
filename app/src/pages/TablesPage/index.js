@@ -13,8 +13,9 @@ import EditIcon from 'grommet/components/icons/base/Edit';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
-import FilterIcon from 'grommet/components/icons/base/Filter';
+import AddIcon from 'grommet/components/icons/base/Add';
 import Select from 'react-select';
+import { Link } from 'react-router'
 
 class TablesPage extends Component {
   constructor() {
@@ -57,19 +58,11 @@ class TablesPage extends Component {
       <Heading align='center'> Tables Setup </Heading>
       </Box>
       <Header justify='between'>
-      <Menu icon={<FilterIcon />} label='Filter'>
-      <Anchor href='#' className='active'>   
-      First action
-      </Anchor>
-      <Anchor href='#'>
-      Second action
-      </Anchor>
-      <Anchor href='#'>
-      Third action
-      </Anchor>
-      </Menu>
+      <Heading> </Heading>
       <Menu direction='row' align='center' responsive={false}>
-      <Search dropAlign={{'right': 'right'}} />
+        <Link to={'manageTables'} activeClassName="active">
+          <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
+        </Link>
       </Menu>
       </Header>
       <Table selectable={false}>

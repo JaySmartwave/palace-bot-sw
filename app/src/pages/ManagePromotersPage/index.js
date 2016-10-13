@@ -100,9 +100,9 @@ class ManagePromotersPage extends Component {
 					  <FormField label="Code" htmlFor="promoterCode">
 					    <input id="promoterCode" type="text"/>
 					  </FormField>
-            <FormField label="Description" htmlFor="promoterDesc">
+            {/*<FormField label="Description" htmlFor="promoterDesc">
               <input id="promoterCode" type="text"/>
-            </FormField>
+            </FormField>*/}
     	       <Box separator="all">
                 <FormField label="Venue" htmlFor="promoterVenue" />
                 <Select 

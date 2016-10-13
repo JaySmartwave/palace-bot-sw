@@ -13,8 +13,9 @@ import CheckmarkIcon from 'grommet/components/icons/base/Checkmark';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
-import FilterIcon from 'grommet/components/icons/base/Filter';
+import DocumentCsvIcon from 'grommet/components/icons/base/DocumentCsv';
 import Select from 'react-select';
+
 
 class GuestListPage extends Component {
   constructor() {
@@ -62,19 +63,9 @@ class GuestListPage extends Component {
       	</Heading>
       </Box>
       <Header justify='between'>
-      <Menu icon={<FilterIcon />} label='Filter'>
-      <Anchor href='#' className='active'>   
-      First action
-      </Anchor>
-      <Anchor href='#'>
-      Second action
-      </Anchor>
-      <Anchor href='#'>
-      Third action
-      </Anchor>
-      </Menu>
+      <Heading> </Heading>
       <Menu direction='row' align='center' responsive={false}>
-      <Search dropAlign={{'right': 'right'}} />
+          <Button className={styles.expBut} label="Export to CSV" icon={<DocumentCsvIcon />} onClick={this.testFunc} />
       </Menu>
       </Header>
       <Table selectable={false}>

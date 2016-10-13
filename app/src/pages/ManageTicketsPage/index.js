@@ -31,8 +31,8 @@ class ManageTicketsPage extends Component {
     this.setName = this.setName.bind(this);
     this.setDescription = this.setDescription.bind(this);
     this.setPrice = this.setPrice.bind(this);
+    this.submitSave = this.submitSave.bind(this);
     this.submitCreate = this.submitCreate.bind(this);
-
     this.state = {
       isMobile: false,
       variants: [],
@@ -88,6 +88,9 @@ class ManageTicketsPage extends Component {
   }
   setPrice(event) {
     this.setState({price: event.target.value});
+  }
+  submitSave() {
+    console.log('Ticket Updated!')
   }
   submitCreate() {
     console.log('Ticket Created!')
