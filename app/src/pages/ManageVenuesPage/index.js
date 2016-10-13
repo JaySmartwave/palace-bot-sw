@@ -31,7 +31,6 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
         this.handleCalendar = this.handleCalendar.bind(this);
         this.onEventChange = this.onEventChange.bind(this);
         this.onDrop = this.onDrop.bind(this);
-        this.testFunc = this.testFunc.bind(this);
         this.onRemoveImage = this.onRemoveImage.bind(this);
         this.setName = this.setName.bind(this);
         this.setDescription = this.setDescription.bind(this);
@@ -50,14 +49,14 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
 
       componentWillMount(){
 
-        let venue = this.props.params.venueId
+        let paramsVenueId = this.props.params.venueId
 
-        console.log(venue)
+        // console.log(paramsVenueId);
 
-        if (venue != null) {
+        if (paramsVenueId != null) {
 
           // Get Venue with Organisation Id and Venue Id 
-          PartyBot.venues.getWithOriganisationIdAndVenueId(organisationId, venue, function(err, response, body) {
+          PartyBot.venues.getWithOriganisationIdAndVenueId(organisationId, paramsVenueId, function(err, response, body) {
 
             console.log(response.statusCode);
             console.log(body);
@@ -67,7 +66,7 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
               this.setState({
                 name: body.name,
                 description: body.description,
-                venueId: venue
+                venueId: paramsVenueId
               })
             }
           }.bind(this));
@@ -84,64 +83,68 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
           window.removeEventListener('resize', this.handleMobile);
         }
       }
-  testFunc() { // TEST functions here
-    console.log("test");
-  }
-  handleMobile() {
-    const isMobile = window.innerWidth <= 768;
-    this.setState({
-      isMobile,
-    });
-  }
-  onEventChange(value) {
-    console.log('You\'ve selected:', value);
-    this.setState({ value });
-  }
-  handleCalendar(event) {
-    this.setState({calendar: event.target.value});
-  }
-  onDrop(file) {
-    this.setState({
-     image: file
-   });
+      handleMobile() {
+        const isMobile = window.innerWidth <= 768;
+        this.setState({
+          isMobile,
+        });
+      }
+      onEventChange(value) {
+        console.log('You\'ve selected:', value);
+        this.setState({ value });
+      }
+      handleCalendar(event) {
+        this.setState({calendar: event.target.value});
+      }
+      onDrop(file) {
+        this.setState({
+         image: file
+       });
 
-    console.log(file[0]);
-  }
-  onRemoveImage() {
-    this.setState({
-      image: []
-    });
-  }
-  setName(event) {
-    this.setState({name: event.target.value});
-  }
-  setDescription(event) {
-    this.setState({ description: event.target.value });
-  }
-  submitCreate() {
+        console.log(file[0]);
+      }
+      onRemoveImage() {
+        this.setState({
+          image: []
+        });
+      }
+      setName(event) {
+        this.setState({name: event.target.value});
+      }
+      setDescription(event) {
+        this.setState({ description: event.target.value });
+      }
+      submitCreate() {
     // console.log(organisationId);
     var objState = this.state;
-    console.log(objState);
 
     // Create venue in a organisation
-    var params = {
+    var createParams = {
       organisationId: organisationId,
       name: objState.name,
       description: objState.description,
-      image: objState.image[0].preview
+      // location: {
+      //   address: objState.description
+      // },
+      // image: objState.image[0].preview
     };
 
-    PartyBot.venues.create(params, function(err, response, body) {
+    // console.log(params);
+
+    PartyBot.venues.create(createParams, function(err, response, body) {
+
+      console.log(createParams);
 
       console.log(response.statusCode);
       console.log(body);
-      console.log(err);
+      console.log(err.errors);
 
       if(response.statusCode == 201) {
         alert('Venue Created.');
       }
 
     });
+    
   }
   render() {
     const {
@@ -177,10 +180,11 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
       <FormField label="Name" htmlFor="venueName">
       <input id="venueName" type="text" onChange={this.setName} value={this.state.name} />
       </FormField>
-      <FormField label="Address" htmlFor="venueDescription">
-      <input id="venueAddress" type="text" onChange={this.setDescription} value={this.state.description}/>
+      <FormField label="Description" htmlFor="venueDescription">
+      <input id="venueDescription" type="text" onChange={this.setDescription} value={this.state.description}/>
       </FormField>
-      {/*<FormField label="Location" htmlFor="venueLocation">
+      {/*<
+      FormField label="Location" htmlFor="venueLocation">
       <input id="venueAddress" type="text"/>
       </FormField>
       <FormField label="Longitude" htmlFor="venueLon">
@@ -188,8 +192,10 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
       </FormField>
       <FormField label="Latitude" htmlFor="venueLat">
       <input id="venueLat" type="number"/>
-    </FormField>*/}
-      {/*<Box separator="all">
+    </FormField>
+  */}
+      {/*
+      <Box separator="all">
       <FormField label="Events" htmlFor="venueEvent"/>
       <Select 
           name="eventVenue"
@@ -204,48 +210,49 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
       </FormField>
       <FormField label="Ends At" htmlFor="venueEnds">
       <DateTime id="venueEnds" format="M/D/YYYY" onChange={this.handleCalendar} value={this.state.calendar} />
-    </FormField> */}
-    <FormField label="Image">
-    {image.length > 0 ? 
-      <Box align="center" justify="center">
-    {/* commented out */}
-    {
-        /*
-        <div>{image.map((file) => <img src={file.preview} /> )}</div>
-        */
-      }
-    {/* commented out */}
-    <div> 
-    <img src={image[0].preview} />
-    </div>
-    <Box>
-    <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>
-    </Box>
-    </Box> :
+    </FormField> 
+  */}
+  <FormField label="Image">
+  {image.length > 0 ? 
     <Box align="center" justify="center">
-    <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
-    Drop image here or click to select image to upload. 
-    </Dropzone>
-    </Box>
-  }
-  </FormField>
-  </fieldset>
-  </FormFields>
-  <Footer pad={{"vertical": "medium"}}>
-  {this.state.venueId !== null ? 
-   <Heading align="center">
-   <Button label="Save Changes" primary={true} onClick={this.submitSave} />
-   </Heading>
-   : 
-   <Heading align="center">
-   <Button label="Create Venue" primary={true} onClick={this.submitCreate} />
-   </Heading>
- }
- </Footer>
- </Form>
- </Box>
- </div>
- );
+  {/* commented out */}
+  {
+          /*
+          <div>{image.map((file) => <img src={file.preview} /> )}</div>
+          */
+        }
+      {/* commented out */}
+      <div> 
+      <img src={image[0].preview} />
+      </div>
+      <Box>
+      <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>
+      </Box>
+      </Box> :
+      <Box align="center" justify="center">
+      <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
+      Drop image here or click to select image to upload. 
+      </Dropzone>
+      </Box>
+    }
+    </FormField>
+    </fieldset>
+    </FormFields>
+    <Footer pad={{"vertical": "medium"}}>
+    {this.state.venueId !== null ? 
+     <Heading align="center">
+     <Button label="Save Changes" primary={true} onClick={this.submitSave} />
+     </Heading>
+     : 
+     <Heading align="center">
+     <Button label="Create Venue" primary={true} onClick={this.submitCreate} />
+     </Heading>
+   }
+   </Footer>
+   </Form>
+   </Box>
+   </div>
+   );
   }
 }
 
