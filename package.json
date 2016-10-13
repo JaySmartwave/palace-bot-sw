@@ -29,12 +29,11 @@
     "generate:container": "plop --plopfile config/generators/index.js container",
     "generate:page": "plop --plopfile config/generators/index.js page",
     "lint": "eslint . --ext .js --ext .jsx; exit 0",
-    "postinstall": "npm run build",
+    "postinstall": "webpack --config ./webpack.config.babel.js --progress",
     "deploy": "cross-env NODE_ENV=production ./node_modules/.bin/webpack",
     "start": "npm run dev",
     "clean": "rm -rf app/dist app/build",
     "setup": "npm install",
-    "build": "./node_modules/.bin/webpack",
     "serve:bundle": "cross-env NODE_ENV=production PORT=1337 node server.js"
   },
   "repository": {
