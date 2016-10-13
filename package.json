@@ -29,6 +29,7 @@
     "generate:container": "plop --plopfile config/generators/index.js container",
     "generate:page": "plop --plopfile config/generators/index.js page",
     "lint": "eslint . --ext .js --ext .jsx; exit 0",
+    "postinstall": "webpack --config ./webpack.config.babel.js --progress --colors",
     "deploy": "cross-env NODE_ENV=production ./node_modules/.bin/webpack",
     "start": "npm run dev",
     "clean": "rm -rf app/dist app/build",
