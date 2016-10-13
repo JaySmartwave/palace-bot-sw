@@ -116,9 +116,7 @@
     "subscriptions-transport-ws": "^0.2.2",
     "svg-react-loader": "^0.3.6",
     "utils": "^0.3.1",
-    "webpack": "v2.1.0-beta.19"
-  },
-  "devDependencies": {
+    "webpack": "v2.1.0-beta.19",
     "babel-eslint": "^5.0.0-beta4",
     "babel-preset-es2015": "^6.9.0",
     "chai": "^3.4.1",
