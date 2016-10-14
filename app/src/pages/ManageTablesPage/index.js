@@ -14,16 +14,31 @@ import Dropzone from 'react-dropzone';
 
 const VARIANTS =[
                   { 
-                    eventId: '001',
-                    eventName: 'Game On',
+                    variantId: '001',
+                    eventId: '003',
                     tablePrice: 3000
                   },
-                  // { 
-                  //   eventId: '002',
-                  //   eventName: 'Overtime',
-                  //   tablePrice: 2000
-                  // }
+                  { 
+                    variantId: '002',
+                    eventId: '002',
+                    tablePrice: 2000
+                  }
                 ] 
+
+const EVENTS =[
+                  { 
+                    eventId: '001',
+                    eventName: 'Overtime'
+                  },
+                  { 
+                    eventId: '002',
+                    eventName: 'Game On'
+                  },
+                  { 
+                    eventId: '003',
+                    eventName: 'Kate Mess'
+                  },
+                ]     
 
 class ManageTablesPage extends Component {
   constructor() {
@@ -37,14 +52,27 @@ class ManageTablesPage extends Component {
     this.getTypeOptions = this.getTypeOptions.bind(this);
     this.onVenueChange = this.onVenueChange.bind(this);
     this.getVenueOptions = this.getVenueOptions.bind(this);
+    this.onEventChange = this.onEventChange.bind(this);
     this.getEventOptions = this.getEventOptions.bind(this);
+    this.addVariant = this.addVariant.bind(this);
+    this.removeVariant = this.removeVariant.bind(this);
     this.state = {
       isMobile: false,
       files: [],
-      tableId: null, // id mock test
-      variants: VARIANTS
+      tableId: '123', // id mock test
+      variants: [{ 
+                    eventId: '001',
+                    tablePrice: 0
+                  }]
     };
   }
+
+  componentWillMount() {
+    if (this.state.tableId !== 'null') {
+      this.setState({variants: VARIANTS});
+    }
+  }
+
   componentDidMount() {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
@@ -64,7 +92,7 @@ class ManageTablesPage extends Component {
 
   onVenueChange(event) {
     var id = event.nativeEvent.target.selectedIndex;
-    console.log('Selected Event' + event.nativeEvent.target[id].value);
+    console.log('Selected Venue' + event.nativeEvent.target[id].value);
     //this.setState or props
   }
 
@@ -74,16 +102,25 @@ class ManageTablesPage extends Component {
     }.bind(this));
   }
 
-  getVenueOptions(){
-    return ["Valkyrie","Pool Club","Revel","Naya"].map(function (item) {
-      return <option key={item} value={item}>{item}</option>;
-    }.bind(this));
+  onEventChange(event) {
+    var id = event.nativeEvent.target.selectedIndex;
+    console.log('Selected Event' + event.nativeEvent.target[id].value);
+    //this.setState or props
   }
 
   getEventOptions(){
-    return ["Overtime","Game On","Kate Mess"].map(function (item) {
-      return <option key={item} value={item}>{item}</option>;
+    return EVENTS.map(function (item) {
+      return <option key={item.eventId} value={item.eventId}>{item.eventName}</option>;
     }.bind(this));
+  }
+
+  addVariant() { // TEST functions here
+    console.log('test');
+  }
+
+  removeVariant(event){
+    var id = event.nativeEvent.target.selectedIndex;
+    console.log('Selected Variant:' + event.nativeEvent.target[id].value);
   }
 
   onTypeChange(event) {
@@ -103,17 +140,19 @@ class ManageTablesPage extends Component {
 
   getTableVariants(){
     return this.state.variants.map(function (item) {
-      return <div key={item.eventId}>
+      return <div key={item.variantId}>
                 <FormField label="Event" htmlFor="tableName">
-                  <input id="tableName" type="text" value={item.eventName} onChange={this.testFunc}/>
+                  <select id="tableVenue" onChange={this.onEventChange}>
+                    {this.getEventOptions()}
+                  </select>
                 </FormField>
                 <FormField label="Price(Php)" htmlFor="tablePrice">
                   <input id="tablePrice" type="number" value={item.tablePrice} onChange={this.testFunc}/>
                 </FormField>
                 <Footer pad={{"vertical": "small"}}>
                    <Heading align="center">
-                   <Button className={styles.eventButton} label="Update" primary={true} onClick={this.testFunc} />
-                   <Button className={styles.eventButton} label="Remove" onClick={this.testFunc} />
+                    <Button className={styles.eventButton} label="Update" primary={true} onClick={this.testFunc} />
+                    <Button className={styles.eventButton} label="Remove" onClick={this.removeVariant} />
                    </Heading>
                  </Footer>
              </div>;
@@ -174,10 +213,6 @@ class ManageTablesPage extends Component {
 					  <FormField label="No. of Pax" htmlFor="tablePax">
 					    <NumberInput id="tablePax" value={0} min={0} max={20} />
 					  </FormField>
-            {
-            //Dynamic Price/Event Component
-            //this.getTableVariants()
-            }
           <FormField label="Image">
           {this.state.files.length > 0 ? 
             <Box align="center" justify="center">
@@ -202,7 +237,11 @@ class ManageTablesPage extends Component {
             <Button label="Add Event" primary={true} onClick={this.testFunc} />
             <br/>
             <br/>
-            <FormField label="Event" htmlFor="tableName">
+            {
+            //Dynamic Price/Event Component
+            this.getTableVariants()
+            }
+            {/*<FormField label="Event" htmlFor="tableName">
               <select id="tableVenue" onChange={this.onVenueChange}>
                 {this.getEventOptions()}
               </select>
@@ -218,6 +257,7 @@ class ManageTablesPage extends Component {
                </Heading>
              </Footer>
             </FormField>
+            */}
            <Footer pad={{"vertical": "medium"}}>
            {this.state.tableId !== null ? 
              <Heading align="center">
