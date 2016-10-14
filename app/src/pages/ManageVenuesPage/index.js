@@ -34,6 +34,7 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
         this.onRemoveImage = this.onRemoveImage.bind(this);
         this.setName = this.setName.bind(this);
         this.setDescription = this.setDescription.bind(this);
+        this.setAddress = this.setAddress.bind(this);
         this.submitCreate = this.submitCreate.bind(this);
 
         this.state = {
@@ -42,6 +43,7 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
           venueId: null, // id mock test
           name: '',
           description: '',
+          address: ''
           //events: EVENTS,
           //value: []
         };
@@ -114,48 +116,53 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
       setDescription(event) {
         this.setState({ description: event.target.value });
       }
-      submitCreate() {
-    // console.log(organisationId);
-    var objState = this.state;
-
-    // Create venue in a organisation
-    var createParams = {
-      organisationId: organisationId,
-      name: objState.name,
-      description: objState.description,
-      // location: {
-      //   address: objState.description
-      // },
-      // image: objState.image[0].preview
-    };
-
-    // console.log(params);
-
-    PartyBot.venues.create(createParams, function(err, response, body) {
-
-      console.log(createParams);
-
-      console.log(response.statusCode);
-      console.log(body);
-      console.log(err.errors);
-
-      if(response.statusCode == 201) {
-        alert('Venue Created.');
+      setAddress(event) {
+        this.setState({
+          address: event.target.value
+        });
       }
+      submitCreate() {
 
-    });
-    
-  }
-  render() {
-    const {
-      router,
-    } = this.context;
-    const {
-      isMobile,
-    } = this.state;
-    const {
-      image,
-    } = this.state;
+        var objState = this.state;
+        var createParams = {
+          organisationId: organisationId,
+          name: objState.name,
+          // description: objState.description,
+          location: {
+            address: objState.address
+          }
+          // can't upload for now
+          // image: objState.image[0].preview
+        };
+
+        console.log(createParams);
+        // return;
+
+        PartyBot.venues.create(createParams, function(err, response, body) {
+
+          console.log(createParams);
+
+          console.log(response.statusCode);
+          console.log(body);
+          console.log(err.errors);
+
+          if(response.statusCode == 200) {
+            console.log('Venue Created.');
+          }
+
+        });
+
+      }
+      render() {
+        const {
+          router,
+        } = this.context;
+        const {
+          isMobile,
+        } = this.state;
+        const {
+          image,
+        } = this.state;
 
     // console.log(image);
 
@@ -180,20 +187,22 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
       <FormField label="Name" htmlFor="venueName">
       <input id="venueName" type="text" onChange={this.setName} value={this.state.name} />
       </FormField>
+      {/*
       <FormField label="Description" htmlFor="venueDescription">
-      <input id="venueDescription" type="text" onChange={this.setDescription} value={this.state.description}/>
+      <input id="venueDescription" type="text" onChange={this.setDescription} value={this.state.description} />
       </FormField>
-      {/*<
-      FormField label="Location" htmlFor="venueLocation">
-      <input id="venueAddress" type="text"/>
-      </FormField>
-      <FormField label="Longitude" htmlFor="venueLon">
-      <input id="venueLon" type="number"/>
-      </FormField>
-      <FormField label="Latitude" htmlFor="venueLat">
-      <input id="venueLat" type="number"/>
+    */}
+    <FormField label="Address" htmlFor="venueAddress">
+    <input id="venueAddress" type="text" onChange={this.setAddress} value={this.state.address}/>
     </FormField>
-  */}
+      {/* 
+          <FormField label="Longitude" htmlFor="venueLon">
+          <input id="venueLon" type="number" />
+          </FormField>
+          <FormField label="Latitude" htmlFor="venueLat">
+          <input id="venueLat" type="number" />
+          </FormField>
+        */}
       {/*
       <Box separator="all">
       <FormField label="Events" htmlFor="venueEvent"/>
@@ -223,7 +232,7 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
         }
       {/* commented out */}
       <div> 
-      <img src={image[0].preview} />
+      <img src={image[0].preview} width="200" />
       </div>
       <Box>
       <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>

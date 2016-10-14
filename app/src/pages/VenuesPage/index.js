@@ -81,9 +81,9 @@ class VenuesPage extends Component {
       <Header justify='between'>
       <Heading> </Heading>
       <Menu direction='row' align='center' responsive={false}>
-        <Link to={'manageVenues'} activeClassName="active">
-          <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
-        </Link>
+      <Link to={'manageVenues'} activeClassName="active">
+      <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
+      </Link>
       </Menu>
       </Header>
       <Table selectable={false}>
@@ -99,18 +99,18 @@ class VenuesPage extends Component {
     {/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
     {this.state.venues.map((venueData, i) => (
       <tr key={i}>
-      <td> {venueData.name} </td>
-      <td> Some Image </td>
-      <td> {venueData.slug} </td>
+      <td>{venueData.name}</td>
+      <td><img src={venueData.image} width="200" /></td>
+      <td>{venueData.location}</td>
       <td>
       <Box justify="center" align="center">
       <Link to={'manageVenues/' + venueData._id} activeClassName="active">
       <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-     </Link>
-    </Box>  
-    </td>
-    </tr>
-    ))}
+      </Link>
+      </Box>  
+      </td>
+      </tr>
+      ))}
     </tbody>
     </Table>
     </div>
