@@ -17,6 +17,9 @@ import { Link } from 'react-router'
 
 // Pages map directly to Routes, i.e. one page equals on Route
 
+let organisationId = '57f3a273f760e4f8ad97eec5',
+venueId = '57ff3b8dd46ae000116c4d49';
+
 class EventsPage extends Component {
 
 	constructor() {
@@ -31,8 +34,8 @@ class EventsPage extends Component {
 	componentWillMount() {
 
 		PartyBot.events.getAllEventsInVenueInOrganisation({
-			organisationId: '57f3a270f760e4f8ad97eec4',
-			venueId: '57f4681dbb6c3c23633eecc2'
+			organisationId: organisationId,
+			venueId: venueId
 		}, function(err, response, body) {
 			console.log('Error: ' + err);
 			console.log('Status Code: ' + response.statusCode);
@@ -85,27 +88,27 @@ class EventsPage extends Component {
 		{this.state.events.map((result) => (
 			<tr key={result._id}>
 			<td> 
-				<Box justify="center" align="center">
-					<img src="http://place-hold.it/240/1E90FF/ffffff&text=Placeholder&fontsize=28" height="200" alt="Smiley face" />
-				</Box>
+			<Box justify="center" align="center">
+			<img src="http://place-hold.it/240/1E90FF/ffffff&text=Placeholder&fontsize=28" height="200" alt="Smiley face" />
+			</Box>
 			</td>
 			<td>
 			<Box justify="center" align="center">
-				<Heading align='center' tag="h3"> {result.name} </Heading>
-				{result.description} 
-				<br/>
-				{result.slug}
+			<Heading align='center' tag="h3"> {result.name} </Heading>
+			{result.description} 
+			<br/>
+			{result.slug}
 			</Box> 
 			</td>
 			<td>
 			<Box justify="center" align="center">
-       			<Link to={'guestList'}>
-				<Button className={styles.button} label="Guest List" onClick={this.testFunc} />
-				</Link>
-				<br/>
-				<Link to={'tableBookings'}>
-				<Button className={styles.button} label="Table Bookings" onClick={this.testFunc} />
-				</Link>
+			<Link to={'guestList'}>
+			<Button className={styles.button} label="Guest List" onClick={this.testFunc} />
+			</Link>
+			<br/>
+			<Link to={'tableBookings'}>
+			<Button className={styles.button} label="Table Bookings" onClick={this.testFunc} />
+			</Link>
 			</Box>
 			</td>
 			</tr>
