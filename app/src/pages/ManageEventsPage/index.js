@@ -15,56 +15,92 @@ import Select from 'react-select';
 import CloseIcon from 'grommet/components/icons/base/Close';
 import Dropzone from 'react-dropzone';
 
-// static muna
 const organisationId = '57f3a273f760e4f8ad97eec5';
-const VENUES = [ // GET all events
-    { value: '001', label: 'Valkyrie' }, // value = venue.id // label = venue.name?
-    { value: '002', label: 'Pool Club' },
-    { value: '003', label: 'Revel'},
-    { value: '004', label: 'Naya'}
-    ];
-    const DAYS = [ 
-    { value: '001', label: 'Sunday' }, 
-    { value: '002', label: 'Monday' },
-    { value: '003', label: 'Tuesday'},
-    { value: '004', label: 'Wednesday'},
-    { value: '005', label: 'Thursday'},
-    { value: '006', label: 'Friday'},
-    { value: '007', label: 'Saturday'}
-    ];
 
-    class ManageEventsPage extends Component {
-      constructor() {
-        super();
-        this.handleMobile = this.handleMobile.bind(this);
-        this.handleRecurring = this.handleRecurring.bind(this);
-        this.onVenueChange = this.onVenueChange.bind(this);
-        this.onVenueAdd = this.onVenueAdd.bind(this);
-        this.onVenueChange = this.onVenueChange.bind(this);
-        this.getVenueOptions = this.getVenueOptions.bind(this);
-        this.onDayAdd = this.onDayAdd.bind(this);
-        this.testFunc = this.testFunc.bind(this);
-        this.onRemoveImage = this.onRemoveImage.bind(this);
-        this.onDrop = this.onDrop.bind(this);
-        this.onRemoveImage = this.onRemoveImage.bind(this);
-        this.setName = this.setName.bind(this);
-        this.setDescription = this.setDescription.bind(this);
-        this.submitCreate = this.submitCreate.bind(this);
+// value = venue.id // label = venue.name?
+// const VENUES = [{ 
+//   value: '001', 
+//   label: 'Valkyrie' 
+// }, { 
+//   value: '002', 
+//   label: 'Pool Club' 
+// }, { 
+//   value: '003', 
+//   label: 'Revel'
+// }, { 
+//   value: '004', 
+//   label: 'Naya'
+// }];
 
-        this.state = {
-          isMobile: false,
-          isRecurring: false,
-          files: [],
+const DAYS = [{ 
+  value: '001', 
+  label: 'Sunday' 
+}, { 
+  value: '002', 
+  label: 'Monday'
+}, { 
+  value: '003',
+  label: 'Tuesday'
+}, { 
+  value: '004',
+  label: 'Wednesday'
+}, { 
+  value: '005',
+  label: 'Thursday'
+}, { 
+  value: '006', 
+  label: 'Friday'
+}, {
+ value: '007',
+ label: 'Saturday'
+}];
+
+class ManageEventsPage extends Component {
+
+  constructor() {
+    super();
+    this.handleMobile = this.handleMobile.bind(this);
+    this.handleRecurring = this.handleRecurring.bind(this);
+    this.onVenueChange = this.onVenueChange.bind(this);
+    this.onVenueAdd = this.onVenueAdd.bind(this);
+    this.onVenueChange = this.onVenueChange.bind(this);
+    this.getVenueOptions = this.getVenueOptions.bind(this);
+    this.onDayAdd = this.onDayAdd.bind(this);
+    this.testFunc = this.testFunc.bind(this);
+    this.onRemoveImage = this.onRemoveImage.bind(this);
+    this.onDrop = this.onDrop.bind(this);
+    this.onRemoveImage = this.onRemoveImage.bind(this);
+    this.setName = this.setName.bind(this);
+    this.setDescription = this.setDescription.bind(this);
+    this.submitCreate = this.submitCreate.bind(this);
+
+    this.state = {
+      isMobile: false,
+      isRecurring: false,
+      files: [],
           eventId: null, // id mock test
           name: '',
           description: '',
           venueId: '',
-          venues: VENUES,
+          venues: [],
           days: DAYS,
           value: [],
           selectedDays: [],
           selectedVenue: ''
         };
+      }
+      componentWillMount() {
+        PartyBot.venues.getAllInOrganisation('57f3a273f760e4f8ad97eec5', function(err, response, body) {
+          console.log('Error: ' + err);
+          console.log('Status Code: ' + response.statusCode);      
+          if(!err && response.statusCode == 200) {
+            // console.log(body);
+            this.setState({
+              venues: body
+            });
+          }
+        }.bind(this));
+
       }
       componentDidMount() {
         if (typeof window !== 'undefined') {
@@ -127,8 +163,19 @@ const VENUES = [ // GET all events
   }
 
   getVenueOptions(){
-    return VENUES.map(function (item) {
-      return <option key={item.value} value={item.value}> {item.label} </option>;
+    let stateVenues = this.state.venues;
+
+    return stateVenues.map(function(venue, i) {
+
+      // console.log(venue);
+      return (
+        <option key={i} value={venue._id}> {venue.name} </option>
+        );
+      // return venue.map(function(venueData, j) {
+      //   console.log(venueData);
+      // });
+      // return <option key={item._id} value={item.value}> {item.label} </option>;
+
     }.bind(this));
   }
 
@@ -154,7 +201,7 @@ const VENUES = [ // GET all events
 
     var createParams = {
       _venue_id: staticVenueId,
-      _organisation_id: organisationId,
+      _organisation_id: '57f3a273f760e4f8ad97eec5',
       name: objState.name,
       description: objState.description
     };
@@ -213,10 +260,8 @@ const VENUES = [ // GET all events
       />*/}
       {//single
       }
-      <select
-      name="venueEvent"
-      onChange={this.onVenueChange}
-      >
+      <select name="venueEvent"
+      onChange={this.onVenueChange}>
       {this.getVenueOptions()}
       </select>
       </Box> 

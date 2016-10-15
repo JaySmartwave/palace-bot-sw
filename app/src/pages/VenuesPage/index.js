@@ -17,11 +17,13 @@ import AddIcon from 'grommet/components/icons/base/Add';
 import Select from 'react-select';
 import { Link } from 'react-router'
 
+const organisationId = '57f3a273f760e4f8ad97eec5';
+
 class VenuesPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
-
+    const organisationId = '57f3a273f760e4f8ad97eec5';
     this.state = {
       isMobile: false,
       venues: []
@@ -41,15 +43,15 @@ class VenuesPage extends Component {
 
     // Yung '57f3a270f760e4f8ad97eec4' organisationId id sya.. Dalihin niyo nalang sa route para makuha yung id
 
-    PartyBot.venues.getAllInOrganisation('57f3a273f760e4f8ad97eec5', function(err, response, body) {
+    PartyBot.venues.getAllInOrganisation(organisationId, function(err, response, body) {
       console.log('Error: ' + err);
       console.log('Status Code: ' + response.statusCode);      
       console.log(body);
       if(!err && response.statusCode == 200) {
         this.setState({venues: body});
       }
-      
     }.bind(this));
+
   }
   componentDidMount() {
     if (typeof window !== 'undefined') {
@@ -101,7 +103,7 @@ class VenuesPage extends Component {
       <tr key={i}>
       <td>{venueData.name}</td>
       <td><img src={venueData.image} width="200" /></td>
-      <td>{venueData.location}</td>
+      <td></td>
       <td>
       <Box justify="center" align="center">
       <Link to={'manageVenues/' + venueData._id} activeClassName="active">
