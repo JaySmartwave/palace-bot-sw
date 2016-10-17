@@ -19,67 +19,58 @@ class SidebarNav extends Component {
         <AppHeader {...this.props} />
         <Menu primary>
           <IndexLink
-            to="events"
+            to="/events"
             activeClassName="active"
-            onClick={() => onToggleNav()}
           >
             Events
           </IndexLink>
           <Link
-            to="guestList"
+            to="/guestList"
             activeClassName="active"
-            onClick={() => onToggleNav()}
           >
             Guest List
           </Link>
           <Link
-            to="tableBookings"
+            to="/tableBookings"
             activeClassName="active"
-            onClick={() => onToggleNav()}
           >
             Table Bookings
           </Link>
           <Menu separator="bottom"/>          
           <Link
-            to="venues"
+            to="/venues"
             activeClassName="active"
-            onClick={() => onToggleNav()}
           >
             Venues
           </Link>
           <Link
-            to="tables"
+            to="/tables"
             activeClassName="active"
-            onClick={() => onToggleNav()}
           >
             Tables
           </Link>
           {/*<Link
-            to="tickets"
+            to="/tickets"
             activeClassName="active"
-            onClick={() => onToggleNav()}
           >
             Tickets
           </Link> */}
           <Link
-            to="schedules"
+            to="/schedules"
             activeClassName="active"
-            onClick={() => onToggleNav()}
           >
             Event Schedule
           </Link>          
           <Link
-            to="promoters"
+            to="/promoters"
             activeClassName="active"
-            onClick={() => onToggleNav()}
           >
             Promoters
           </Link>
           <Menu separator="bottom"/>
           <Link
-            to="alerts"
+            to="/alerts"
             activeClassName="active"
-            onClick={() => onToggleNav()}
           >
             Alerts
           </Link>
