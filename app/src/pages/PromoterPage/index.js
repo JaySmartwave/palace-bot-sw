@@ -14,7 +14,6 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
 import AddIcon from 'grommet/components/icons/base/Add';
-import Select from 'react-select';
 import { Link } from 'react-router'
 
 class PromoterPage extends Component {
@@ -82,7 +81,7 @@ class PromoterPage extends Component {
       <td> {code} </td>
       <td>
       	<Box justify="center" align="center">
-          <Button label="Edit Promoter" icon={<EditIcon />} onClick={this.testFunc} />
+          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
       	</Box>
       </td>
       </tr>
@@ -93,7 +92,7 @@ class PromoterPage extends Component {
       <td> PAM143 </td>
       <td>
       	<Box justify="center" align="center">
-          <Button label="Edit Promoter" icon={<EditIcon />} onClick={this.testFunc} />
+          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
       	</Box>
       </td>
       </tr>
@@ -103,7 +102,7 @@ class PromoterPage extends Component {
       <td> DEN123 </td>
       <td>
       	<Box justify="center" align="center">
-          <Button label="Edit Promoter" icon={<EditIcon />} onClick={this.testFunc} />
+          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
       	</Box>
       </td>
       </tr>
@@ -113,7 +112,7 @@ class PromoterPage extends Component {
       <td> ARA789 </td>
       <td>
       	<Box justify="center" align="center">
-          <Button label="Edit Promoter" icon={<EditIcon />} onClick={this.testFunc} />
+          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
       	</Box>
       </td>
       </tr>
@@ -123,7 +122,7 @@ class PromoterPage extends Component {
       <td> MAR888 </td>
       <td>
         <Box justify="center" align="center">
-          <Button label="Edit Promoter" icon={<EditIcon />} onClick={this.testFunc} />
+          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
         </Box>
       </td>
       </tr>
@@ -136,7 +135,7 @@ class PromoterPage extends Component {
 
 PromoterPage.contextTypes = {
   router: PropTypes.object.isRequired,
-  prmoters: PropTypes.array
+  promoters: PropTypes.array
 };
 
 export default cssModules(PromoterPage, styles);

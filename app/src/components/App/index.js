@@ -64,9 +64,6 @@ class Main extends Component {
                 Party Bot
               </Title>
             }
-            <Title onClick={this.handleToggleNav} a11yTitle="Open Menu Right">
-              <MenuIcon colorIndex="brand" size="medium" type="control" />
-            </Title>
           </Header>
           {React.cloneElement(this.props.children, this.props)}
         </SidebarNav>

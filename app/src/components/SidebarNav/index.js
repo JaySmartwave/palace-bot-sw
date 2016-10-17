@@ -37,12 +37,12 @@ class SidebarNav extends Component {
           >
             Tables
           </Link>
-          {/*<Link
+          <Link
             to="/tickets"
             activeClassName="active"
           >
             Tickets
-          </Link> */}
+          </Link>
           <Link
             to="/schedules"
             activeClassName="active"
@@ -64,9 +64,8 @@ class SidebarNav extends Component {
           </Link>
           <Menu separator="bottom"/>
           <Link
-            to="aiModule"
+            to="/aiModule"
             activeClassName="active"
-            onClick={() => onToggleNav()}
           >
             AI Module
           </Link>
