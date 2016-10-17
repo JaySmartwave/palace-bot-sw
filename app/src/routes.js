@@ -20,12 +20,12 @@ const routes = (
   <Route path="/about" component={Pages.AboutPage} />
   <Route path="/events" component={Pages.EventsPage} />
   <Route path="/venues" component={Pages.VenuesPage} />
+  <Route path="/venues/add" component={Pages.ManageVenuesPage} />
+  <Route path="/venues/:venueId" component={Pages.ManageVenuesPage} />
   <Route path="/tables" component={Pages.TablesPage} />
   <Route path="/schedules" component={Pages.SchedulePage} />
   <Route path="/promoters" component={Pages.PromoterPage} />
   <Route path="/alerts" component={Pages.AlertsPage} />
-  <Route path="/manageVenues" component={Pages.ManageVenuesPage} />
-  <Route path="/manageVenues/:venueId" component={Pages.ManageVenuesPage} />
   <Route path="/manageTables" component={Pages.ManageTablesPage} />
   <Route path="/manageEvents" component={Pages.ManageEventsPage} />
   <Route path="/managePromoters" component={Pages.ManagePromotersPage} />

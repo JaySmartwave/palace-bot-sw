@@ -29,18 +29,12 @@ class VenuesPage extends Component {
 
   }
   componentWillMount () {
-    // Naka Set timeout lang muna to kasi may error  yung API ni sir JC nung ginagawa ko
-    // setTimeout(function() {
-    //   this.setState({venues: [ 
-    //   { _id: 1, name: "Jeirene", slug: "jeirene"},
-    //   { _id: 2, name: "Jay", slug: "jay"},
-    //   { _id: 3, name: "Oscar", slug: "pogi"},
-    //   { _id: 4, name: "Pepe", slug: "ngwasak"}
-    //   ] });
-    // }.bind(this), 3000); // Importante yung .bind(this) sa callback function para may access ng callback sa this ng current scope
-
-    // Yung '57f3a270f760e4f8ad97eec4' organisationId id sya.. Dalihin niyo nalang sa route para makuha yung id
-
+   
+  }
+  componentDidMount() {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.handleMobile);
+    }
     PartyBot.venues.getAllInOrganisation('57f3a273f760e4f8ad97eec5', function(err, response, body) {
       console.log('Error: ' + err);
       console.log('Status Code: ' + response.statusCode);      
@@ -50,11 +44,6 @@ class VenuesPage extends Component {
       }
       
     }.bind(this));
-  }
-  componentDidMount() {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', this.handleMobile);
-    }
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -81,7 +70,7 @@ class VenuesPage extends Component {
       <Header justify='between'>
       <Heading> </Heading>
       <Menu direction='row' align='center' responsive={false}>
-      <Link to={'manageVenues'} activeClassName="active">
+      <Link to={'/venues/add'} activeClassName="active">
       <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
       </Link>
       </Menu>
