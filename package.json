@@ -118,7 +118,7 @@
     "node-sass": "^3.4.2",
     "npm-install-webpack-plugin": "^4.0.3",
     "null-loader": "0.1.1",
-    "partybot-http-client": "0.0.1-beta-11",
+    "partybot-http-client": "0.0.1-beta-12",
     "plop": "1.5.0",
     "react": "^15.3.1",
     "react-addons-css-transition-group": "^15.2.1",
