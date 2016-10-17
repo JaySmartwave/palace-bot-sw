@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
-import DashboardIcon from 'grommet/components/icons/base/Dashboard';
+import MenuIcon from 'grommet/components/icons/base/Menu';
 
 const Logo = ({
   inverse,
 }) => (
-  <DashboardIcon
+  <MenuIcon
     size="medium"
     type="logo"
     colorIndex={inverse ? 'light-2' : 'brand'}

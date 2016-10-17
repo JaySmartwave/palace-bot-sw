@@ -92,8 +92,8 @@ class VenuesPage extends Component {
       <Table selectable={false}>
       <thead>
       <tr>
-      <th>Venue Name</th>
-      <th>Picture</th>
+      <th>Name</th>
+      <th>Image</th>
       <th>Address</th>
       <th></th>
       </tr>

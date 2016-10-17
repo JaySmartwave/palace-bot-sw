@@ -14,9 +14,6 @@ const routes = (
   <Route path="/" component={App}>
   <IndexRedirect to="/home" />
   <Route path="/home" component={Pages.LandingPage} name="Home" />
-  <Route path="/geo-spatial" component={Pages.GeoSpatialPage} />
-  <Route path="/key-metrics" component={Pages.KeyMetricsPage} name="KeyMetrics" />
-  <Route path="/data" component={Pages.DataPage} name="Data" />
   <Route path="/about" component={Pages.AboutPage} />
   <Route path="/events" component={Pages.EventsPage} />
   <Route path="/venues" component={Pages.VenuesPage} />
@@ -34,6 +31,8 @@ const routes = (
   <Route path="/tableBookings" component={Pages.TableBookingsPage} />
   <Route path="/manageTickets" component={Pages.ManageTicketsPage} />
   <Route path="/tickets" component={Pages.TicketsPage} />
+  <Route path="/aiModule" component={Pages.AiModulePage} />
+  <Route path="/login" component={Pages.LoginPage} />
   <Route path="*" component={Pages.NotFoundPage} />
   </Route>
   </Router>

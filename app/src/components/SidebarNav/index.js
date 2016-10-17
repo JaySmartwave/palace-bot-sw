@@ -24,18 +24,6 @@ class SidebarNav extends Component {
           >
             Events
           </IndexLink>
-          <Link
-            to="/guestList"
-            activeClassName="active"
-          >
-            Guest List
-          </Link>
-          <Link
-            to="/tableBookings"
-            activeClassName="active"
-          >
-            Table Bookings
-          </Link>
           <Menu separator="bottom"/>          
           <Link
             to="/venues"
@@ -49,12 +37,12 @@ class SidebarNav extends Component {
           >
             Tables
           </Link>
-          {/*<Link
+          <Link
             to="/tickets"
             activeClassName="active"
           >
             Tickets
-          </Link> */}
+          </Link>
           <Link
             to="/schedules"
             activeClassName="active"
@@ -73,6 +61,13 @@ class SidebarNav extends Component {
             activeClassName="active"
           >
             Alerts
+          </Link>
+          <Menu separator="bottom"/>
+          <Link
+            to="/aiModule"
+            activeClassName="active"
+          >
+            AI Module
           </Link>
           <Menu separator="bottom"/>
         </Menu>

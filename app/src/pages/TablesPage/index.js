@@ -68,8 +68,8 @@ class TablesPage extends Component {
       <Table selectable={false}>
       <thead>
       <tr>
-      <th> Table Type </th>
-      <th> Table Name </th>
+      <th> Type </th>
+      <th> Name </th>
       <th> Venue </th>
       <th> Price </th>
       <th> </th>
