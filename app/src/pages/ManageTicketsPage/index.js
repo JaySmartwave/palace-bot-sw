@@ -1,4 +1,5 @@
 import PartyBot from 'partybot-http-client'; // Bots http client
+import __ from 'underscore';
 import React, { PropTypes, Component } from 'react';
 import cssModules from 'react-css-modules';
 import styles from './index.module.scss';
@@ -16,6 +17,8 @@ const EVENTS = [
     { value: '003', label: 'Kate Mess'},
     { value: '004', label: 'Game On'},
     ];
+let organisationId =  "5800471acb97300011c68cf7";
+let venueId = "5800889684555e0011585f3c";
 
 class ManageTicketsPage extends Component {
   constructor() {
@@ -34,8 +37,11 @@ class ManageTicketsPage extends Component {
       ticketId: null, // id mock test
       name: '',
       description: '',
-      url: '',
-      selectedEvent: ''
+      ticket_url: '',
+      selectedEvent: '',
+      tags: 'ticket',
+      organisationId: organisationId,
+      venueId: venueId
     };
   }
   componentDidMount() {
@@ -81,13 +87,20 @@ class ManageTicketsPage extends Component {
     this.setState({description: event.target.value});
   }
   setUrl(event) {
-    this.setState({url: event.target.value});
+    this.setState({ticket_url: event.target.value});
   }
   submitSave() {
-    console.log('Ticket Updated!')
+    console.log('Ticket Updated!');
   }
   submitCreate() {
-    console.log('Ticket Created!')
+    let cl = console.log;
+    let params = _.pick(this.state, ['name', 'description', 'ticket_url', 'venueId', 'organisationId']);
+    // console.log(params);
+    PartyBot.products.create(params, function(errors, response, body) {
+      cl("Errors: "+JSON.stringify(errors, null, 2) || null);
+      cl("Response status code: "+response.statusCode || null);
+      cl("Body: "+JSON.stringify(body) || null);
+    });
   }
   render() {
     const {
@@ -115,7 +128,7 @@ class ManageTicketsPage extends Component {
      }
      </Box>
      <Box direction="row" justify="center" align="center" wrap={true} pad="small	" margin="small">
-     <Form>
+     <Form onSubmit={this.submitSave}>
      <FormFields>
      <fieldset>
       {/*<Box separator="all">
@@ -134,7 +147,7 @@ class ManageTicketsPage extends Component {
 	     <input id="ticketDescription" type="text" onChange={this.setDescription}/>
 	     </FormField>
 	     <FormField label="URL" htmlFor="ticketUrl">
-	     <input id="ticketUrl" type="text" onChange={this.setPrice}/>
+	     <input id="ticketUrl" type="text" onChange={this.setUrl}/>
 	     </FormField>
        </fieldset>
        </FormFields>

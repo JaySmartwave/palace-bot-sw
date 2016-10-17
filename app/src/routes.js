@@ -29,8 +29,8 @@ const routes = (
   <Route path="/editTables" component={Pages.EditTablesPage} />
   <Route path="/guestList" component={Pages.GuestListPage} />
   <Route path="/tableBookings" component={Pages.TableBookingsPage} />
-  <Route path="/manageTickets" component={Pages.ManageTicketsPage} />
   <Route path="/tickets" component={Pages.TicketsPage} />
+  <Route path="/tickets/add" component={Pages.ManageTicketsPage} />
   <Route path="/aiModule" component={Pages.AiModulePage} />
   <Route path="/login" component={Pages.LoginPage} />
   <Route path="*" component={Pages.NotFoundPage} />

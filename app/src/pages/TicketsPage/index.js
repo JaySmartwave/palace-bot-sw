@@ -76,7 +76,7 @@ class TicketsPage extends Component {
       <Header justify='between'>
       <Heading> </Heading>
       <Menu direction='row' align='center' responsive={false}>
-        <Link to={'manageTickets'} activeClassName="active">
+        <Link to={'/tickets/add'} activeClassName="active">
           <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
         </Link>
       </Menu>
