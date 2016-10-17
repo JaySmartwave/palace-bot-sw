@@ -1,4 +1,4 @@
-import PartyBot from 'partybot-http-client'; // Bots http client
+import PartyBot from 'partybot-http-client';
 import React, { PropTypes, Component } from 'react';
 import cssModules from 'react-css-modules';
 import styles from './index.module.scss';
@@ -23,6 +23,7 @@ import { Link } from 'react-router'
   const getAllParams = {
     organisationId: organisationId,
     venueId: venueId,
+    tags: 'ticket'
   };
 
 class TicketsPage extends Component {

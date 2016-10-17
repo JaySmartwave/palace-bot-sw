@@ -1,3 +1,4 @@
+import PartyBot from 'partybot-http-client';
 import React, { PropTypes, Component } from 'react';
 import cssModules from 'react-css-modules';
 import styles from './index.module.scss';
@@ -11,6 +12,9 @@ import FormFields from 'grommet/components/FormFields';
 import NumberInput from 'grommet/components/NumberInput';
 import CloseIcon from 'grommet/components/icons/base/Close';
 import Dropzone from 'react-dropzone';
+
+let organisationId =  "5800471acb97300011c68cf7";
+let venueId = "5800889684555e0011585f3c";
 
 const VARIANTS =[
                   { 
@@ -44,11 +48,11 @@ class ManageTablesPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
-    this.testFunc = this.testFunc.bind(this);
     this.getTableVariants = this.getTableVariants.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.onRemoveImage = this.onRemoveImage.bind(this);
     this.onTypeChange = this.onTypeChange.bind(this);
+    this.setName = this.setName.bind(this);
     this.getTypeOptions = this.getTypeOptions.bind(this);
     this.onVenueChange = this.onVenueChange.bind(this);
     this.getVenueOptions = this.getVenueOptions.bind(this);
@@ -56,14 +60,20 @@ class ManageTablesPage extends Component {
     this.getEventOptions = this.getEventOptions.bind(this);
     this.addVariant = this.addVariant.bind(this);
     this.removeVariant = this.removeVariant.bind(this);
+    this.submitCreate = this.submitCreate.bind(this);
+    this.submitSave = this.submitSave.bind(this);
     this.state = {
       isMobile: false,
       files: [],
-      tableId: '123', // id mock test
+      tableId: null,
+      name: '',
       variants: [{ 
-                    eventId: '001',
-                    tablePrice: 0
-                  }]
+        eventId: '001',
+        tablePrice: 0
+      }],
+      organisationId: organisationId,
+      venueId: venueId,
+      tags: 'table'
     };
   }
 
@@ -74,6 +84,8 @@ class ManageTablesPage extends Component {
   }
 
   componentDidMount() {
+    console.log(this.state.tableId);
+
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
@@ -129,29 +141,30 @@ class ManageTablesPage extends Component {
     //this.setState
   }
 
+  setName(event) {
+    this.setState({name: event.nativeEvent.target.value});
+  }
+
   getTypeOptions(){
     return ["Couch","Cabana","Magnum Couch","Skybox"].map(function (item) {
       return <option key={item} value={item}>{item}</option>;
     }.bind(this));
-  }
-  testFunc() { // TEST functions here
-    console.log('test');
   }
 
   getTableVariants(){
     return this.state.variants.map(function (item) {
       return <div key={item.variantId}>
                 <FormField label="Event" htmlFor="tableName">
-                  <select id="tableVenue" onChange={this.onEventChange}>
+                  <select id="tableVenue" onChange={this.setName}>
                     {this.getEventOptions()}
                   </select>
                 </FormField>
                 <FormField label="Price(Php)" htmlFor="tablePrice">
-                  <input id="tablePrice" type="number" value={item.tablePrice} onChange={this.testFunc}/>
+                  <input id="tablePrice" type="number" value={item.tablePrice} onChange={this.onEventChange}/>
                 </FormField>
                 <Footer pad={{"vertical": "small"}}>
                    <Heading align="center">
-                    <Button className={styles.eventButton} label="Update" primary={true} onClick={this.testFunc} />
+                    <Button className={styles.eventButton} label="Update" primary={true} onClick={this.onEventChange} />
                     <Button className={styles.eventButton} label="Remove" onClick={this.removeVariant} />
                    </Heading>
                  </Footer>
@@ -169,6 +182,22 @@ class ManageTablesPage extends Component {
       files: []
     });
   }
+
+
+  submitSave() {
+    console.log("Trigger Save");
+  }
+
+  submitCreate() {
+   let params = _.pick(this.state, ['name', 'organisationId', 'venueId', 'tags']);
+   let cl = console.log;
+   PartyBot.products.create(params, function(errors, response, body) {
+      cl("Errors: "+JSON.stringify(errors, null, 2) || null);
+      cl("Response status code: "+response.statusCode || null);
+      cl("Body: "+JSON.stringify(body) || null);
+    });
+  }
+
   render() {
     const {
       router,
@@ -208,7 +237,7 @@ class ManageTablesPage extends Component {
 						  </select>
 					  </FormField>
 					  <FormField label="Table Name" htmlFor="tableName">
-					    <input id="tableName" type="text"/>
+					    <input id="tableName" type="text" onChange={this.setName}/>
 					  </FormField>
 					  <FormField label="No. of Pax" htmlFor="tablePax">
 					    <NumberInput id="tablePax" value={0} min={0} max={20} />
@@ -259,13 +288,14 @@ class ManageTablesPage extends Component {
             </FormField>
             */}
            <Footer pad={{"vertical": "medium"}}>
-           {this.state.tableId !== null ? 
+           {
+            this.state.tableId !== null ? 
              <Heading align="center">
-             <Button label="Save Changes" primary={true} onClick={this.testFunc} />
+             <Button label="Save Changes" primary={true} onClick={this.submitSave} />
              </Heading>
              : 
              <Heading align="center">
-             <Button label="Create Table" primary={true} onClick={this.testFunc} />
+             <Button label="Create Table" primary={true} onClick={this.submitCreate} />
              </Heading>
            }
            </Footer>

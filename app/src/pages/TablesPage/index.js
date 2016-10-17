@@ -23,6 +23,7 @@ import { Link } from 'react-router'
   const getAllParams = {
     organisationId: organisationId,
     venueId: venueId,
+    tags: 'table'
   };
 
 class TablesPage extends Component {
@@ -75,7 +76,7 @@ class TablesPage extends Component {
       <Header justify='between'>
       <Heading> </Heading>
       <Menu direction='row' align='center' responsive={false}>
-        <Link to={'manageTables'} activeClassName="active">
+        <Link to={'/tables/add'} activeClassName="active">
           <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
         </Link>
       </Menu>
