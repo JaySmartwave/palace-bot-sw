@@ -25,20 +25,6 @@ class SidebarNav extends Component {
           >
             Events
           </IndexLink>
-          <Link
-            to="guestList"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            Guest List
-          </Link>
-          <Link
-            to="tableBookings"
-            activeClassName="active"
-            onClick={() => onToggleNav()}
-          >
-            Table Bookings
-          </Link>
           <Menu separator="bottom"/>          
           <Link
             to="venues"
@@ -82,6 +68,14 @@ class SidebarNav extends Component {
             onClick={() => onToggleNav()}
           >
             Alerts
+          </Link>
+          <Menu separator="bottom"/>
+          <Link
+            to="aiModule"
+            activeClassName="active"
+            onClick={() => onToggleNav()}
+          >
+            AI Module
           </Link>
           <Menu separator="bottom"/>
         </Menu>

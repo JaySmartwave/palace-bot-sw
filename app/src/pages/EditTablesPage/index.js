@@ -52,7 +52,6 @@ class EditTablesPage extends Component {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
-    console.log(this.state.tables)
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -66,27 +65,34 @@ class EditTablesPage extends Component {
     });
   }
   testFunc() {
-    console.log(this.state.Tables)
+    console.log('test');
   }
+
+  getTableCount(count){
+    console.log(count)
+    return count.map(function (item) {
+      return <div>
+          <CheckBox key={item.tableId} id="isGuestList" onChange={this.testFunc} label={item.tableId} />
+        </div>
+    })
+  }
+
   getTables(){
     return this.state.tables.map(function (item) {
+      let TABLECOUNT = [];
+      TABLECOUNT = item.tableCount;
       return <div>
                 <FormField key={item.tableName} label={item.tableName}>
-                  {
-                  //<CheckBox id="isGuestList" onChange={this.testFunc} label={item.tableName + " 1"} />
-                  }
+                  { TABLECOUNT.map(function (count) {
+                    console.log(count); 
+                    this.getTableCount(count);
+                  })
+                }
                 </FormField>
               </div>
-    }.bind(this));
+    });
   }
-  getTableCount(){
-    console.log(this.state.currentItem)
-    return this.state.currentItem.map(function (item) {
-      return <div key={item.tableId}>
-          <CheckBox id="isGuestList" onChange={this.testFunc} label={item.tableId} />
-        </div>
-    }.bind(this));
-  }
+
   render() {
     const {
       router,

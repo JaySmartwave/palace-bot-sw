@@ -232,13 +232,13 @@ const VENUES = [ // GET all events
       <CheckBox id="isTickets" onChange={this.testFunc} label="Tickets" />
       </FormField>
       <FormField label="Cutoff" htmlFor="cutOff">
-      <DateTime id="cutOff" name="name" format="h:mm:ss a" step={10} onChange={this.testFunc} />
+      <DateTime id="cutOff" name="name" format="h:mm:ss a" step={10} onChange={this.testFunc} value=""/>
       </FormField>
       <FormField label="Starts At" htmlFor="startsAt">
-      <DateTime id="startsAt" onChange={this.testFunc} />
+      <DateTime id="startsAt" onChange={this.testFunc} value="" />
       </FormField>
       <FormField label="Ends At" htmlFor="endsAt">
-      <DateTime id="endsAt" onChange={this.testFunc} />
+      <DateTime id="endsAt" onChange={this.testFunc} value="" />
       </FormField>
       <FormField htmlFor="isRecurring">
       <CheckBox id="isRecurring" onChange={this.handleRecurring} label="Recurring" />

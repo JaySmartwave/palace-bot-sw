@@ -34,7 +34,9 @@ const routes = (
   <Route path="/tableBookings" component={Pages.TableBookingsPage} />
   <Route path="/manageTickets" component={Pages.ManageTicketsPage} />
   <Route path="/tickets" component={Pages.TicketsPage} />
-  <Route path="*" component={Pages.NotFoundPage} />
+  <Route path="/aiModule" component={Pages.AiModulePage} />
+          <Route path="/login" component={Pages.LoginPage} />
+          <Route path="*" component={Pages.NotFoundPage} />
   </Route>
   </Router>
   </ApolloProvider>
