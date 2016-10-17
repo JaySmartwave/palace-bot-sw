@@ -17,6 +17,14 @@ import AddIcon from 'grommet/components/icons/base/Add';
 import Select from 'react-select';
 import { Link } from 'react-router'
 
+  let organisationId =  "5800471acb97300011c68cf7";
+  let venueId = "5800889684555e0011585f3c";
+
+  const getAllParams = {
+    organisationId: organisationId,
+    venueId: venueId,
+  };
+
 class TablesPage extends Component {
   constructor() {
     super();
@@ -25,7 +33,6 @@ class TablesPage extends Component {
       isMobile: false,
       tables: []
     };
-
   }
   componentWillMount () {
 
@@ -34,6 +41,14 @@ class TablesPage extends Component {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
+    PartyBot.products.getProducts(getAllParams, function(errors, response, body) {
+    console.log("Errors: "+JSON.stringify(errors, null, 2) || null);
+    console.log("Response status code: "+response.statusCode || null);
+    console.log("Body: "+JSON.stringify(body) || null);
+     if(response.statusCode == 200) {
+        this.setState({tables: body});
+      }
+    }.bind(this));
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -76,18 +91,18 @@ class TablesPage extends Component {
       </tr>
       </thead>
       <tbody>
-    {/*this.state.venues.map((result) => (
-      <tr key={id}>
-      <td> {type} </td>
-      <td> {name} </td>
-      <td> {venue} </td>
-      <td> {price} </td>
+      {this.state.tables.map((result) => (
+      <tr key={result._id}>
+      <td> {result.slug} </td>
+      <td> {result.name} </td>
+      <td> {result.description} </td>
+      <td> {result.price} </td>
       <td>
           <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
       </td>
       </tr>
-      ))*/}
-      <tr>
+      ))}
+      {/*<tr>
       <td> type </td>
       <td> name </td>
       <td> venue </td>
@@ -119,7 +134,7 @@ class TablesPage extends Component {
           <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
       	</Box>
       </td>
-      </tr>
+      </tr>*/}
     </tbody>
     </Table>
     </div>
