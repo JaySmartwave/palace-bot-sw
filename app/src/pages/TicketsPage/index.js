@@ -1,4 +1,4 @@
-import PartyBot from 'partybot-http-client'; // Bots http client
+import PartyBot from 'partybot-http-client';
 import React, { PropTypes, Component } from 'react';
 import cssModules from 'react-css-modules';
 import styles from './index.module.scss';
@@ -15,6 +15,16 @@ import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
 import AddIcon from 'grommet/components/icons/base/Add';
 import { Link } from 'react-router'
+
+
+  let organisationId =  "5800471acb97300011c68cf7";
+  let venueId = "5800889684555e0011585f3c";
+
+  const getAllParams = {
+    organisationId: organisationId,
+    venueId: venueId,
+    tags: 'ticket'
+  };
 
 class TicketsPage extends Component {
   constructor() {
@@ -33,6 +43,14 @@ class TicketsPage extends Component {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
+    PartyBot.products.getProducts(getAllParams, function(errors, response, body) {
+    console.log("Errors: "+JSON.stringify(errors, null, 2) || null);
+    console.log("Response status code: "+response.statusCode || null);
+    console.log("Body: "+JSON.stringify(body) || null);
+     if(response.statusCode == 200) {
+        this.setState({tickets: body});
+      }
+    }.bind(this));
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -59,7 +77,7 @@ class TicketsPage extends Component {
       <Header justify='between'>
       <Heading> </Heading>
       <Menu direction='row' align='center' responsive={false}>
-        <Link to={'managePromoters'} activeClassName="active">
+        <Link to={'/tickets/add'} activeClassName="active">
           <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
         </Link>
       </Menu>
@@ -74,19 +92,19 @@ class TicketsPage extends Component {
       </tr>
       </thead>
       <tbody>
-    {/*this.state.venues.map((result) => (
-      <tr key={id}>
-      <td> {name} </td> // event?
-      <td> {desc} </td> // ticket tier? (desc/name)
-      <td> <Anchor href={url}> {url} </Anchor> </td>
+      {this.state.tickets.map((result) => (
+      <tr key={result._id}>
+      <td> {result.name} </td>
+      <td> {result.description} </td>
+      <td> {result.slug} </td>
       <td>
       	<Box justify="center" align="center">
           <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
       	</Box>
       </td>
       </tr>
-      ))*/}
-      <tr>
+      ))}
+      {/*<tr>
       <td> Overtime </td>
       <td> VIP </td>
       <td> <Anchor href="https://www.ticketworld.com.ph"> https://www.ticketworld.com.ph </Anchor>  </td>
@@ -105,7 +123,7 @@ class TicketsPage extends Component {
           <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
       	</Box>
       </td>
-      </tr>
+      </tr>*/}
     </tbody>
     </Table>
     </div>

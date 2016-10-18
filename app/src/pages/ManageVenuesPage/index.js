@@ -14,9 +14,6 @@ import Select from 'react-select';
 import CloseIcon from 'grommet/components/icons/base/Close';
 import Dropzone from 'react-dropzone';
 
-// static muna
-const organisationId = '57f3a273f760e4f8ad97eec5';
-
     /*const EVENTS = [ // GET all events
     { value: '001', label: 'Girls Just Wanna Have Fun' }, // value = event.id // label = event.name?
     { value: '002', label: 'Kate Mess' },
@@ -24,18 +21,22 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
     { value: '004', label: 'Overtime'}
     ];*/
 
+    const organisationId = '57f3a273f760e4f8ad97eec5';
+
     class ManageVenuesPage extends Component {
       constructor() {
         super();
-        this.handleMobile = this.handleMobile.bind(this);
-        this.handleCalendar = this.handleCalendar.bind(this);
+        // this.handleMobile = this.handleMobile.bind(this);
+        // this.handleCalendar = this.handleCalendar.bind(this);
         this.onEventChange = this.onEventChange.bind(this);
-        this.onDrop = this.onDrop.bind(this);
-        this.onRemoveImage = this.onRemoveImage.bind(this);
-        this.setName = this.setName.bind(this);
-        this.setDescription = this.setDescription.bind(this);
-        this.setAddress = this.setAddress.bind(this);
-        this.submitCreate = this.submitCreate.bind(this);
+        // this.onDrop = this.onDrop.bind(this);
+        // this.onRemoveImage = this.onRemoveImage.bind(this);
+        // this.setName = this.setName.bind(this);
+        // this.setDescription = this.setDescription.bind(this);
+        // this.setAddress = this.setAddress.bind(this);
+        // this.submitCreate = this.submitCreate.bind(this);
+
+        const organisationId = '57f3a273f760e4f8ad97eec5';
 
         this.state = {
           isMobile: false,
@@ -77,12 +78,12 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
 
       componentDidMount() {
         if (typeof window !== 'undefined') {
-          window.addEventListener('resize', this.handleMobile);
+          window.addEventListener('resize', this.handleMobile.bind(this));
         }   
       }
       componentWillUnmount() {
         if (typeof window !== 'undefined') {
-          window.removeEventListener('resize', this.handleMobile);
+          window.removeEventListener('resize', this.handleMobile.bind(this));
         }
       }
       handleMobile() {
@@ -185,7 +186,7 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
       <FormFields>
       <fieldset>
       <FormField label="Name" htmlFor="venueName">
-      <input id="venueName" type="text" onChange={this.setName} value={this.state.name} />
+      <input id="venueName" type="text" onChange={this.setName.bind(this)} value={this.state.name} />
       </FormField>
       {/*
       <FormField label="Description" htmlFor="venueDescription">
@@ -193,7 +194,7 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
       </FormField>
     */}
     <FormField label="Address" htmlFor="venueAddress">
-    <input id="venueAddress" type="text" onChange={this.setAddress} value={this.state.address}/>
+    <input id="venueAddress" type="text" onChange={this.setAddress.bind(this)} value={this.state.address}/>
     </FormField>
       {/* 
           <FormField label="Longitude" htmlFor="venueLon">
@@ -235,11 +236,11 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
       <img src={image[0].preview} width="200" />
       </div>
       <Box>
-      <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>
+      <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
       </Box>
       </Box> :
       <Box align="center" justify="center">
-      <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
+      <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop.bind(this)} accept='image/*'>
       Drop image here or click to select image to upload. 
       </Dropzone>
       </Box>
@@ -250,11 +251,11 @@ const organisationId = '57f3a273f760e4f8ad97eec5';
     <Footer pad={{"vertical": "medium"}}>
     {this.state.venueId !== null ? 
      <Heading align="center">
-     <Button label="Save Changes" primary={true} onClick={this.submitSave} />
+     <Button label="Save Changes" primary={true} onClick={this.submitSave.bind(this)} />
      </Heading>
      : 
      <Heading align="center">
-     <Button label="Create Venue" primary={true} onClick={this.submitCreate} />
+     <Button label="Create Venue" primary={true} onClick={this.submitCreate.bind(this)} />
      </Heading>
    }
    </Footer>

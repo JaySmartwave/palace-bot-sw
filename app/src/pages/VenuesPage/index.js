@@ -17,11 +17,13 @@ import AddIcon from 'grommet/components/icons/base/Add';
 import Select from 'react-select';
 import { Link } from 'react-router'
 
+const organisationId = '57f3a273f760e4f8ad97eec5';
+
 class VenuesPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
-
+    const organisationId = '57f3a273f760e4f8ad97eec5';
     this.state = {
       isMobile: false,
       venues: []
@@ -29,7 +31,19 @@ class VenuesPage extends Component {
 
   }
   componentWillMount () {
-   
+
+    // Naka Set timeout lang muna to kasi may error  yung API ni sir JC nung ginagawa ko
+    // setTimeout(function() {
+    //   this.setState({venues: [ 
+    //   { _id: 1, name: "Jeirene", slug: "jeirene"},
+    //   { _id: 2, name: "Jay", slug: "jay"},
+    //   { _id: 3, name: "Oscar", slug: "pogi"},
+    //   { _id: 4, name: "Pepe", slug: "ngwasak"}
+    //   ] });
+    // }.bind(this), 3000); // Importante yung .bind(this) sa callback function para may access ng callback sa this ng current scope
+
+    // Yung '57f3a270f760e4f8ad97eec4' organisationId id sya.. Dalihin niyo nalang sa route para makuha yung id
+    
   }
   componentDidMount() {
     if (typeof window !== 'undefined') {
@@ -42,8 +56,8 @@ class VenuesPage extends Component {
       if(!err && response.statusCode == 200) {
         this.setState({venues: body});
       }
-      
     }.bind(this));
+
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -90,7 +104,7 @@ class VenuesPage extends Component {
       <tr key={i}>
       <td>{venueData.name}</td>
       <td><img src={venueData.image} width="200" /></td>
-      <td>{venueData.location}</td>
+      <td></td>
       <td>
       <Box justify="center" align="center">
       <Link to={'manageVenues/' + venueData._id} activeClassName="active">
