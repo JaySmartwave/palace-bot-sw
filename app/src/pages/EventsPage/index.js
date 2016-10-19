@@ -17,8 +17,8 @@ import { Link } from 'react-router'
 
 // Pages map directly to Routes, i.e. one page equals on Route
 
-const organisationId = '57f3a273f760e4f8ad97eec5',
-venueId = '57ff3b8dd46ae000116c4d49';
+let organisationId = '57f3a270f760e4f8ad97eec4';
+let venueId = '57f4681dbb6c3c23633eecc2';
 
 class EventsPage extends Component {
 

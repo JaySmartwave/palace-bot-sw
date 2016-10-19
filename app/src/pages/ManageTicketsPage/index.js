@@ -10,6 +10,28 @@ import Button from 'grommet/components/Button';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import FormFields from 'grommet/components/FormFields';
+import CloseIcon from 'grommet/components/icons/base/Close';
+import Dropzone from 'react-dropzone';
+import moment from 'moment';
+import TimePicker from 'rc-time-picker';
+import Layer from 'grommet/components/Layer';
+import Header from 'grommet/components/Header';
+import Section from 'grommet/components/Section';
+import Paragraph from 'grommet/components/Paragraph';
+
+const VENUES = [{ 
+  value: '001', 
+  label: 'Valkyrie' 
+}, { 
+  value: '002', 
+  label: 'Pool Club' 
+}, { 
+  value: '003', 
+  label: 'Revel'
+}, { 
+  value: '004', 
+  label: 'Naya'
+}];
 
 const EVENTS = [ 
     { value: '001', label: 'Girls Just Wanna Have Fun' }, 
@@ -24,8 +46,11 @@ class ManageTicketsPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
+    this.onVenueChange = this.onVenueChange.bind(this);
+    this.getVenueOptions = this.getVenueOptions.bind(this);
     this.getEventOptions = this.getEventOptions.bind(this);
     this.onEventChange = this.onEventChange.bind(this);
+    this.closeSetup = this.closeSetup.bind(this);
     this.setName = this.setName.bind(this);
     this.setDescription = this.setDescription.bind(this);
     this.setUrl = this.setUrl.bind(this);
@@ -40,8 +65,10 @@ class ManageTicketsPage extends Component {
       ticket_url: '',
       selectedEvent: '',
       tags: 'ticket',
+      confirm: false,
       organisationId: organisationId,
-      venueId: venueId
+      venueId: venueId,
+      files: []
     };
   }
   componentDidMount() {
@@ -63,6 +90,28 @@ class ManageTicketsPage extends Component {
 
   testFunc() { // TEST functions here
     console.log("test");
+  }
+
+    closeSetup(){
+    this.setState({
+     confirm: false
+   });
+    this.context.router.push('/tickets');
+  }
+
+  getVenueOptions(){
+    return VENUES.map(function (item) {
+      return <option key={item.value} value={item.value}> {item.label} </option>;
+    }.bind(this));
+  }
+
+  onVenueChange(event) {
+    let venueId = event.nativeEvent.target.selectedIndex;
+    let venueCode = event.nativeEvent.target[venueId].value;
+    console.log('Selected Venue: ' + venueCode);
+    this.setState({
+      selectedVenue: venueCode
+    });
   }
 
   getEventOptions(){
@@ -89,18 +138,27 @@ class ManageTicketsPage extends Component {
   setUrl(event) {
     this.setState({ticket_url: event.target.value});
   }
+  setUrl(event) {
+    this.setState({ticket_url: event.target.value});
+  }
   submitSave() {
     console.log('Ticket Updated!');
   }
   submitCreate() {
     let cl = console.log;
-    let params = _.pick(this.state, ['name', 'description', 'ticket_url', 'venueId', 'organisationId']);
+    let params = _.pick(this.state, ['name', 'description', 'ticket_url', 'venueId', 'organisationId', 'tags']);
     // console.log(params);
     PartyBot.products.create(params, function(errors, response, body) {
       cl("Errors: "+JSON.stringify(errors, null, 2) || null);
       cl("Response status code: "+response.statusCode || null);
       cl("Body: "+JSON.stringify(body) || null);
-    });
+
+      if(response.statusCode == 200) {
+            this.setState({
+              confirm: true
+            });
+          }
+        }.bind(this));
   }
   render() {
     const {
@@ -116,6 +174,18 @@ class ManageTicketsPage extends Component {
     return (
       <div className={styles.container}>
       <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
+      {this.state.confirm !== false ? 
+      <Layer align="center">
+        <Header>
+            Ticket successfully created.
+        </Header>
+        <Section>
+          <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
+        </Section>
+      </Layer>
+      :
+      null
+      }
       <Box pad={{ vertical: 'medium' }}>
       {this.state.ticketId !== null ? 
        <Heading align="center">
@@ -149,6 +219,26 @@ class ManageTicketsPage extends Component {
 	     <FormField label="URL" htmlFor="ticketUrl">
 	     <input id="ticketUrl" type="text" onChange={this.setUrl}/>
 	     </FormField>
+       <FormField label="Venue" htmlFor="ticketVenue">
+       <select id="ticketVenue" onChange={this.onVenueChange}>
+        {this.getVenueOptions()}
+       </select>
+       </FormField>
+       <FormField label="Image">
+          {this.state.files.length > 0 ? 
+            <Box align="center" justify="center">
+             <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
+              <Box>
+              <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>
+              </Box>
+            </Box> :
+            <Box align="center" justify="center">
+            <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
+              Drop image here or click to select image to upload. 
+            </Dropzone>
+            </Box>
+          }
+       </FormField>
        </fieldset>
        </FormFields>
        <Footer pad={{"vertical": "medium"}}>

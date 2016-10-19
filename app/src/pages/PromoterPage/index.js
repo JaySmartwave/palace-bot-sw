@@ -16,6 +16,12 @@ import Search from 'grommet/components/Search';
 import AddIcon from 'grommet/components/icons/base/Add';
 import { Link } from 'react-router'
 
+let organisationId = '5800471acb97300011c68cf7';
+
+const getAllParams = {
+    organisationId: organisationId
+};
+
 class PromoterPage extends Component {
   constructor() {
     super();
@@ -33,6 +39,14 @@ class PromoterPage extends Component {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
+    PartyBot.promoters.getPromoters(getAllParams, function(err, response, body) {
+        console.log("Error: "+err);
+        console.log("Response: "+response.statusCode || null);
+        console.log("Body: "+JSON.stringify(body, null, 2) || null);
+       if(response.statusCode == 200) {
+          this.setState({promoters: body});
+        }
+      }.bind(this));
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -74,19 +88,19 @@ class PromoterPage extends Component {
       </tr>
       </thead>
       <tbody>
-    {/*this.state.venues.map((result) => (
-      <tr key={id}>
-      <td> {name} </td>
-      <td> {venue} </td>
-      <td> {code} </td>
+    {this.state.promoters.map((result) => (
+      <tr key={result._id}>
+      <td> {result.name.last} </td>
+      <td> {result.image} </td>
+      <td> {result.slug} </td>
       <td>
       	<Box justify="center" align="center">
           <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
       	</Box>
       </td>
       </tr>
-      ))*/}
-      <tr>
+      ))}
+      {/*<tr>
       <td> Pam Lee </td>
       <td> Pool Club </td>
       <td> PAM143 </td>
@@ -125,7 +139,7 @@ class PromoterPage extends Component {
           <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
         </Box>
       </td>
-      </tr>
+      </tr>*/}
     </tbody>
     </Table>
     </div>

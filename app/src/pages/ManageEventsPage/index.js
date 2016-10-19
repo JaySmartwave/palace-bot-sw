@@ -14,6 +14,15 @@ import DateTime from 'grommet/components/DateTime';
 import Select from 'react-select';
 import CloseIcon from 'grommet/components/icons/base/Close';
 import Dropzone from 'react-dropzone';
+import moment from 'moment';
+import TimePicker from 'rc-time-picker';
+import 'rc-time-picker/assets/index.css';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import Layer from 'grommet/components/Layer';
+import Header from 'grommet/components/Header';
+import Section from 'grommet/components/Section';
+import Paragraph from 'grommet/components/Paragraph';
 
 const organisationId = '57f3a273f760e4f8ad97eec5';
 
@@ -55,18 +64,25 @@ const DAYS = [{
  label: 'Saturday'
 }];
 
+const showSecond = true;
+const str = showSecond ? 'HH:mm:ss' : 'HH:mm';
+
 class ManageEventsPage extends Component {
 
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.handleRecurring = this.handleRecurring.bind(this);
+    this.closeSetup = this.closeSetup.bind(this);
     this.onVenueChange = this.onVenueChange.bind(this);
     this.onVenueAdd = this.onVenueAdd.bind(this);
     this.onVenueChange = this.onVenueChange.bind(this);
     this.getVenueOptions = this.getVenueOptions.bind(this);
     this.onDayAdd = this.onDayAdd.bind(this);
+    this.onTimeChange = this.onTimeChange.bind(this);
     this.testFunc = this.testFunc.bind(this);
+    this.setStartDate = this.setStartDate.bind(this);
+    this.setEndDate = this.setEndDate.bind(this);
     this.onRemoveImage = this.onRemoveImage.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.onRemoveImage = this.onRemoveImage.bind(this);
@@ -83,10 +99,13 @@ class ManageEventsPage extends Component {
           description: '',
           venueId: '',
           venues: [],
+          confirm: false,
           days: DAYS,
           value: [],
           selectedDays: [],
-          selectedVenue: ''
+          selectedVenue: '',
+          startDate: moment(),
+          endDate: moment()
         };
       }
       componentWillMount() {
@@ -130,6 +149,23 @@ class ManageEventsPage extends Component {
     console.log("test");
   }
 
+  setStartDate(date) {
+    this.setState({
+      startDate: date
+    });
+  }
+
+  setEndDate(date) {
+    this.setState({
+      endDate: date
+    });
+  }
+
+
+  onTimeChange(value) {
+  console.log(value && value.format(str));
+  }
+
   onVenueChange(event) {
     let venueId = event.nativeEvent.target.selectedIndex;
     let venueCode = event.nativeEvent.target[venueId].value;
@@ -138,6 +174,13 @@ class ManageEventsPage extends Component {
       selectedVenue: venueCode
     });
     console.log(this.state.selectedVenue);
+  }
+
+  closeSetup(){
+    this.setState({
+     confirm: false
+   });
+    this.context.router.push('/schedules');
   }
 
   onDrop(files) {
@@ -213,10 +256,12 @@ class ManageEventsPage extends Component {
       console.log(body);
       console.log(err);
 
-      if(response.statusCode == 201) {
-        alert('Event Created.');
-      }
-    });
+      if(response.statusCode == 200) {
+            this.setState({
+              confirm: true
+            });
+          }
+        }.bind(this));
 
   }
   render() {
@@ -233,6 +278,18 @@ class ManageEventsPage extends Component {
     return (
       <div className={styles.container}>
       <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
+      {this.state.confirm !== false ? 
+      <Layer align="center">
+        <Header>
+            Event successfully created.
+        </Header>
+        <Section>
+          <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
+        </Section>
+      </Layer>
+      :
+      null
+      }
       <Box pad={{ vertical: 'medium' }}>
       {this.state.eventId !== null ? 
        <Heading align="center">
@@ -277,13 +334,38 @@ class ManageEventsPage extends Component {
       <CheckBox id="isTickets" onChange={this.testFunc} label="Tickets" />
       </FormField>
       <FormField label="Cutoff" htmlFor="cutOff">
-      <DateTime id="cutOff" name="name" format="h:mm:ss a" step={10} onChange={this.testFunc} value=""/>
+        <TimePicker
+          style={{ margin: 10 }}
+          showSecond={showSecond}
+          defaultValue={moment()}
+          onChange={this.onTimeChange}
+        />
       </FormField>
       <FormField label="Starts At" htmlFor="startsAt">
-      <DateTime id="startsAt" onChange={this.testFunc} value="" />
+        {this.state.isRecurring !== true ? 
+          <DatePicker className={styles.dpckr} selected={this.state.startDate} onChange={this.handleChange} />
+        :
+          null    
+        }     
+        <TimePicker
+          style={{ margin: 10 }}
+          showSecond={showSecond}
+          defaultValue={moment()}
+          onChange={this.onTimeChange}
+        />
       </FormField>
-      <FormField label="Ends At" htmlFor="endsAt">
-      <DateTime id="endsAt" onChange={this.testFunc} value="" />
+      <FormField label="Ends At" htmlFor="endsAt">  
+        {this.state.isRecurring !== true ?
+          <DatePicker className={styles.dpckr} selected={this.state.endDate} onChange={this.handleChange} />
+        :
+          null
+        } 
+        <TimePicker
+          style={{ margin: 10 }}
+          showSecond={showSecond}
+          defaultValue={moment()}
+          onChange={this.onTimeChange}
+        />       
       </FormField>
       <FormField htmlFor="isRecurring">
       <CheckBox id="isRecurring" onChange={this.handleRecurring} label="Recurring" />

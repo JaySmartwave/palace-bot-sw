@@ -14,8 +14,7 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
 import AddIcon from 'grommet/components/icons/base/Add';
-import { Link } from 'react-router'
-
+import { Link } from 'react-router';
 
   let organisationId =  "5800471acb97300011c68cf7";
   let venueId = "5800889684555e0011585f3c";
@@ -86,8 +85,8 @@ class TicketsPage extends Component {
       <thead>
       <tr>
       <th> Name </th>
-      <th> Description</th>
-      <th> URL </th>
+      <th> Image </th>
+      <th> Venue </th>
       <th> </th>
       </tr>
       </thead>
@@ -95,8 +94,8 @@ class TicketsPage extends Component {
       {this.state.tickets.map((result) => (
       <tr key={result._id}>
       <td> {result.name} </td>
-      <td> {result.description} </td>
-      <td> {result.slug} </td>
+      <td> {result.image} </td>
+      <td> {result.venue} </td>
       <td>
       	<Box justify="center" align="center">
           <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
@@ -104,26 +103,6 @@ class TicketsPage extends Component {
       </td>
       </tr>
       ))}
-      {/*<tr>
-      <td> Overtime </td>
-      <td> VIP </td>
-      <td> <Anchor href="https://www.ticketworld.com.ph"> https://www.ticketworld.com.ph </Anchor>  </td>
-      <td>
-      	<Box justify="center" align="center">
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-      	</Box>
-      </td>
-      </tr>
-      <tr>
-      <td> Game On </td>
-      <td> Admission </td>
-      <td> <Anchor href="https://smtickets.com/"> https://smtickets.com/ </Anchor>  </td>
-      <td>
-      	<Box justify="center" align="center">
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-      	</Box>
-      </td>
-      </tr>*/}
     </tbody>
     </Table>
     </div>

@@ -17,6 +17,9 @@ import AddIcon from 'grommet/components/icons/base/Add';
 import Select from 'react-select';
 import { Link } from 'react-router'
 
+let organisationId = '57f3a270f760e4f8ad97eec4';
+let venueId = '57f4681dbb6c3c23633eecc2';
+
 class SchedulePage extends Component {
   constructor() {
     super();
@@ -34,6 +37,17 @@ class SchedulePage extends Component {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
+     
+  // Get All Events In Venue In Organisation 
+  PartyBot.events.getAllEventsInVenueInOrganisation({organisationId: organisationId, venueId: venueId}, function(err, response, body) {
+      console.log("Error: "+err);
+      console.log("Status Code: "+response.statusCode);
+      console.log("Body :"+JSON.stringify(body));
+     if(response.statusCode == 200) {
+        this.setState({schedule: body});
+      }
+    }.bind(this));
+
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -75,11 +89,11 @@ class SchedulePage extends Component {
       </tr>
       </thead>
       <tbody>
-    {/*this.state.venues.map((result) => (
-      <tr key={id}>
-      <td> {name} </td>
-      <td> {venue} </td>
-      <td> {date} </td>
+    {this.state.schedule.map((result) => (
+      <tr key={result._id}>
+      <td> {result.name} </td>
+      <td> {result.description} </td>
+      <td> {result.slug} </td>
       <td>
       	<Box justify="center" align="center">
           <Button className={styles.button} label="Edit Event" icon={<EditIcon />} onClick={this.testFunc} />
@@ -89,7 +103,8 @@ class SchedulePage extends Component {
       	</Box>
       </td>
       </tr>
-      ))*/}
+      ))}
+      {/*
       <tr>
       <td> name </td>
       <td> venue </td>
@@ -124,7 +139,7 @@ class SchedulePage extends Component {
           <Button className={styles.button} label="Edit Tables" icon={<EditIcon />} onClick={this.testFunc} />
       	</Box>
       </td>
-      </tr>
+      </tr>*/}
     </tbody>
     </Table>
     </div>

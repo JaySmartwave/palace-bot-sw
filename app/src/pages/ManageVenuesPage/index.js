@@ -13,6 +13,10 @@ import DateTime from 'grommet/components/DateTime';
 import Select from 'react-select';
 import CloseIcon from 'grommet/components/icons/base/Close';
 import Dropzone from 'react-dropzone';
+import Layer from 'grommet/components/Layer';
+import Header from 'grommet/components/Header';
+import Section from 'grommet/components/Section';
+import Paragraph from 'grommet/components/Paragraph';
 
     /*const EVENTS = [ // GET all events
     { value: '001', label: 'Girls Just Wanna Have Fun' }, // value = event.id // label = event.name?
@@ -29,12 +33,13 @@ import Dropzone from 'react-dropzone';
         // this.handleMobile = this.handleMobile.bind(this);
         // this.handleCalendar = this.handleCalendar.bind(this);
         this.onEventChange = this.onEventChange.bind(this);
+        this.closeSetup = this.closeSetup.bind(this);
         // this.onDrop = this.onDrop.bind(this);
         // this.onRemoveImage = this.onRemoveImage.bind(this);
         // this.setName = this.setName.bind(this);
         // this.setDescription = this.setDescription.bind(this);
         // this.setAddress = this.setAddress.bind(this);
-        // this.submitCreate = this.submitCreate.bind(this);
+        this.submitCreate = this.submitCreate.bind(this);
 
         const organisationId = '57f3a273f760e4f8ad97eec5';
 
@@ -44,7 +49,8 @@ import Dropzone from 'react-dropzone';
           venueId: null, // id mock test
           name: '',
           description: '',
-          address: ''
+          address: '',
+          confirm: false
           //events: EVENTS,
           //value: []
         };
@@ -103,8 +109,13 @@ import Dropzone from 'react-dropzone';
         this.setState({
          image: file
        });
-
         console.log(file[0]);
+      }
+      closeSetup(){
+        this.setState({
+         confirm: false
+       });
+        this.context.router.push('/venues');
       }
       onRemoveImage() {
         this.setState({
@@ -145,14 +156,14 @@ import Dropzone from 'react-dropzone';
 
           console.log(response.statusCode);
           console.log(body);
-          console.log(err.errors);
 
           if(response.statusCode == 200) {
             console.log('Venue Created.');
+            this.setState({
+              confirm: true
+            });
           }
-
-        });
-
+        }.bind(this));
       }
       render() {
         const {
@@ -170,6 +181,18 @@ import Dropzone from 'react-dropzone';
     return (
       <div className={styles.container}>
       <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
+      {this.state.confirm !== false ? 
+      <Layer align="center">
+        <Header>
+            Venue successfully created.
+        </Header>
+        <Section>
+          <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
+        </Section>
+      </Layer>
+      :
+      null
+      }
       <Box pad={{ vertical: 'medium' }}>
       {this.state.venueId !== null ? 
         <Heading align='center'>
@@ -226,7 +249,7 @@ import Dropzone from 'react-dropzone';
   {image.length > 0 ? 
     <Box align="center" justify="center">
   {/* commented out */}
-  {
+    {
           /*
           <div>{image.map((file) => <img src={file.preview} /> )}</div>
           */

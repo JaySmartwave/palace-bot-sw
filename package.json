@@ -120,11 +120,13 @@
     "null-loader": "0.1.1",
     "partybot-http-client": "0.0.1-beta-12",
     "plop": "1.5.0",
+    "rc-time-picker": "^2.0.2",
     "react": "^15.3.1",
     "react-addons-css-transition-group": "^15.2.1",
     "react-addons-update": "^15.3.2",
     "react-apollo": "^0.5.5",
     "react-css-modules": "^3.7.6",
+    "react-datepicker": "^0.30.0",
     "react-dom": "^15.0.1",
     "react-dropzone": "^3.6.0",
     "react-foundation": "^0.6.8",
@@ -152,7 +154,7 @@
     "svg-react-loader": "^0.3.6",
     "underscore": "^1.8.3",
     "utils": "^0.3.1",
-    "webpack": "v2.1.0-beta.19",
+    "webpack": "^2.1.0-beta.19",
     "webpack-dev-server": "2.1.0-beta.3",
     "webpack-visualizer-plugin": "^0.1.5"
   }

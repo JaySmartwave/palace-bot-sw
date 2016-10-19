@@ -12,6 +12,10 @@ import FormFields from 'grommet/components/FormFields';
 import NumberInput from 'grommet/components/NumberInput';
 import CloseIcon from 'grommet/components/icons/base/Close';
 import Dropzone from 'react-dropzone';
+import Layer from 'grommet/components/Layer';
+import Header from 'grommet/components/Header';
+import Section from 'grommet/components/Section';
+import Paragraph from 'grommet/components/Paragraph';
 
 let organisationId =  "5800471acb97300011c68cf7";
 let venueId = "5800889684555e0011585f3c";
@@ -49,6 +53,7 @@ class ManageTablesPage extends Component {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.getTableVariants = this.getTableVariants.bind(this);
+    this.closeSetup = this.closeSetup.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.onRemoveImage = this.onRemoveImage.bind(this);
     this.onTypeChange = this.onTypeChange.bind(this);
@@ -66,6 +71,7 @@ class ManageTablesPage extends Component {
       isMobile: false,
       files: [],
       tableId: null,
+      confirm: false,
       name: '',
       variants: [{ 
         eventId: '001',
@@ -73,7 +79,7 @@ class ManageTablesPage extends Component {
       }],
       organisationId: organisationId,
       venueId: venueId,
-      tags: 'table'
+      tags: 'table',
     };
   }
 
@@ -124,6 +130,13 @@ class ManageTablesPage extends Component {
     return EVENTS.map(function (item) {
       return <option key={item.eventId} value={item.eventId}>{item.eventName}</option>;
     }.bind(this));
+  }
+
+  closeSetup(){
+    this.setState({
+     confirm: false
+   });
+    this.context.router.push('/tables');
   }
 
   addVariant() { // TEST functions here
@@ -183,7 +196,6 @@ class ManageTablesPage extends Component {
     });
   }
 
-
   submitSave() {
     console.log("Trigger Save");
   }
@@ -195,7 +207,13 @@ class ManageTablesPage extends Component {
       cl("Errors: "+JSON.stringify(errors, null, 2) || null);
       cl("Response status code: "+response.statusCode || null);
       cl("Body: "+JSON.stringify(body) || null);
-    });
+
+      if(response.statusCode == 200) {
+            this.setState({
+              confirm: true
+            });
+          }
+        }.bind(this));
   }
 
   render() {
@@ -211,7 +229,19 @@ class ManageTablesPage extends Component {
     } = this.state;
     return (
       <div className={styles.container}>
-        <Box pad={{ vertical: 'medium' }}>
+      {this.state.confirm !== false ? 
+      <Layer align="center">
+        <Header>
+            Table successfully created.
+        </Header>
+        <Section>
+          <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
+        </Section>
+      </Layer>
+      :
+      null
+      }
+      <Box pad={{ vertical: 'medium' }}>
         {this.state.tableId !== null ? 
     	<Heading align="center">
             Edit Table
