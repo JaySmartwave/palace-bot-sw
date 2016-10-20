@@ -14,8 +14,11 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
 import DocumentCsvIcon from 'grommet/components/icons/base/DocumentCsv';
-import Select from 'react-select';
 
+const FILTER = [ 
+    { value: '001', label: 'Approved' }, 
+    { value: '002', label: 'Pending' },
+  ];
 
 class GuestListPage extends Component {
   constructor() {
@@ -23,13 +26,35 @@ class GuestListPage extends Component {
     this.handleMobile = this.handleMobile.bind(this);
     this.state = {
       isMobile: false,
-      guestList: []
-    };
+      guestList: [],
+      filter: FILTER,
+      activeFilter: '' 
+     };
 
   }
   componentWillMount () {
 
   }
+
+  onFilterChange(event) {
+    let filterId = event.nativeEvent.target.selectedIndex;
+    let filterCode = event.nativeEvent.target[filterId].value;
+    console.log('Selected Venue: ' + filterCode);
+    this.setState({
+      activeFilter: filterCode
+    }.bind(this));
+    console.log(this.state.activeFilter);
+  }
+
+  getFilterOptions(){
+
+    return this.state.filter.map(function(filter, i) {
+      return (
+        <option key={i} value={filter.value}> {filter.label} </option>
+        );
+    }.bind(this));
+  }
+
   componentDidMount() {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
@@ -63,7 +88,13 @@ class GuestListPage extends Component {
       	</Heading>
       </Box>
       <Header justify='between'>
-      <Heading> </Heading>
+      <Heading> 
+        <select name="filter"
+          onChange={this.onFilterChange}
+          className={styles.filSel}>
+          {this.getFilterOptions()}
+        </select>
+      </Heading>
       <Menu direction='row' align='center' responsive={false}>
           <Button className={styles.expBut} label="Export to CSV" icon={<DocumentCsvIcon />} onClick={this.testFunc} />
       </Menu>

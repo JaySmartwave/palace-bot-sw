@@ -15,7 +15,8 @@ import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
 import AddIcon from 'grommet/components/icons/base/Add';
 import Select from 'react-select';
-import { Link } from 'react-router'
+import { Link } from 'react-router';
+import moment from 'moment';
 
 let organisationId = '57f3a270f760e4f8ad97eec4';
 let venueId = '57f4681dbb6c3c23633eecc2';
@@ -83,6 +84,7 @@ class SchedulePage extends Component {
       <thead>
       <tr>
       <th> Name </th>
+      <th> Image </th>
       <th> Venue</th>
       <th> Date </th>
       <th> </th>
@@ -92,8 +94,9 @@ class SchedulePage extends Component {
     {this.state.schedule.map((result) => (
       <tr key={result._id}>
       <td> {result.name} </td>
+      <td> <img src={result.image} width="200" /></td>
       <td> {result.description} </td>
-      <td> {result.slug} </td>
+      <td> {moment('10/17/2016', 'MM/DD/YYYY').format('dddd, MM/DD/YYYY')} </td>
       <td>
       	<Box justify="center" align="center">
           <Button className={styles.button} label="Edit Event" icon={<EditIcon />} onClick={this.testFunc} />

@@ -222,15 +222,6 @@ class ManageEventsPage extends Component {
     }.bind(this));
   }
 
-  onVenueChange(event) {
-    let venueId = event.nativeEvent.target.selectedIndex;
-    let venueCode = event.nativeEvent.target[venueId].value;
-    console.log('Selected Venue: ' + venueCode);
-    this.setState({
-      selectedVenue: venueCode
-    });
-  }
-
   setName(event) {
     this.setState({name: event.target.value});
   }

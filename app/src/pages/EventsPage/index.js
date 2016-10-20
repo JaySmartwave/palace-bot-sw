@@ -13,7 +13,7 @@ import EditIcon from 'grommet/components/icons/base/Edit';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
-import { Link } from 'react-router'
+import { Link } from 'react-router';
 
 // Pages map directly to Routes, i.e. one page equals on Route
 
@@ -89,7 +89,7 @@ class EventsPage extends Component {
 			<tr key={result._id}>
 			<td> 
 			<Box justify="center" align="center">
-			<img src="http://place-hold.it/240/1E90FF/ffffff&text=Placeholder&fontsize=28" height="200" alt="Smiley face" />
+			<img src="http://place-hold.it/240/1E90FF/ffffff&text=Placeholder&fontsize=28" height="200" alt="" />
 			</Box>
 			</td>
 			<td>

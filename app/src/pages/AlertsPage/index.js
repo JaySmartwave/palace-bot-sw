@@ -1,3 +1,4 @@
+import PartyBot from 'partybot-http-client'; // Bots http client
 import React, { PropTypes, Component } from 'react';
 import cssModules from 'react-css-modules';
 import styles from './index.module.scss';
@@ -9,7 +10,6 @@ import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import FormFields from 'grommet/components/FormFields';
 
-
 import Dropzone from 'react-dropzone';
 
 class AlertsPage extends Component {
@@ -20,7 +20,20 @@ class AlertsPage extends Component {
     this.state = {
       isMobile: false,
       files: [],
+      venues: []
     };
+  }
+  componentWillMount() {
+  PartyBot.venues.getAllInOrganisation('57f3a273f760e4f8ad97eec5', function(err, response, body) {
+    console.log('Error: ' + err);
+    console.log('Status Code: ' + response.statusCode);      
+      if(!err && response.statusCode == 200) {
+        // console.log(body);
+        this.setState({
+          venues: body
+        });
+      }
+    }.bind(this));
   }
   componentDidMount() {
     if (typeof window !== 'undefined') {
@@ -47,6 +60,35 @@ class AlertsPage extends Component {
 	  });
   	console.log(files)
 	}
+
+  onVenueChange(event) {
+  let venueId = event.nativeEvent.target.selectedIndex;
+  let venueCode = event.nativeEvent.target[venueId].value;
+  console.log('Selected Venue: ' + venueCode);
+  this.setState({
+    selectedVenue: venueCode
+  });
+    console.log(this.state.selectedVenue);
+  }
+
+  getVenueOptions(){
+    let stateVenues = this.state.venues;
+
+    return stateVenues.map(function(venue, i) {
+
+      // console.log(venue);
+      return (
+        <option key={i} value={venue._id}> {venue.name} </option>
+        );
+      // return venue.map(function(venueData, j) {
+      //   console.log(venueData);
+      // });
+      // return <option key={item._id} value={item.value}> {item.label} </option>;
+
+    }.bind(this));
+  }
+
+
   render() {
     const {
       router,
@@ -74,6 +116,12 @@ class AlertsPage extends Component {
 					  <FormField label="Link" htmlFor="alertLink">
 					    <input id="alertLink" type="text"/>
 					  </FormField>
+               <FormField label="Venue" htmlFor="alertVenue">
+                <select name="venueAlert"
+                  onChange={this.onVenueChange}>
+                  {this.getVenueOptions()}
+                </select>
+            </FormField>
 						  <FormField label="Picture">
 						   <Box direction="row" justify="center" align="center">
 							   	<Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>

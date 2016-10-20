@@ -26,15 +26,44 @@ import { Link } from 'react-router'
     tags: 'table'
   };
 
+  const FILTER = [ //Venue?
+    { value: '001', label: 'Approved' }, 
+    { value: '002', label: 'Pending' },
+  ];
+
+
 class TablesPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.state = {
       isMobile: false,
-      tables: []
+      tables: [],
+      filter: FILTER,
+      activeFilter: '' 
     };
   }
+
+  onFilterChange(event) {
+    let filterId = event.nativeEvent.target.selectedIndex;
+    let filterCode = event.nativeEvent.target[filterId].value;
+    console.log('Selected Venue: ' + filterCode);
+    this.setState({
+      activeFilter: filterCode
+    }.bind(this));
+    console.log(this.state.activeFilter);
+  }
+
+  getFilterOptions(){
+
+    return this.state.filter.map(function(filter, i) {
+      return (
+        <option key={i} value={filter.value}> {filter.label} </option>
+        );
+    }.bind(this));
+  }
+
+
   componentWillMount () {
 
   }
@@ -74,7 +103,13 @@ class TablesPage extends Component {
       <Heading align='center'> Tables Setup </Heading>
       </Box>
       <Header justify='between'>
-      <Heading> </Heading>
+      <Heading> 
+        <select name="filter"
+          onChange={this.onFilterChange}
+          className={styles.filSel}>
+          {this.getFilterOptions()}
+        </select>
+      </Heading>
       <Menu direction='row' align='center' responsive={false}>
         <Link to={'/tables/add'} activeClassName="active">
           <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
