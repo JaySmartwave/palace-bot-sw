@@ -1,4 +1,6 @@
 /* Assemble all pages for export */
+export ManageTableTypesPage from './ManageTableTypesPage/index';
+export TableTypesPage from './TableTypesPage/index';
 export LoginPage from './LoginPage/index';
 export AiModulePage from './AiModulePage/index';
 export TicketsPage from './TicketsPage/index';

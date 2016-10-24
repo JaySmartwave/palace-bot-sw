@@ -139,13 +139,18 @@ class ManageTablesPage extends Component {
     this.context.router.push('/tables');
   }
 
-  addVariant() { // TEST functions here
-    console.log('test');
+  addVariant() { // will create then get?
+    var newArray = this.state.variants.slice();    
+    newArray.push({ 
+        variantId: Math.floor(Math.random() * 999) + 1  , //auto increment
+        eventId: '001', // default value
+        tablePrice: 0 // default value
+      });   
+    this.setState({variants:newArray})
   }
 
-  removeVariant(event){
-    var id = event.nativeEvent.target.selectedIndex;
-    console.log('Selected Variant:' + event.nativeEvent.target[id].value);
+  removeVariant(){ // delete variant ID
+      console.log(this.props.id)
   }
 
   onTypeChange(event) {
@@ -178,7 +183,7 @@ class ManageTablesPage extends Component {
                 <Footer pad={{"vertical": "small"}}>
                    <Heading align="center">
                     <Button className={styles.eventButton} label="Update" primary={true} onClick={this.onEventChange} />
-                    <Button className={styles.eventButton} label="Remove" onClick={this.removeVariant} />
+                    <Button id={item.variantId} className={styles.eventButton} label="Remove" onClick={this.removeVariant} />
                    </Heading>
                  </Footer>
              </div>;
@@ -266,11 +271,8 @@ class ManageTablesPage extends Component {
 						    {this.getTypeOptions()}
 						  </select>
 					  </FormField>
-					  <FormField label="Table Name" htmlFor="tableName">
+					  <FormField label=" Name" htmlFor="tableName">
 					    <input id="tableName" type="text" onChange={this.setName}/>
-					  </FormField>
-					  <FormField label="No. of Pax" htmlFor="tablePax">
-					    <NumberInput id="tablePax" value={0} min={0} max={20} />
 					  </FormField>
           <FormField label="Image">
           {this.state.files.length > 0 ? 
@@ -293,7 +295,7 @@ class ManageTablesPage extends Component {
             <Box>
             Pricing:
             </Box>
-            <Button label="Add Event" primary={true} onClick={this.testFunc} />
+            <Button label="Add Event" primary={true} onClick={this.addVariant} />
             <br/>
             <br/>
             {

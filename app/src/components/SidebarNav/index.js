@@ -38,6 +38,12 @@ class SidebarNav extends Component {
             Tables
           </Link>
           <Link
+            to="/tableTypes"
+            activeClassName="active"
+          >
+            Table Types
+          </Link>
+          <Link
             to="/tickets"
             activeClassName="active"
           >
