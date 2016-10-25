@@ -20,17 +20,10 @@ import { Link } from 'react-router'
   let organisationId =  "5800471acb97300011c68cf7";
   let venueId = "5800889684555e0011585f3c";
 
-  const getAllParams = {
+  const options = {
     organisationId: organisationId,
-    venueId: venueId,
     tags: 'table'
   };
-
-  const FILTER = [ //Venue?
-    { value: '001', label: 'Approved' }, 
-    { value: '002', label: 'Pending' },
-  ];
-
 
 class TablesPage extends Component {
   constructor() {
@@ -39,19 +32,23 @@ class TablesPage extends Component {
     this.state = {
       isMobile: false,
       tables: [],
-      filter: FILTER,
+      filter: [],
       activeFilter: '' 
     };
   }
 
-  onFilterChange(event) {
-    let filterId = event.nativeEvent.target.selectedIndex;
-    let filterCode = event.nativeEvent.target[filterId].value;
-    console.log('Selected Venue: ' + filterCode);
+  onFilterChange = (event) => {
+    let filterId = event.target.value;
+    // let filterCode = event.nativeEvent.target[filterId].value;
     this.setState({
-      activeFilter: filterCode
-    }.bind(this));
-    console.log(this.state.activeFilter);
+      activeFilter: filterId
+    });
+    var options = {
+      organisationId: organisationId,
+      tags: 'table',
+      venue_id: filterId
+    };
+    this.getProducts(options);
   }
 
   getFilterOptions(){
@@ -68,22 +65,34 @@ class TablesPage extends Component {
 
   }
   componentDidMount() {
+    console.log("Component did mount");
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
-    PartyBot.products.getProducts(getAllParams, function(errors, response, body) {
-    console.log("Errors: "+JSON.stringify(errors, null, 2) || null);
-    console.log("Response status code: "+response.statusCode || null);
-    console.log("Body: "+JSON.stringify(body) || null);
-     if(response.statusCode == 200) {
-        this.setState({tables: body});
-      }
-    }.bind(this));
+    this.getVenues();
+    this.getProducts(options);
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
       window.removeEventListener('resize', this.handleMobile);
     }    
+  }
+  getVenues() {
+    PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
+      if(response.statusCode == 200) {
+        var venues = [];
+        body.map((value, index) => {
+          this.setState({ filter: this.state.filter.concat([{value: value._id, label: value.name}]) });
+        });
+      }
+    });
+  }
+  getProducts(options) {
+    PartyBot.products.getProductsInOrganisation(options,(errors, response, body) => {
+     if(response.statusCode == 200) {
+        this.setState({tables: body});
+      }
+    });
   }
   handleMobile() {
     const isMobile = window.innerWidth <= 768;
@@ -91,6 +100,7 @@ class TablesPage extends Component {
       isMobile,
     });
   }
+
   testFunc() {
   	console.log('test');
   }

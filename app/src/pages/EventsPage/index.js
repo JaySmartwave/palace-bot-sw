@@ -17,7 +17,9 @@ import { Link } from 'react-router';
 
 // Pages map directly to Routes, i.e. one page equals on Route
 
-let organisationId = '57f3a270f760e4f8ad97eec4';
+let options = {
+  organisationId: '5800471acb97300011c68cf7',
+};
 let venueId = '57f4681dbb6c3c23633eecc2';
 
 class EventsPage extends Component {
@@ -31,26 +33,19 @@ class EventsPage extends Component {
 		};
 
 	}
-	componentWillMount() {
-
-		PartyBot.events.getAllEventsInVenueInOrganisation({
-			organisationId: organisationId,
-			venueId: venueId
-		}, function(err, response, body) {
+	componentWillMount() { }
+	componentDidMount() {
+		if (typeof window !== 'undefined') {
+			window.addEventListener('resize', this.handleMobile);
+		}
+		PartyBot.events.getEventsInOrganisation(options, function(err, response, body) {
 			console.log('Error: ' + err);
 			console.log('Status Code: ' + response.statusCode);
 			console.log(body);
 			if(!err && response.statusCode == 200) {
 				this.setState({events: body});
 			}
-
 		}.bind(this));
-
-	}
-	componentDidMount() {
-		if (typeof window !== 'undefined') {
-			window.addEventListener('resize', this.handleMobile);
-		}
 	}
 	componentWillUnmount() {
 		if (typeof window !== 'undefined') {
@@ -78,9 +73,9 @@ class EventsPage extends Component {
 			<Table selectable={false}>
 			<thead>
 			<tr>
-			<th> </th>
-			<th> </th>
-			<th> </th>
+			<th>Image</th>
+			<th>Description</th>
+			<th></th>
 			</tr>
 			</thead>
 			<tbody>

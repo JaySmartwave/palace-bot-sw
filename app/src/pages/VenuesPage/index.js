@@ -17,13 +17,13 @@ import AddIcon from 'grommet/components/icons/base/Add';
 import Select from 'react-select';
 import { Link } from 'react-router'
 
-const organisationId = '57f3a273f760e4f8ad97eec5';
-
+let options = {
+  organisationId: '5800471acb97300011c68cf7',
+};
 class VenuesPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
-    const organisationId = '57f3a273f760e4f8ad97eec5';
     this.state = {
       isMobile: false,
       venues: []
@@ -31,25 +31,14 @@ class VenuesPage extends Component {
 
   }
   componentWillMount () {
-
-    // Naka Set timeout lang muna to kasi may error  yung API ni sir JC nung ginagawa ko
-    // setTimeout(function() {
-    //   this.setState({venues: [ 
-    //   { _id: 1, name: "Jeirene", slug: "jeirene"},
-    //   { _id: 2, name: "Jay", slug: "jay"},
-    //   { _id: 3, name: "Oscar", slug: "pogi"},
-    //   { _id: 4, name: "Pepe", slug: "ngwasak"}
-    //   ] });
-    // }.bind(this), 3000); // Importante yung .bind(this) sa callback function para may access ng callback sa this ng current scope
-
-    // Yung '57f3a270f760e4f8ad97eec4' organisationId id sya.. Dalihin niyo nalang sa route para makuha yung id
-    
+    console.log(options);
   }
+
   componentDidMount() {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
-    PartyBot.venues.getAllInOrganisation('57f3a273f760e4f8ad97eec5', function(err, response, body) {
+    PartyBot.venues.getAllInOrganisation(options, function(err, response, body) {
       console.log('Error: ' + err);
       console.log('Status Code: ' + response.statusCode);      
       console.log(body);

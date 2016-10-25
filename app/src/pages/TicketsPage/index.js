@@ -19,9 +19,8 @@ import { Link } from 'react-router';
   let organisationId =  "5800471acb97300011c68cf7";
   let venueId = "5800889684555e0011585f3c";
 
-  const getAllParams = {
+  const options = {
     organisationId: organisationId,
-    venueId: venueId,
     tags: 'ticket'
   };
 
@@ -38,28 +37,9 @@ class TicketsPage extends Component {
     this.state = {
       isMobile: false,
       tickets: [],
-      filter: FILTER,
+      filter: [],
       activeFilter: '' 
     };
-  }
-
-  onFilterChange(event) {
-    let filterId = event.nativeEvent.target.selectedIndex;
-    let filterCode = event.nativeEvent.target[filterId].value;
-    console.log('Selected Venue: ' + filterCode);
-    this.setState({
-      activeFilter: filterCode
-    }.bind(this));
-    console.log(this.state.activeFilter);
-  }
-
-  getFilterOptions(){
-
-    return this.state.filter.map(function(filter, i) {
-      return (
-        <option key={i} value={filter.value}> {filter.label} </option>
-        );
-    }.bind(this));
   }
 
   componentWillMount () {
@@ -69,29 +49,62 @@ class TicketsPage extends Component {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
-    PartyBot.products.getProducts(getAllParams, function(errors, response, body) {
-    console.log("Errors: "+JSON.stringify(errors, null, 2) || null);
-    console.log("Response status code: "+response.statusCode || null);
-    console.log("Body: "+JSON.stringify(body) || null);
-     if(response.statusCode == 200) {
-        this.setState({tickets: body});
-      }
-    }.bind(this));
+    this.getVenues();
+    this.getProducts(options);
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
       window.removeEventListener('resize', this.handleMobile);
     }    
   }
+
+  onFilterChange = (event) => {
+    let filterId = event.target.value;
+    // let filterCode = event.nativeEvent.target[filterId].value;
+    this.setState({
+      activeFilter: filterId
+    });
+    var options = {
+      organisationId: organisationId,
+      tags: 'ticket',
+      venue_id: filterId
+    };
+    this.getProducts(options);
+  }
+  getVenues() {
+    PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
+      if(response.statusCode == 200) {
+        var venues = [];
+        body.map((value, index) => {
+          this.setState({ filter: this.state.filter.concat([{value: value._id, label: value.name}]) });
+        });
+      }
+    });
+  }
+  getProducts(options) {
+    PartyBot.products.getProductsInOrganisation(options,(errors, response, body) => {
+     if(response.statusCode == 200) {
+        this.setState({tickets: body});
+      }
+    });
+  }
+  getFilterOptions(){
+
+    return this.state.filter.map(function(filter, i) {
+      return (
+        <option key={i} value={filter.value}> {filter.label} </option>
+        );
+    }.bind(this));
+  }
+
+  
   handleMobile() {
     const isMobile = window.innerWidth <= 768;
     this.setState({
       isMobile,
     });
   }
-  testFunc() {
-  	console.log('test');
-  }
+  
   render() {
     const { router, } = this.context;
     const { isMobile, } = this.state;
@@ -110,35 +123,35 @@ class TicketsPage extends Component {
       </Heading>
       <Menu direction='row' align='center' responsive={false}>
         <Link to={'/tickets/add'} activeClassName="active">
-          <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
+          <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={function(){}} />
         </Link>
       </Menu>
       </Header>
       <Table selectable={false}>
       <thead>
       <tr>
-      <th> Name </th>
-      <th> Image </th>
-      <th> Venue </th>
-      <th> </th>
+      <th>Name</th>
+      <th>Image</th>
+      <th>Venue</th>
+      <th></th>
       </tr>
       </thead>
       <tbody>
       {this.state.tickets.map((result) => (
-      <tr key={result._id}>
-      <td> {result.name} </td>
-      <td> <img src={result.image} width="200" /></td>
-      <td> {result.venue} </td>
-      <td>
-      	<Box justify="center" align="center">
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-      	</Box>
-      </td>
-      </tr>
-      ))}
-    </tbody>
-    </Table>
-    </div>
+        <tr key={result._id}>
+        <td> {result.name} </td>
+        <td> <img src={result.image} width="200" /></td>
+        <td> {result.venue} </td>
+        <td>
+        <Box justify="center" align="center">
+        <Button label="Edit" icon={<EditIcon />} onClick={function(){}} />
+        </Box>
+        </td>
+        </tr>
+        ))}
+      </tbody>
+      </Table>
+      </div>
     );
   }
 }
