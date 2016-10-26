@@ -21,8 +21,7 @@ import Select from 'react-select';
 const VENUES = [ // GET all events
     { value: '001', label: 'Valkyrie' }, // value = venue.id // label = venue.name?
     { value: '002', label: 'Pool Club' },
-    { value: '003', label: 'Revel'},
-    { value: '004', label: 'Naya'}
+    { value: '003', label: 'Revel'}
     ];
 
 class ManageTableTypesPage extends Component {
