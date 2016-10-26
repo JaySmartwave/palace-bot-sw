@@ -24,22 +24,6 @@ import Header from 'grommet/components/Header';
 import Section from 'grommet/components/Section';
 import Paragraph from 'grommet/components/Paragraph';
 
-const organisationId = '57f3a273f760e4f8ad97eec5';
-
-// value = venue.id // label = venue.name?
-// const VENUES = [{ 
-//   value: '001', 
-//   label: 'Valkyrie' 
-// }, { 
-//   value: '002', 
-//   label: 'Pool Club' 
-// }, { 
-//   value: '003', 
-//   label: 'Revel'
-// }, { 
-//   value: '004', 
-//   label: 'Naya'
-// }];
 
 const DAYS = [{ 
   value: '001', 
@@ -74,7 +58,6 @@ class ManageEventsPage extends Component {
     this.handleMobile = this.handleMobile.bind(this);
     this.handleRecurring = this.handleRecurring.bind(this);
     this.closeSetup = this.closeSetup.bind(this);
-    this.onVenueChange = this.onVenueChange.bind(this);
     this.onVenueAdd = this.onVenueAdd.bind(this);
     this.onVenueChange = this.onVenueChange.bind(this);
     this.getVenueOptions = this.getVenueOptions.bind(this);
@@ -91,59 +74,70 @@ class ManageEventsPage extends Component {
     this.submitCreate = this.submitCreate.bind(this);
 
     this.state = {
+      organisationId: '5800471acb97300011c68cf7',
       isMobile: false,
       isRecurring: false,
       files: [],
-          eventId: null, // id mock test
-          name: '',
-          description: '',
-          venueId: '',
-          venues: [],
-          confirm: false,
-          days: DAYS,
-          value: [],
-          selectedDays: [],
-          selectedVenue: '',
-          startDate: moment(),
-          endDate: moment()
-        };
-      }
-      componentWillMount() {
-        PartyBot.venues.getAllInOrganisation('57f3a273f760e4f8ad97eec5', function(err, response, body) {
-          console.log('Error: ' + err);
-          console.log('Status Code: ' + response.statusCode);      
-          if(!err && response.statusCode == 200) {
-            // console.log(body);
-            this.setState({
-              venues: body
-            });
-          }
-        }.bind(this));
-
-      }
-      componentDidMount() {
-        if (typeof window !== 'undefined') {
-          window.addEventListener('resize', this.handleMobile);
-        }
-      }
-      componentWillUnmount() {
-        if (typeof window !== 'undefined') {
-          window.removeEventListener('resize', this.handleMobile);
-        }
-      }
-      handleMobile() {
-        const isMobile = window.innerWidth <= 768;
+      eventId: null,
+      name: '',
+      description: '',
+      venueId: '',
+      venues: [],
+      confirm: false,
+      days: DAYS,
+      value: [],
+      selectedDays: [],
+      selectedVenue: '',
+      startDate: moment(),
+      endDate: moment()
+    };
+  }
+  componentWillMount() {
+    PartyBot.venues.getAllInOrganisation(this.state.organisationId, function(err, response, body) {
+      console.log('Error: ' + err);
+      console.log('Status Code: ' + response.statusCode);      
+      if(!err && response.statusCode == 200) {
         this.setState({
-          isMobile,
+          venues: body
         });
       }
-      handleRecurring() {
-       var active = !this.state.isRecurring;
-       this.setState({
-        isRecurring: active,
-      });
-       console.log(isRecurring)
-     }
+    }.bind(this));
+  }
+  componentDidMount() {
+    let options = {
+      organisationId: this.state.organisationId
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.handleMobile);
+    }
+    this.getVenues(options);
+  }
+  componentWillUnmount() {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.handleMobile);
+    }
+  }
+  handleMobile() {
+    const isMobile = window.innerWidth <= 768;
+    this.setState({
+      isMobile,
+    });
+  }
+  handleRecurring() {
+    var active = !this.state.isRecurring;
+    this.setState({
+      isRecurring: active,
+    });
+    console.log(isRecurring)
+  }
+
+  getVenues(options) {
+    PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
+      if(response.statusCode == 200) {
+        this.setState({venues: body});
+      }
+    });
+  }
 
   testFunc() { // TEST functions here
     console.log("test");
@@ -163,17 +157,14 @@ class ManageEventsPage extends Component {
 
 
   onTimeChange(value) {
-  console.log(value && value.format(str));
+    console.log(value && value.format(str));
   }
 
-  onVenueChange(event) {
-    let venueId = event.nativeEvent.target.selectedIndex;
-    let venueCode = event.nativeEvent.target[venueId].value;
-    console.log('Selected Venue: ' + venueCode);
+  onVenueChange = (event) => {
+    let venueCode = event.target.value;
     this.setState({
       selectedVenue: venueCode
     });
-    console.log(this.state.selectedVenue);
   }
 
   closeSetup(){
@@ -231,13 +222,14 @@ class ManageEventsPage extends Component {
   submitCreate() {
 
     var objState = this.state;
-    var staticVenueId = '57ff3b8dd46ae000116c4d49';
+    var staticVenueId = this.state.selectedVenue;
 
     var createParams = {
-      _venue_id: staticVenueId,
-      _organisation_id: '57f3a273f760e4f8ad97eec5',
+      venueId: staticVenueId,
+      organisationId: this.state.organisationId,
       name: objState.name,
-      description: objState.description
+      description: objState.description,
+      oted: null
     };
 
     console.log(createParams);
@@ -248,11 +240,11 @@ class ManageEventsPage extends Component {
       console.log(err);
 
       if(response.statusCode == 200) {
-            this.setState({
-              confirm: true
-            });
-          }
-        }.bind(this));
+        this.setState({
+          confirm: true
+        });
+      }
+    }.bind(this));
 
   }
   render() {
@@ -270,16 +262,16 @@ class ManageEventsPage extends Component {
       <div className={styles.container}>
       <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
       {this.state.confirm !== false ? 
-      <Layer align="center">
+        <Layer align="center">
         <Header>
-            Event successfully created.
+        Event successfully created.
         </Header>
         <Section>
-          <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
+        <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
         </Section>
-      </Layer>
-      :
-      null
+        </Layer>
+        :
+        null
       }
       <Box pad={{ vertical: 'medium' }}>
       {this.state.eventId !== null ? 
@@ -325,38 +317,38 @@ class ManageEventsPage extends Component {
       <CheckBox id="isTickets" onChange={this.testFunc} label="Tickets" />
       </FormField>
       <FormField label="Cutoff" htmlFor="cutOff">
-        <TimePicker
-          style={{ margin: 10 }}
-          showSecond={showSecond}
-          defaultValue={moment()}
-          onChange={this.onTimeChange}
-        />
+      <TimePicker
+      style={{ margin: 10 }}
+      showSecond={showSecond}
+      defaultValue={moment()}
+      onChange={this.onTimeChange}
+      />
       </FormField>
       <FormField label="Starts At" htmlFor="startsAt">
-        {this.state.isRecurring !== true ? 
-          <DatePicker className={styles.dpckr} selected={this.state.startDate} onChange={this.handleChange} />
+      {this.state.isRecurring !== true ? 
+        <DatePicker className={styles.dpckr} selected={this.state.startDate} onChange={this.handleChange} />
         :
-          null    
-        }     
-        <TimePicker
-          style={{ margin: 10 }}
-          showSecond={showSecond}
-          defaultValue={moment()}
-          onChange={this.onTimeChange}
-        />
+        null    
+      }     
+      <TimePicker
+      style={{ margin: 10 }}
+      showSecond={showSecond}
+      defaultValue={moment()}
+      onChange={this.onTimeChange}
+      />
       </FormField>
       <FormField label="Ends At" htmlFor="endsAt">  
-        {this.state.isRecurring !== true ?
-          <DatePicker className={styles.dpckr} selected={this.state.endDate} onChange={this.handleChange} />
+      {this.state.isRecurring !== true ?
+        <DatePicker className={styles.dpckr} selected={this.state.endDate} onChange={this.handleChange} />
         :
-          null
-        } 
-        <TimePicker
-          style={{ margin: 10 }}
-          showSecond={showSecond}
-          defaultValue={moment()}
-          onChange={this.onTimeChange}
-        />       
+        null
+      } 
+      <TimePicker
+      style={{ margin: 10 }}
+      showSecond={showSecond}
+      defaultValue={moment()}
+      onChange={this.onTimeChange}
+      />       
       </FormField>
       <FormField htmlFor="isRecurring">
       <CheckBox id="isRecurring" onChange={this.handleRecurring} label="Recurring" />
@@ -406,7 +398,7 @@ class ManageEventsPage extends Component {
      </Box>
      </div>
      );
-  }
+}
 }
 
 ManageEventsPage.contextTypes = {
