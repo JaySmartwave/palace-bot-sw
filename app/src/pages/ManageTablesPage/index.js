@@ -115,7 +115,7 @@ class ManageTablesPage extends Component {
   }
 
   getVenueOptions(){
-    return ["Valkyrie","Pool Club","Revel","Naya"].map(function (item) {
+    return ["Valkyrie","Pool Club","Revel"].map(function (item) {
       return <option key={item} value={item}>{item}</option>;
     }.bind(this));
   }

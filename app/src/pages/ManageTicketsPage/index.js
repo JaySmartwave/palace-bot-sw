@@ -28,9 +28,6 @@ const VENUES = [{
 }, { 
   value: '003', 
   label: 'Revel'
-}, { 
-  value: '004', 
-  label: 'Naya'
 }];
 
 const EVENTS = [ 
