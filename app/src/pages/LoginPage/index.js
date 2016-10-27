@@ -34,8 +34,9 @@ class LoginPage extends Component {
       isMobile,
     });
   }
-  testFunc() {
-  	console.log('test');
+  login (event) {
+    window.localStorage.setItem('sessToken', event.username);
+    window.location.reload();
   }
   render() {
     const { router, } = this.context;
@@ -45,7 +46,7 @@ class LoginPage extends Component {
       	<Box pad={{ vertical: 'medium' }} justify="center" align="center" >
 	      	<LoginForm 
 	      		align="center"
-	      		onSubmit={this.testFunc}
+	      		onSubmit={this.login}
 	      		title="Party Bot" 
 	  		/>
 		</Box>

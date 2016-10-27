@@ -8,7 +8,7 @@ import { updatePageTitle, getTitleFromRoute } from 'utils/a11y';
 import Header from 'grommet/components/Header';
 import Title from 'grommet/components/Title';
 import MenuIcon from 'grommet/components/icons/base/Menu';
-
+import { LoginPage } from '../../pages';
 class Main extends Component {
   constructor() {
     super();
@@ -46,6 +46,7 @@ class Main extends Component {
     } = this.state;
     return (
       <App centered={false}>
+        { window.localStorage.sessToken ? 
         <SidebarNav
           navActive={navIsActive}
           onToggleNav={this.handleToggleNav}
@@ -66,7 +67,8 @@ class Main extends Component {
             }
           </Header>
           {React.cloneElement(this.props.children, this.props)}
-        </SidebarNav>
+        </SidebarNav> : <LoginPage /> }
+        
       </App>
     );
   }
