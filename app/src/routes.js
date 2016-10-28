@@ -15,7 +15,10 @@ const routes = (
       <IndexRoute component={Pages.LandingPage} />
       <Route path="/home" component={Pages.LandingPage} name="Home" />
       <Route path="/about" component={Pages.AboutPage} />
-      <Route path="/events" component={Pages.EventsPage} />
+      <Route path="/events" component={Pages.SchedulePage} />
+      <Route path="/schedules" component={Pages.SchedulePage} />
+      <Route path="/events/add" component={Pages.ManageEventsPage} />
+      <Route path="/schedules/add" component={Pages.ManageEventsPage} />
       <Route path="/venues" component={Pages.VenuesPage} />
       <Route path="/venues/add" component={Pages.ManageVenuesPage} />
       <Route path="/venues/:venueId" component={Pages.ManageVenuesPage} />
@@ -24,7 +27,6 @@ const routes = (
       <Route path="/schedules" component={Pages.SchedulePage} />
       <Route path="/promoters" component={Pages.PromoterPage} />
       <Route path="/alerts" component={Pages.AlertsPage} />
-      <Route path="/manageEvents" component={Pages.ManageEventsPage} />
       <Route path="/managePromoters" component={Pages.ManagePromotersPage} />
       <Route path="/editTables" component={Pages.EditTablesPage} />
       <Route path="/guestList" component={Pages.GuestListPage} />
