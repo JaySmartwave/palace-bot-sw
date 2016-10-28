@@ -17,10 +17,12 @@ import Layer from 'grommet/components/Layer';
 import Header from 'grommet/components/Header';
 import Section from 'grommet/components/Section';
 import Paragraph from 'grommet/components/Paragraph';
-
+import Cloudinary from 'cloudinary';
+import fs from 'fs'; 
+import request from 'superagent';
+import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_UPLOAD_URL } from '../../constants';
 
 const organisationId = '5800471acb97300011c68cf7';
-
 class ManageVenuesPage extends Component {
   constructor() {
     super();
@@ -28,22 +30,22 @@ class ManageVenuesPage extends Component {
     // this.handleCalendar = this.handleCalendar.bind(this);
     this.onEventChange = this.onEventChange.bind(this);
     this.closeSetup = this.closeSetup.bind(this);
-    // this.onDrop = this.onDrop.bind(this);
+    this.onDrop = this.onDrop.bind(this);
     // this.onRemoveImage = this.onRemoveImage.bind(this);
     // this.setName = this.setName.bind(this);
     this.setDescription = this.setDescription.bind(this);
-    // this.setAddress = this.setAddress.bind(this);
+    this.handleImageUpload = this.handleImageUpload.bind(this);
+    this.setAddress = this.setAddress.bind(this);
     this.submitCreate = this.submitCreate.bind(this);
-
     const organisationId = '5800471acb97300011c68cf7';
 
     this.state = {
       isMobile: false,
-      image: [],
+      image: null,
       venueId: null,
-      name: '',
-      description: '',
-      address: '',
+      name: 'Name',
+      description: 'Description',
+      location: { address: 'Address' },
       confirm: false
     };
   }
@@ -51,8 +53,7 @@ class ManageVenuesPage extends Component {
   componentWillMount(){
 
     let paramsVenueId = this.props.params.venueId
-    if (paramsVenueId != null) {
-      // Get Venue with Organisation Id and Venue Id 
+    if (paramsVenueId) {
       PartyBot.venues.getWithOriganisationIdAndVenueId(organisationId, paramsVenueId, function(err, response, body) {
         console.log(response.statusCode);
         console.log(body);
@@ -66,6 +67,7 @@ class ManageVenuesPage extends Component {
         }
       }.bind(this));
     }
+
   }
 
   componentDidMount() {
@@ -93,19 +95,43 @@ class ManageVenuesPage extends Component {
   }
   onDrop(file) {
     this.setState({
-     image: file
-   });
+       image: file[0]
+     });
     console.log(file[0]);
   }
-  closeSetup(){
+  handleImageUpload(file, callback) {
+    let options = {
+      url: CLOUDINARY_UPLOAD_URL,
+      formData: {
+        file: file
+      }
+    };
+    let upload = request.post(CLOUDINARY_UPLOAD_URL)
+    .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+    .field('file', file);
+
+    upload.end((err, response) => {
+      if (err) {
+        console.error(err);
+      }
+
+      if (response.body.secure_url !== '') {
+        console.log(response.body.secure_url);
+        callback(null, response.body.secure_url)
+      } else {
+        callback(err, '');
+      }
+    });
+  }
+  closeSetup() {
     this.setState({
-     confirm: false
-   });
+      confirm: false
+    });
     this.context.router.push('/venues');
   }
   onRemoveImage() {
     this.setState({
-      image: []
+      image: null
     });
   }
   setName(event) {
@@ -116,37 +142,36 @@ class ManageVenuesPage extends Component {
   }
   setAddress(event) {
     this.setState({
-      address: event.target.value
+      location: { address: event.target.value }
     });
   }
-  submitCreate() {
-
-    var objState = this.state;
-    var createParams = {
-      organisationId: organisationId,
-      name: objState.name,
-      description: objState.description,
-      location: {
-        address: objState.address
-      }
-    };
-
-    console.log(createParams);
-
-    PartyBot.venues.create(createParams, function(err, response, body) {
-
-      console.log(createParams);
-
-      console.log(response.statusCode);
-      console.log(body);
-
-      if(response.statusCode == 200) {
-        console.log('Venue Created.');
-        this.setState({
-          confirm: true
+  submitCreate(event) {
+    event.preventDefault();
+    this.handleImageUpload(this.state.image, (err, imageLink) => {
+      if (err) {
+        console.log(err)
+      } else {
+        let objState = this.state;
+        let createParams = { 
+          organisationId: organisationId, 
+          name: this.state.name,
+          description: this.state.description,
+          location: this.state.location,
+          image: imageLink
+        };
+        console.log(createParams);
+        PartyBot.venues.create(createParams, (err, response, body) => {
+          if(response.statusCode == 200) {
+            console.log(body);
+            this.setState({
+              confirm: true
+            });
+          }
         });
       }
-    }.bind(this));
+    });
+    
+  
   }
   render() {
     const {
@@ -185,31 +210,30 @@ class ManageVenuesPage extends Component {
       }
       </Box>
       <Box direction="row" justify="center" align="center" wrap={true} pad="small" margin="small">
-      <Form>
+      <Form onSubmit={this.submitCreate}>
       <FormFields>
       <fieldset>
       <FormField label="Name" htmlFor="venueName">
-      <input id="venueName" type="text" onChange={this.setName.bind(this)} value={this.state.name} />
+        <input id="venueName" type="text" onChange={this.setName.bind(this)} value={this.state.name} />
       </FormField>
       <FormField label="Description" htmlFor="venueDescription">
-      <input id="venueDescription" type="text" onChange={this.setDescription} value={this.state.description} />
+        <input id="venueDescription" type="text" onChange={this.setDescription} value={this.state.description} />
       </FormField>
       <FormField label="Address" htmlFor="venueAddress">
-      <input id="venueAddress" type="text" onChange={this.setAddress.bind(this)} value={this.state.address}/>
+        <input id="venueAddress" type="text" onChange={this.setAddress} value={this.state.location.address}/>
       </FormField>
-      
       <FormField label="Image">
-      {image.length > 0 ? 
+      {this.state.image ? 
         <Box align="center" justify="center"> 
         <div> 
-        <img src={image[0].preview} width="200" />
+        <img src={this.state.image.preview} width="200" />
         </div>
         <Box>
         <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
         </Box>
         </Box> :
         <Box align="center" justify="center">
-        <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop.bind(this)} accept='image/*'>
+        <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
         Drop image here or click to select image to upload. 
         </Dropzone>
         </Box>

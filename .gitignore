@@ -1,6 +1,7 @@
 node_modules/
 build/
 npm-debug.log
+diff-debug.log
 .DS_Store
 =======
 # Logs
