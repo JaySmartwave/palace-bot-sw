@@ -32,10 +32,10 @@ class SidebarNav extends Component {
             Venues
           </Link>
           <Link
-            to="/tables"
+            to="/event-schedule"
             activeClassName="active"
           >
-            Tables
+            Event Schedule
           </Link>
           <Link
             to="/tableTypes"
@@ -44,17 +44,17 @@ class SidebarNav extends Component {
             Table Types
           </Link>
           <Link
+            to="/tables"
+            activeClassName="active"
+          >
+            Tables
+          </Link>
+          <Link
             to="/tickets"
             activeClassName="active"
           >
             Tickets
-          </Link>
-          <Link
-            to="/event-schedule"
-            activeClassName="active"
-          >
-            Event Schedule
-          </Link>          
+          </Link>        
           <Link
             to="/promoters"
             activeClassName="active"
