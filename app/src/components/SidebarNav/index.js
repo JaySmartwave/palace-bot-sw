@@ -38,7 +38,7 @@ class SidebarNav extends Component {
             Event Schedule
           </Link>
           <Link
-            to="/tableTypes"
+            to="/table-types"
             activeClassName="active"
           >
             Table Types

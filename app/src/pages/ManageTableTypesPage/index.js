@@ -18,12 +18,6 @@ import Section from 'grommet/components/Section';
 import Paragraph from 'grommet/components/Paragraph';
 import Select from 'react-select';
 
-const VENUES = [ // GET all events
-    { value: '001', label: 'Valkyrie' }, // value = venue.id // label = venue.name?
-    { value: '002', label: 'Pool Club' },
-    { value: '003', label: 'Revel'}
-    ];
-
 class ManageTableTypesPage extends Component {
   constructor() {
     super();
@@ -36,23 +30,28 @@ class ManageTableTypesPage extends Component {
     this.submitCreate = this.submitCreate.bind(this);
     this.submitSave = this.submitSave.bind(this);
     this.state = {
+      organisationId: '5800471acb97300011c68cf7',
       isMobile: false,
       files: [],
       tableTypeId: null,
       confirm: false,
       name: '',
-      tags: 'tabletypes', //??
-      venues: VENUES,
+      tags: 'tabletypes',
+      venues: [],
       selectedVenues: [],
     };
   }
 
   componentDidMount() {
-    console.log(this.state.tableId);
-
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
+
+    let options = {
+      organisationId: this.state.organisationId
+    };
+
+    this.getVenues(options);
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -67,14 +66,8 @@ class ManageTableTypesPage extends Component {
   }
 
   onVenueAdd(selectedVenues) {
-    console.log('You\'ve selected:', selectedVenues);
     this.setState({ selectedVenues });
-  }
-
-  getVenueOptions(){
-    return ["Valkyrie","Pool Club","Revel","Naya"].map(function (item) {
-      return <option key={item} value={item}>{item}</option>;
-    }.bind(this));
+    console.log(selectedVenues);
   }
 
   closeSetup(){
@@ -109,6 +102,18 @@ class ManageTableTypesPage extends Component {
    		 });
   }
 
+  getVenues(options) {
+    PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
+      if(response.statusCode == 200) {
+        let arr = [];
+        body.map(function(value, index) {
+          arr.push({value: value._id, label: value.name});
+        });
+        this.setState({venues: arr});
+      }
+    });
+  }
+
   render() {
     const {
       router,
@@ -122,19 +127,18 @@ class ManageTableTypesPage extends Component {
     } = this.state;
     return (
       <div className={styles.container}>
-    <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
-      {this.state.confirm !== false ? 
-      <Layer align="center">
-        <Header>
+        <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
+        {this.state.confirm !== false ? 
+        <Layer align="center">
+          <Header>
             Table Type successfully created.
-        </Header>
-        <Section>
-          <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
-        </Section>
-      </Layer>
-      :
-      null
-      }
+          </Header>
+          <Section>
+            <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
+          </Section>
+        </Layer>
+        : null
+        }
       <Box pad={{ vertical: 'medium' }}>
         {this.state.tableTypeId !== null ? 
     	<Heading align="center">
@@ -156,8 +160,8 @@ class ManageTableTypesPage extends Component {
 		                  name="promoterVenue"
 		                  options={this.state.venues}
 		                  value={this.state.selectedVenues}
-		                  onChange={this.onVenueAdd} 
-		                  multi={true}
+		                  onChange={this.onVenueAdd}
+                      multi={true}
 		                  />
 		           		</Box>
 					  <FormField label="Name" htmlFor="tableTypeName">

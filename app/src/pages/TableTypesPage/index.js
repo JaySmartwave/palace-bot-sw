@@ -94,7 +94,7 @@ class TableTypesPage extends Component {
         </select>
       </Heading>
       <Menu direction='row' align='center' responsive={false}>
-        <Link to={'/manageTableTypes'} activeClassName="active">
+        <Link to={'/table-types/add'} activeClassName="active">
           <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
         </Link>
       </Menu>
