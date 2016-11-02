@@ -15,16 +15,14 @@ const routes = (
       <IndexRoute component={Pages.LandingPage} />
       <Route path="/home" component={Pages.LandingPage} name="Home" />
       <Route path="/about" component={Pages.AboutPage} />
-      <Route path="/events" component={Pages.SchedulePage} />
-      <Route path="/schedules" component={Pages.SchedulePage} />
-      <Route path="/events/add" component={Pages.ManageEventsPage} />
-      <Route path="/schedules/add" component={Pages.ManageEventsPage} />
+      <Route path="/events" component={Pages.EventsPage} />
+      <Route path="/event-schedule" component={Pages.SchedulePage} />
+      <Route path="/event-schedule/add" component={Pages.ManageEventsPage} />
       <Route path="/venues" component={Pages.VenuesPage} />
       <Route path="/venues/add" component={Pages.ManageVenuesPage} />
       <Route path="/venues/:venueId" component={Pages.ManageVenuesPage} />
       <Route path="/tables" component={Pages.TablesPage} />
       <Route path="/tables/add" component={Pages.ManageTablesPage} />
-      <Route path="/schedules" component={Pages.SchedulePage} />
       <Route path="/promoters" component={Pages.PromoterPage} />
       <Route path="/alerts" component={Pages.AlertsPage} />
       <Route path="/managePromoters" component={Pages.ManagePromotersPage} />

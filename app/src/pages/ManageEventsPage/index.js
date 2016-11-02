@@ -23,7 +23,8 @@ import Layer from 'grommet/components/Layer';
 import Header from 'grommet/components/Header';
 import Section from 'grommet/components/Section';
 import Paragraph from 'grommet/components/Paragraph';
-
+import request from 'superagent';
+import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_UPLOAD_URL } from '../../constants';
 
 const DAYS = [{ 
   value: '001', 
@@ -93,15 +94,7 @@ class ManageEventsPage extends Component {
     };
   }
   componentWillMount() {
-    PartyBot.venues.getAllInOrganisation(this.state.organisationId, function(err, response, body) {
-      console.log('Error: ' + err);
-      console.log('Status Code: ' + response.statusCode);      
-      if(!err && response.statusCode == 200) {
-        this.setState({
-          venues: body
-        });
-      }
-    }.bind(this));
+    
   }
   componentDidMount() {
     let options = {
@@ -171,19 +164,19 @@ class ManageEventsPage extends Component {
     this.setState({
      confirm: false
    });
-    this.context.router.push('/schedules');
+    this.context.router.push('/event-schedule');
   }
 
   onDrop(files) {
   	this.setState({
-     files: files
-   });
+       image: files[0]
+     });
   }
 
   onRemoveImage() {
     this.setState({
-      files: []
-    });
+       image: null
+     });
   }
 
   onVenueAdd(value) {
@@ -219,34 +212,65 @@ class ManageEventsPage extends Component {
   setDescription(event) {
     this.setState({description: event.target.value});
   }
-  submitCreate() {
 
-    var objState = this.state;
-    var staticVenueId = this.state.selectedVenue;
+  submitCreate(event) {
+    event.preventDefault();
+    this.handleImageUpload(this.state.image, (err, imageLink) => {
+      if (err) {
+        console.log(err);
+      } else {
+        let objState = this.state;
+        let staticVenueId = this.state.selectedVenue;
 
-    var createParams = {
-      venueId: staticVenueId,
-      organisationId: this.state.organisationId,
-      name: objState.name,
-      description: objState.description,
-      oted: null
-    };
+        let createParams = {
+          venueId: staticVenueId,
+          organisationId: this.state.organisationId,
+          name: objState.name,
+          description: objState.description,
+          image: imageLink,
+          oted: null
+        };
+        console.log("Sending post request");
+        PartyBot.events.create(createParams, (err, response, body) => {
+          console.log(err);
+          console.log(response.statusCode);
+          console.log(body);
+          if(!err && response.statusCode == 201) {
+            this.setState({
+              confirm: true
+            });
+          } else {
 
-    console.log(createParams);
-
-    PartyBot.events.create(createParams, function(err, response, body) {
-      console.log(response.statusCode);
-      console.log(body);
-      console.log(err);
-
-      if(response.statusCode == 200) {
-        this.setState({
-          confirm: true
+          }
         });
       }
-    }.bind(this));
-
+    });
   }
+
+  handleImageUpload(file, callback) {
+    let options = {
+      url: CLOUDINARY_UPLOAD_URL,
+      formData: {
+        file: file
+      }
+    };
+    let upload = request.post(CLOUDINARY_UPLOAD_URL)
+    .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+    .field('file', file);
+
+    upload.end((err, response) => {
+      if (err) {
+        console.error(err);
+      }
+
+      if (response.body.secure_url !== '') {
+        callback(null, response.body.secure_url)
+      } else {
+        callback(err, '');
+      }
+    });
+  }
+
   render() {
     const {
       router,
@@ -260,144 +284,126 @@ class ManageEventsPage extends Component {
     } = this.state;
     return (
       <div className={styles.container}>
-      <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
-      {this.state.confirm !== false ? 
-        <Layer align="center">
-        <Header>
-        Event successfully created.
-        </Header>
-        <Section>
-        <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
-        </Section>
-        </Layer>
-        :
-        null
-      }
-      <Box pad={{ vertical: 'medium' }}>
-      {this.state.eventId !== null ? 
-       <Heading align="center">
-       Edit Event
-       </Heading>
-       : 
-       <Heading align="center">
-       Add Event
-       </Heading>
-     }
-     </Box>
-     <Box direction="row" justify="center" align="center" wrap={true} pad="small	" margin="small">
-     <Form>
-     <FormFields>
-     <fieldset>
-     <Box separator="all">
-     <FormField label="Venue" htmlFor="tableVenue" />
-      {/* *** MULTIPLE ***
-        <Select 
-        name="venueEvent"
-        options={this.state.venues}
-        value={this.state.value}
-        onChange={this.onVenueAdd} 
-        multi={true}
-      />*/}
-      {//single
-      }
-      <select name="venueEvent"
-      onChange={this.onVenueChange}>
-      {this.getVenueOptions()}
-      </select>
-      </Box> 
-      <FormField label="Event Name" htmlFor="eventName">
-      <input id="eventName" type="text" onChange={this.setName}/>
-      </FormField>
-      <FormField label="Description" htmlFor="venueDescription">
-      <input id="venueAddress" type="text" onChange={this.setDescription}/>
-      </FormField>
-      <FormField htmlFor="checkboxes">
-      <CheckBox id="isGuestList" onChange={this.testFunc} label="Guest List" />
-      <CheckBox id="isTableBoookings" onChange={this.testFunc} label="Table Bookings" />
-      <CheckBox id="isTickets" onChange={this.testFunc} label="Tickets" />
-      </FormField>
-      <FormField label="Cutoff" htmlFor="cutOff">
-      <TimePicker
-      style={{ margin: 10 }}
-      showSecond={showSecond}
-      defaultValue={moment()}
-      onChange={this.onTimeChange}
-      />
-      </FormField>
-      <FormField label="Starts At" htmlFor="startsAt">
-      {this.state.isRecurring !== true ? 
-        <DatePicker className={styles.dpckr} selected={this.state.startDate} onChange={this.handleChange} />
-        :
-        null    
-      }     
-      <TimePicker
-      style={{ margin: 10 }}
-      showSecond={showSecond}
-      defaultValue={moment()}
-      onChange={this.onTimeChange}
-      />
-      </FormField>
-      <FormField label="Ends At" htmlFor="endsAt">  
-      {this.state.isRecurring !== true ?
-        <DatePicker className={styles.dpckr} selected={this.state.endDate} onChange={this.handleChange} />
-        :
-        null
-      } 
-      <TimePicker
-      style={{ margin: 10 }}
-      showSecond={showSecond}
-      defaultValue={moment()}
-      onChange={this.onTimeChange}
-      />       
-      </FormField>
-      <FormField htmlFor="isRecurring">
-      <CheckBox id="isRecurring" onChange={this.handleRecurring} label="Recurring" />
-      </FormField>
-      {this.state.isRecurring !== false ? 
-        <Box separator="all">
-        <FormField label="Days" htmlFor="eventDays" />
-        <Select 
-        name="eventDays"
-        options={this.state.days}
-        value={this.state.selectedDays}
-        onChange={this.onDayAdd} 
-        multi={true}
-        />
+        <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
+        {this.state.confirm !== false ? 
+          <Layer align="center">
+            <Header>
+              Event successfully created.
+            </Header>
+            <Section>
+              <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
+            </Section>
+          </Layer>
+          : null
+        }
+        <Box> {/*  pad={{ vertical: 'medium' }} */}
+        {this.state.eventId !== null ? 
+          <Heading align="center">
+          Edit Event
+          </Heading>
+          : 
+          <Heading align="center">
+          Add Event
+          </Heading>
+        }
         </Box>
-        : null
-      }
-      <FormField label="Image">
-      {this.state.files.length > 0 ? 
-        <Box align="center" justify="center">
-        <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
-        <Box>
-        <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>
+        <Box direction="row" justify="center" align="center" wrap={true} margin="small"> {/*pad="small "*/}
+          <Form>
+            <FormFields>
+              <fieldset>
+                <Box separator="all">
+                  <FormField label="Venue" htmlFor="tableVenue" />
+                  {/* *** MULTIPLE ***
+                    <Select 
+                    name="venueEvent"
+                    options={this.state.venues}
+                    value={this.state.value}
+                    onChange={this.onVenueAdd} 
+                    multi={true}
+                  />*/}
+                  {//single
+                  }
+                  <select name="venueEvent" onChange={this.onVenueChange}>
+                    {this.getVenueOptions()}
+                  </select>
+                </Box> 
+                <FormField label="Event Name" htmlFor="eventName">
+                  <input id="eventName" type="text" onChange={this.setName}/>
+                </FormField>
+                <FormField label="Description" htmlFor="venueDescription">
+                  <input id="venueAddress" type="text" onChange={this.setDescription}/>
+                </FormField>
+                <FormField htmlFor="checkboxes">
+                  <CheckBox id="isGuestList" onChange={this.testFunc} label="Guest List" />
+                  <CheckBox id="isTableBoookings" onChange={this.testFunc} label="Table Bookings" />
+                  <CheckBox id="isTickets" onChange={this.testFunc} label="Tickets" />
+                </FormField>
+                <FormField label="Cutoff" htmlFor="cutOff">
+                  <TimePicker
+                  style={{ margin: 10 }}
+                  showSecond={showSecond}
+                  defaultValue={moment()}
+                  onChange={this.onTimeChange}
+                  />
+                </FormField>
+                <FormField label="Starts At" htmlFor="startsAt">
+                  {this.state.isRecurring !== true ? 
+                    <DatePicker className={styles.dpckr} selected={this.state.startDate} onChange={this.handleChange} />
+                    : null    
+                  }     
+                  <TimePicker style={{ margin: 10 }} showSecond={showSecond} defaultValue={moment()} onChange={this.onTimeChange} />
+                </FormField>
+                <FormField label="Ends At" htmlFor="endsAt">  
+                  {this.state.isRecurring !== true ?
+                    <DatePicker className={styles.dpckr} selected={this.state.endDate} onChange={this.handleChange} />
+                    : null
+                  } 
+                  <TimePicker style={{ margin: 10 }} showSecond={showSecond} defaultValue={moment()} onChange={this.onTimeChange} />       
+                </FormField>
+                <FormField htmlFor="isRecurring">
+                  <CheckBox id="isRecurring" onChange={this.handleRecurring} label="Recurring" />
+                </FormField>
+                {this.state.isRecurring !== false ? 
+                  <Box separator="all">
+                    <FormField label="Days" htmlFor="eventDays" />
+                    <Select name="eventDays" options={this.state.days} value={this.state.selectedDays} onChange={this.onDayAdd}  multi={true} />
+                  </Box>
+                  : null
+                }
+                <FormField label="Image">
+                  {this.state.image ? 
+                  <Box align="center" justify="center"> 
+                    <div> 
+                      <img src={this.state.image.preview} width="200" />
+                    </div>
+                    <Box>
+                      <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
+                    </Box>
+                  </Box> :
+                  <Box align="center" justify="center">
+                    <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
+                      Drop image here or click to select image to upload. 
+                    </Dropzone>
+                  </Box>
+                }
+                </FormField>
+              </fieldset>
+            </FormFields>
+            <Footer pad={{"vertical": "medium"}}>
+              {this.state.eventId !== null ? 
+               <Heading align="center">
+               <Button label="Save Changes" primary={true} onClick={this.submitSave} />
+               </Heading>
+               : 
+               <Heading align="center">
+               <Button label="Create Event" primary={true} onClick={this.submitCreate} />
+               </Heading>
+             }
+            </Footer>
+          </Form>
         </Box>
-        </Box> :
-        <Box align="center" justify="center">
-        <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
-        Drop image here or click to select image to upload. 
-        </Dropzone>
-        </Box>
-      }
-      </FormField>
-      </fieldset>
-      </FormFields>
-      <Footer pad={{"vertical": "medium"}}>
-      {this.state.eventId !== null ? 
-       <Heading align="center">
-       <Button label="Save Changes" primary={true} onClick={this.submitSave} />
-       </Heading>
-       : 
-       <Heading align="center">
-       <Button label="Create Event" primary={true} onClick={this.submitCreate} />
-       </Heading>
-     }
-     </Footer>
-     </Form>
-     </Box>
-     </div>
-     );
+      </div>
+      );
 }
 }
 

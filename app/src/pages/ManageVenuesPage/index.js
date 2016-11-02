@@ -18,10 +18,8 @@ import Header from 'grommet/components/Header';
 import Section from 'grommet/components/Section';
 import Paragraph from 'grommet/components/Paragraph';
 import Cloudinary from 'cloudinary';
-import fs from 'fs'; 
 import request from 'superagent';
 import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_UPLOAD_URL } from '../../constants';
-
 const organisationId = '5800471acb97300011c68cf7';
 class ManageVenuesPage extends Component {
   constructor() {
@@ -37,9 +35,8 @@ class ManageVenuesPage extends Component {
     this.handleImageUpload = this.handleImageUpload.bind(this);
     this.setAddress = this.setAddress.bind(this);
     this.submitCreate = this.submitCreate.bind(this);
-    const organisationId = '5800471acb97300011c68cf7';
-
     this.state = {
+      organisationId: '5800471acb97300011c68cf7',
       isMobile: false,
       image: null,
       venueId: null,
@@ -52,9 +49,19 @@ class ManageVenuesPage extends Component {
 
   componentWillMount(){
 
+  }
+
+  componentDidMount() {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.handleMobile.bind(this));
+    }
     let paramsVenueId = this.props.params.venueId
     if (paramsVenueId) {
-      PartyBot.venues.getWithOriganisationIdAndVenueId(organisationId, paramsVenueId, function(err, response, body) {
+      let options = {
+        organisationId: this.state.organisationId,
+        venueId: paramsVenueId
+      }
+      PartyBot.venues.getWithOriganisationIdAndVenueId(options, (err, response, body) => {
         console.log(response.statusCode);
         console.log(body);
         console.log(err);
@@ -65,15 +72,8 @@ class ManageVenuesPage extends Component {
             venueId: paramsVenueId
           })
         }
-      }.bind(this));
+      });
     }
-
-  }
-
-  componentDidMount() {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', this.handleMobile.bind(this));
-    }   
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -149,7 +149,7 @@ class ManageVenuesPage extends Component {
     event.preventDefault();
     this.handleImageUpload(this.state.image, (err, imageLink) => {
       if (err) {
-        console.log(err)
+        console.log(err);
       } else {
         let objState = this.state;
         let createParams = { 
@@ -170,8 +170,6 @@ class ManageVenuesPage extends Component {
         });
       }
     });
-    
-  
   }
   render() {
     const {
@@ -185,77 +183,75 @@ class ManageVenuesPage extends Component {
     } = this.state;
     return (
       <div className={styles.container}>
-      <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
-      {this.state.confirm !== false ? 
+        <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
+        {this.state.confirm !== false ? 
         <Layer align="center">
-        <Header>
-        Venue successfully created.
-        </Header>
-        <Section>
-        <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
-        </Section>
-        </Layer>
+          <Header>
+            Venue successfully created.
+          </Header>
+          <Section>
+            <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
+          </Section>
+        </Layer>:null
+        }
+        <Box>{/* pad={{ vertical: 'medium' }} */}
+        {this.state.venueId !== null ? 
+          <Heading align='center'>
+            Edit Venue
+          </Heading>
         :
-        null
-      }
-      <Box pad={{ vertical: 'medium' }}>
-      {this.state.venueId !== null ? 
-        <Heading align='center'>
-        Edit Venue
-        </Heading>
-        : 
-        <Heading align='center'>
-        Add Venue
-        </Heading>
-      }
-      </Box>
-      <Box direction="row" justify="center" align="center" wrap={true} pad="small" margin="small">
-      <Form onSubmit={this.submitCreate}>
-      <FormFields>
-      <fieldset>
-      <FormField label="Name" htmlFor="venueName">
-        <input id="venueName" type="text" onChange={this.setName.bind(this)} value={this.state.name} />
-      </FormField>
-      <FormField label="Description" htmlFor="venueDescription">
-        <input id="venueDescription" type="text" onChange={this.setDescription} value={this.state.description} />
-      </FormField>
-      <FormField label="Address" htmlFor="venueAddress">
-        <input id="venueAddress" type="text" onChange={this.setAddress} value={this.state.location.address}/>
-      </FormField>
-      <FormField label="Image">
-      {this.state.image ? 
-        <Box align="center" justify="center"> 
-        <div> 
-        <img src={this.state.image.preview} width="200" />
-        </div>
-        <Box>
-        <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
+          <Heading align='center'>
+            Add Venue
+          </Heading>
+        }
         </Box>
-        </Box> :
-        <Box align="center" justify="center">
-        <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
-        Drop image here or click to select image to upload. 
-        </Dropzone>
+        <Box direction="row" justify="center" align="center" wrap={true} pad="small" margin="small">
+          <Form onSubmit={this.submitCreate}>
+            <FormFields>
+              <fieldset>
+                <FormField label="Name" htmlFor="venueName">
+                  <input id="venueName" type="text" onChange={this.setName.bind(this)} value={this.state.name} />
+                </FormField>
+                <FormField label="Description" htmlFor="venueDescription">
+                  <input id="venueDescription" type="text" onChange={this.setDescription} value={this.state.description} />
+                </FormField>
+                  <FormField label="Address" htmlFor="venueAddress">
+                    <input id="venueAddress" type="text" onChange={this.setAddress} value={this.state.location.address}/>
+                  </FormField>
+                <FormField label="Image">
+                {this.state.image ? 
+                  <Box align="center" justify="center"> 
+                    <div> 
+                      <img src={this.state.image.preview} width="200" />
+                    </div>
+                    <Box>
+                      <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
+                    </Box>
+                  </Box> :
+                  <Box align="center" justify="center">
+                    <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
+                      Drop image here or click to select image to upload. 
+                    </Dropzone>
+                  </Box>
+                }
+                </FormField>
+              </fieldset>
+            </FormFields>
+            <Footer pad={{"vertical": "medium"}}>
+            {this.state.venueId !== null ? 
+              <Heading align="center">
+                <Button label="Save Changes" primary={true} onClick={this.submitSave.bind(this)} />
+              </Heading>
+              : 
+              <Heading align="center">
+                <Button label="Create Venue" primary={true} onClick={this.submitCreate.bind(this)} />
+              </Heading>
+            }
+            </Footer>
+          </Form>
         </Box>
-      }
-      </FormField>
-      </fieldset>
-      </FormFields>
-      <Footer pad={{"vertical": "medium"}}>
-      {this.state.venueId !== null ? 
-       <Heading align="center">
-       <Button label="Save Changes" primary={true} onClick={this.submitSave.bind(this)} />
-       </Heading>
-       : 
-       <Heading align="center">
-       <Button label="Create Venue" primary={true} onClick={this.submitCreate.bind(this)} />
-       </Heading>
-     }
-     </Footer>
-     </Form>
-     </Box>
      </div>
-     );
+    );
   }
 }
 

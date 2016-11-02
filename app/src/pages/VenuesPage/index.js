@@ -28,10 +28,10 @@ class VenuesPage extends Component {
       isMobile: false,
       venues: []
     };
-
   }
+
   componentWillMount () {
-    console.log(options);
+
   }
 
   componentDidMount() {
@@ -39,73 +39,72 @@ class VenuesPage extends Component {
       window.addEventListener('resize', this.handleMobile);
     }
     PartyBot.venues.getAllInOrganisation(options, function(err, response, body) {
-      console.log('Error: ' + err);
-      console.log('Status Code: ' + response.statusCode);      
-      console.log(body);
       if(!err && response.statusCode == 200) {
         this.setState({venues: body});
       }
     }.bind(this));
-
   }
+
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
       window.removeEventListener('resize', this.handleMobile);
     }    
   }
+
   handleMobile() {
     const isMobile = window.innerWidth <= 768;
     this.setState({
       isMobile,
     });
   }
+
   testFunc() {
-  	console.log('test');
+
   }
+
   render() {
     const { router, } = this.context;
     const { isMobile, } = this.state;
     return (
       <div className={styles.container}>
-      <Box pad={{ vertical: 'medium' }}>
-      <Heading align='center'> Venues Setup </Heading>
-      </Box>
-      <Header justify='between'>
-      <Heading> </Heading>
-      <Menu direction='row' align='center' responsive={false}>
-      <Link to={'/venues/add'} activeClassName="active">
-      <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
-      </Link>
-      </Menu>
-      </Header>
-      <Table selectable={false}>
-      <thead>
-      <tr>
-      <th>Name</th>
-      <th>Image</th>
-      <th>Address</th>
-      <th></th>
-      </tr>
-      </thead>
-      <tbody>
-    {/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
-    {this.state.venues.map((venueData, i) => (
-      <tr key={i}>
-      <td>{venueData.name}</td>
-      <td><img src={venueData.image} width="200" /></td>
-      <td></td>
-      <td>
-      <Box justify="center" align="center">
-      <Link to={'manageVenues/' + venueData._id} activeClassName="active">
-      <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-      </Link>
-      </Box>  
-      </td>
-      </tr>
-      ))}
-    </tbody>
-    </Table>
-    </div>
+        <Box pad={{ vertical: 'medium' }}>
+          <Heading align='center'> Venues Setup </Heading>
+        </Box>
+        <Header justify='between'>
+          <Heading></Heading>
+          <Menu direction='row' align='center' responsive={false}>
+          <Link to={'/venues/add'} activeClassName="active">
+            <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={ function(){} } />
+          </Link>
+        </Menu>
+        </Header>
+        <Table selectable={false}>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Image</th>
+              <th>Address</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.venues.map((venueData, i) => (
+              <tr key={i}>
+                <td>{venueData.name}</td>
+                <td><img src={venueData.image} width="200" /></td>
+                <td></td>
+                <td>
+                  <Box justify="center" align="center">
+                    <Link to={'manageVenues/' + venueData._id} activeClassName="active">
+                      <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
+                    </Link>
+                  </Box>  
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
     );
   }
 }

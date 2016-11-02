@@ -50,7 +50,7 @@ class SidebarNav extends Component {
             Tickets
           </Link>
           <Link
-            to="/schedules"
+            to="/event-schedule"
             activeClassName="active"
           >
             Event Schedule

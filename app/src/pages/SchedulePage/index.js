@@ -21,7 +21,6 @@ import moment from 'moment';
 let options = {
   organisationId: '5800471acb97300011c68cf7',
 };
-let venueId = '57f4681dbb6c3c23633eecc2';
 
 class SchedulePage extends Component {
   constructor() {
@@ -39,14 +38,11 @@ class SchedulePage extends Component {
   componentDidMount() {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
-    }
-     
-  // Get All Events In Venue In Organisation 
-  PartyBot.events.getEventsInOrganisation(options, function(err, response, body) {
-      console.log('Error: ' + err);
-      console.log('Status Code: ' + response.statusCode);
-      console.log(body);
+    } 
+    // Get All Events In Venue In Organisation 
+    PartyBot.events.getEventsInOrganisation(options, function(err, response, body) {
       if(!err && response.statusCode == 200) {
+        console.log(body);
         this.setState({events: body});
       }
     }.bind(this));
@@ -64,7 +60,7 @@ class SchedulePage extends Component {
     });
   }
   testFunc() {
-  	console.log('test');
+
   }
   render() {
     const { router, } = this.context;
@@ -77,8 +73,8 @@ class SchedulePage extends Component {
       <Header justify='between'>
       <Heading> </Heading>
       <Menu direction='row' align='center' responsive={false}>
-        <Link to={'/events/add'}>
-          <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
+        <Link to={'/event-schedule/add'}>
+          <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={function(){}} />
         </Link>
       </Menu>
       </Header>
