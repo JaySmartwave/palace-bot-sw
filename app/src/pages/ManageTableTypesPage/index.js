@@ -17,6 +17,8 @@ import Header from 'grommet/components/Header';
 import Section from 'grommet/components/Section';
 import Paragraph from 'grommet/components/Paragraph';
 import Select from 'react-select';
+import request from 'superagent';
+import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_UPLOAD_URL } from '../../constants';
 
 class ManageTableTypesPage extends Component {
   constructor() {
@@ -31,8 +33,9 @@ class ManageTableTypesPage extends Component {
     this.submitSave = this.submitSave.bind(this);
     this.state = {
       organisationId: '5800471acb97300011c68cf7',
+      no_of_pax: null,
       isMobile: false,
-      files: [],
+      image: null,
       tableTypeId: null,
       confirm: false,
       name: '',
@@ -67,28 +70,30 @@ class ManageTableTypesPage extends Component {
 
   onVenueAdd(selectedVenues) {
     this.setState({ selectedVenues });
-    console.log(selectedVenues);
   }
 
   closeSetup(){
     this.setState({
      confirm: false
    });
-    this.context.router.push('/tableTypes');
+    this.context.router.push('/table-types');
   }
 
   setName(event) {
-    this.setState({name: event.nativeEvent.target.value});
+    this.setState({name: event.target.value});
   }
 
-  onDrop(files) {
-  	this.setState({
-     files: files
-   });
+  setNoOfPax = (event) => {
+    this.setState({no_of_pax: event.target.value});
+  };
+  onDrop(file) {
+    this.setState({
+       image: file[0]
+     });
   }
   onRemoveImage() {
     this.setState({
-      files: []
+      image: null
     });
   }
 
@@ -96,10 +101,56 @@ class ManageTableTypesPage extends Component {
     console.log("Trigger Save");
   }
 
-  submitCreate() {
-        this.setState({
-          confirm: true
-   		 });
+  handleImageUpload = (file, callback) => {
+    let options = {
+      url: CLOUDINARY_UPLOAD_URL,
+      formData: {
+        file: file
+      }
+    };
+    let upload = request.post(CLOUDINARY_UPLOAD_URL)
+    .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+    .field('file', file);
+
+    upload.end((err, response) => {
+      if (err) {
+        console.error(err);
+      }
+
+      if (response.body.secure_url !== '') {
+        callback(null, response.body.secure_url)
+      } else {
+        callback(err, '');
+      }
+    });
+  }
+
+  submitCreate(event) {
+    event.preventDefault();
+    let venuesArr = this.state.selectedVenues.map(function(value, index) {
+      return value.value;
+    });
+    this.handleImageUpload(this.state.image, (err, imageLink) => {
+      if (err) {
+        console.log(err);
+      } else {
+        let objState = this.state;
+        let createParams = { 
+          organisationId: this.state.organisationId,
+          venue_id: venuesArr,
+          name: this.state.name,
+          no_of_pax: this.state.no_of_pax,
+          image: imageLink
+        };
+        PartyBot.tableTypes.create(createParams, (err, response, body) => {
+          if(response.statusCode == 200) {
+            this.setState({
+              confirm: true
+            });
+          }
+        });
+      }
+    });
   }
 
   getVenues(options) {
@@ -168,20 +219,22 @@ class ManageTableTypesPage extends Component {
 					    <input id="tableTypeName" type="text" onChange={this.setName}/>
 					  </FormField>
 					  <FormField label="No. of Pax" htmlFor="tablePax">
-					    <NumberInput id="tablePax" value={0} min={0} max={99} />
+					    <NumberInput id="tablePax" min={0} max={99} onChange={this.setNoOfPax}/>
 					  </FormField>
           <FormField label="Image">
-          {this.state.files.length > 0 ? 
-            <Box align="center" justify="center">
-             <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
+          {this.state.image ? 
+            <Box align="center" justify="center"> 
+              <div> 
+                <img src={this.state.image.preview} width="200" />
+              </div>
               <Box>
-              <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>
+                <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
               </Box>
             </Box> :
             <Box align="center" justify="center">
-            <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
-              Drop image here or click to select image to upload. 
-            </Dropzone>
+              <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
+                Drop image here or click to select image to upload. 
+              </Dropzone>
             </Box>
           }
            </FormField>

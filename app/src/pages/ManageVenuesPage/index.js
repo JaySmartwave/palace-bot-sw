@@ -17,7 +17,6 @@ import Layer from 'grommet/components/Layer';
 import Header from 'grommet/components/Header';
 import Section from 'grommet/components/Section';
 import Paragraph from 'grommet/components/Paragraph';
-import Cloudinary from 'cloudinary';
 import request from 'superagent';
 import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_UPLOAD_URL } from '../../constants';
 const organisationId = '5800471acb97300011c68cf7';
