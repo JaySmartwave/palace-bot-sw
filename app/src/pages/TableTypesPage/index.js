@@ -17,20 +17,16 @@ import AddIcon from 'grommet/components/icons/base/Add';
 import Select from 'react-select';
 import { Link } from 'react-router'
 
-  const FILTER = [ //Venue?
-    { value: '001', label: 'Venue A' }, 
-    { value: '002', label: 'Venue B' },
-  ];
-
 
 class TableTypesPage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.state = {
+      organisationId: '5800471acb97300011c68cf7',
       isMobile: false,
-      tables: [],
-      filter: FILTER,
+      tableTypes: [],
+      filter: [],
       activeFilter: '' 
     };
   }
@@ -54,14 +50,37 @@ class TableTypesPage extends Component {
     }.bind(this));
   }
 
+  getVenues(options) {
+    PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
+      if(response.statusCode == 200) {
+        var venues = [];
+        body.map((value, index) => {
+          this.setState({ filter: this.state.filter.concat([{value: value._id, label: value.name}]) });
+        });
+      }
+    });
+  }
 
+  getTableTypes(options) {
+    PartyBot.tableTypes.getTableTypesInOrganisation(options, (errors, response, body) => {
+      if(response.statusCode == 200) {
+        console.log(body);
+        this.setState({ tableTypes: body });
+      }
+    });
+  }
   componentWillMount () {
 
   }
   componentDidMount() {
+    const options = {
+      organisationId: this.state.organisationId,
+    };
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
+    this.getVenues(options);
+    this.getTableTypes(options);
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -102,53 +121,26 @@ class TableTypesPage extends Component {
       <Table selectable={false}>
       <thead>
       <tr>
-      <th> Name </th>
-      <th> Venue </th>
-      <th> Pax </th>
-      <th> </th>
+      <th>Name</th>
+      <th>Image</th>
+      <th>Venue</th>
+      <th>Pax</th>
+      <th></th>
       </tr>
       </thead>
       <tbody>
-      {/* this.state.tables.map((result) => (
+      {this.state.tableTypes.map((result) => (
       <tr key={result._id}>
-      <td> {result.name} </td>
-      <td> {result.venue} </td> //multiple?? 
-      <td> {result.pax} </td>
+      <td>{result.name}</td>
+      <td><img src={result.image} width="200" /></td>
+      <td>VENUES</td>
+      <td>{result.no_of_pax}</td>
       <td>
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
+          <Button label="Edit" icon={<EditIcon />} onClick={() => {}} />
       </td>
       </tr>
-      ))*/}
-      <tr>
-      <td> name </td>
-      <td> venue </td>
-      <td> pax </td>
-      <td>
-      	<Box justify="center" align="center">
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-      	</Box>
-      </td>
-      </tr>
-      <tr>
-      <td> name </td>
-      <td> venue </td>
-      <td> pax </td>
-      <td>
-		<Box justify="center" align="center">
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-      	</Box>
-      </td>
-      </tr>
-      <tr>
-      <td> name </td>
-      <td> venue </td>
-      <td> pax </td>
-      <td>
-      	<Box justify="center" align="center">
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-      	</Box>
-      </td>
-      </tr>
+      ))}
+      
     </tbody>
     </Table>
     </div>
@@ -158,7 +150,7 @@ class TableTypesPage extends Component {
 
 TableTypesPage.contextTypes = {
   router: PropTypes.object.isRequired,
-  tablesTypes: PropTypes.array
+  tableTypes: PropTypes.array
 };
 
 export default cssModules(TableTypesPage, styles);
