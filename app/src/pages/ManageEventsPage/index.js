@@ -215,6 +215,7 @@ class ManageEventsPage extends Component {
 
   submitCreate(event) {
     event.preventDefault();
+    console.log("Sending post request");
     this.handleImageUpload(this.state.image, (err, imageLink) => {
       if (err) {
         console.log(err);
@@ -230,7 +231,6 @@ class ManageEventsPage extends Component {
           image: imageLink,
           oted: null
         };
-        console.log("Sending post request");
         PartyBot.events.create(createParams, (err, response, body) => {
           console.log(err);
           console.log(response.statusCode);
@@ -323,8 +323,10 @@ class ManageEventsPage extends Component {
                   />*/}
                   {//single
                   }
-                  <select name="venueEvent" onChange={this.onVenueChange}>
-                    {this.getVenueOptions()}
+                  <select name="venueEvent" onChange={this.onVenueChange} defaultValue={this.state.selectedVenue = (this.state.venues[0])? this.state.venues[0]._id : null}>
+                  {this.state.venues.map((value, index) => {
+                    return <option key={index} value={value._id}>{value.name}</option>;
+                  })}
                   </select>
                 </Box> 
                 <FormField label="Event Name" htmlFor="eventName">
