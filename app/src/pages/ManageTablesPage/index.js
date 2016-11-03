@@ -120,9 +120,9 @@ class ManageTablesPage extends Component {
   }
 
   getEventOptions(){
-    return EVENTS.map(function (item) {
-      return <option key={item.eventId} value={item.eventId}>{item.eventName}</option>;
-    }.bind(this));
+    // return EVENTS.map(function (item) {
+    //   return <option key={item.eventId} value={item.eventId}>{item.eventName}</option>;
+    // }.bind(this));
   }
 
   closeSetup(){
@@ -222,8 +222,6 @@ class ManageTablesPage extends Component {
   submitSave() {
     console.log("Trigger Save");
   }
-
-
 
   submitCreate = () => {
     event.preventDefault();
