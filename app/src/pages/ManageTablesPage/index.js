@@ -16,37 +16,8 @@ import Layer from 'grommet/components/Layer';
 import Header from 'grommet/components/Header';
 import Section from 'grommet/components/Section';
 import Paragraph from 'grommet/components/Paragraph';
-
-let organisationId =  "5800471acb97300011c68cf7";
-let venueId = "5800889684555e0011585f3c";
-
-const VARIANTS =[
-                  { 
-                    variantId: '001',
-                    eventId: '003',
-                    tablePrice: 3000
-                  },
-                  { 
-                    variantId: '002',
-                    eventId: '002',
-                    tablePrice: 2000
-                  }
-                ] 
-
-const EVENTS =[
-                  { 
-                    eventId: '001',
-                    eventName: 'Overtime'
-                  },
-                  { 
-                    eventId: '002',
-                    eventName: 'Game On'
-                  },
-                  { 
-                    eventId: '003',
-                    eventName: 'Kate Mess'
-                  },
-                ]     
+import request from 'superagent';
+import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_UPLOAD_URL } from '../../constants';
 
 class ManageTablesPage extends Component {
   constructor() {
@@ -56,45 +27,48 @@ class ManageTablesPage extends Component {
     this.closeSetup = this.closeSetup.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.onRemoveImage = this.onRemoveImage.bind(this);
-    this.onTypeChange = this.onTypeChange.bind(this);
-    this.setName = this.setName.bind(this);
-    this.getTypeOptions = this.getTypeOptions.bind(this);
-    this.onVenueChange = this.onVenueChange.bind(this);
-    this.getVenueOptions = this.getVenueOptions.bind(this);
     this.onEventChange = this.onEventChange.bind(this);
     this.getEventOptions = this.getEventOptions.bind(this);
     this.addVariant = this.addVariant.bind(this);
     this.removeVariant = this.removeVariant.bind(this);
-    this.submitCreate = this.submitCreate.bind(this);
     this.submitSave = this.submitSave.bind(this);
     this.state = {
       isMobile: false,
-      files: [],
       tableId: null,
       confirm: false,
       name: '',
-      variants: [{ 
-        eventId: '001',
-        tablePrice: 0
-      }],
-      organisationId: organisationId,
-      venueId: venueId,
+      variants: [],
+      organisationId: '5800471acb97300011c68cf7',
+      venues: [],
+      venueId: null,
+      tableTypes: [],
+      tableTypeId: null,
       tags: 'table',
+      image: null
     };
   }
 
   componentWillMount() {
-    if (this.state.tableId !== 'null') {
+    if (this.state.tableId) {
       this.setState({variants: VARIANTS});
     }
   }
 
   componentDidMount() {
-    console.log(this.state.tableId);
-
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
+
+    let options = {
+      organisationId: this.state.organisationId
+    };
+
+    this.getVenues(options);
+    let ttOptions = {
+      organisationId: this.state.organisationId,
+      venue_id: this.state.venueid
+    }
+    this.getTableTypes(ttOptions);
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -108,21 +82,40 @@ class ManageTablesPage extends Component {
     });
   }
 
-  onVenueChange(event) {
-    var id = event.nativeEvent.target.selectedIndex;
-    console.log('Selected Venue' + event.nativeEvent.target[id].value);
-    //this.setState or props
+  getVenues = (options) => {
+    PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
+      if(response.statusCode == 200) {
+        this.setState({venues: body});
+      }
+    });
   }
 
-  getVenueOptions(){
-    return ["Valkyrie","Pool Club","Revel"].map(function (item) {
-      return <option key={item} value={item}>{item}</option>;
-    }.bind(this));
+  getTableTypes = (options) => {
+    PartyBot.tableTypes.getTableTypesInOrganisation(options, (errors, response, body) => {
+      if(response.statusCode == 200) {
+        this.setState({tableTypes: body});
+      }
+    });
+  }
+
+  onVenueChange = (event) => {
+    let id = event.target.value;
+    this.setState({ venueId: id});
+    let options = {
+      organisationId: this.state.organisationId,
+      venue_id: id
+    };
+    this.getTableTypes(options);
+  }
+
+  getVenueOptions = () => {
+    return this.state.venues.map((value, index) => {
+      return <option key={index} value={value._id}>{value.name}</option>;
+    });
   }
 
   onEventChange(event) {
     var id = event.nativeEvent.target.selectedIndex;
-    console.log('Selected Event' + event.nativeEvent.target[id].value);
     //this.setState or props
   }
 
@@ -153,20 +146,21 @@ class ManageTablesPage extends Component {
       console.log(this.props.id)
   }
 
-  onTypeChange(event) {
-    var id = event.nativeEvent.target.selectedIndex;
-    console.log('Selected Table:' + event.nativeEvent.target[id].value);
+  onTypeChange = (event) => {
+    var id = event.target.value;
+
+    this.setState({tableTypeId: id});
     //this.setState
   }
 
-  setName(event) {
-    this.setState({name: event.nativeEvent.target.value});
+  setName = (event) => {
+    this.setState({name: event.target.value});
   }
 
-  getTypeOptions(){
-    return ["Couch","Cabana","Magnum Couch","Skybox"].map(function (item) {
-      return <option key={item} value={item}>{item}</option>;
-    }.bind(this));
+  getTypeOptions = () => {
+    return this.state.tableTypes.map((value, index) => {
+      return <option key={index} value={value._id}>{value.name}</option>;
+    });
   }
 
   getTableVariants(){
@@ -190,14 +184,38 @@ class ManageTablesPage extends Component {
     }.bind(this));
   }
 
-  onDrop(files) {
-  	this.setState({
-     files: files
-   });
+  onDrop(file) {
+    this.setState({
+       image: file[0]
+     });
   }
   onRemoveImage() {
     this.setState({
-      files: []
+      image: null
+    });
+  }
+
+  handleImageUpload = (file, callback) => {
+    let options = {
+      url: CLOUDINARY_UPLOAD_URL,
+      formData: {
+        file: file
+      }
+    };
+    let upload = request.post(CLOUDINARY_UPLOAD_URL)
+    .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+    .field('file', file);
+
+    upload.end((err, response) => {
+      if (err) {
+        console.error(err);
+      }
+
+      if (response.body.secure_url !== '') {
+        callback(null, response.body.secure_url)
+      } else {
+        callback(err, '');
+      }
     });
   }
 
@@ -205,20 +223,35 @@ class ManageTablesPage extends Component {
     console.log("Trigger Save");
   }
 
-  submitCreate() {
-   let params = _.pick(this.state, ['name', 'organisationId', 'venueId', 'tags']);
-   let cl = console.log;
-   PartyBot.products.create(params, function(errors, response, body) {
-      cl("Errors: "+JSON.stringify(errors, null, 2) || null);
-      cl("Response status code: "+response.statusCode || null);
-      cl("Body: "+JSON.stringify(body) || null);
 
-      if(response.statusCode == 200) {
+
+  submitCreate = () => {
+    event.preventDefault();
+    this.handleImageUpload(this.state.image, (err, imageLink) => { 
+      if(err) {
+        console.log(err);
+      } else {
+        let createParams = {
+          name: this.state.name,
+          organisationId: this.state.organisationId,
+          venueId: this.state.venueId,
+          tags: this.state.tags,
+          table_type: this.state.tableTypeId,
+          image: imageLink
+        };
+        PartyBot.products.create(createParams, (errors, response, body) => {
+          console.log("Errors: "+JSON.stringify(errors, null, 2) || null);
+          console.log("Response status code: "+response.statusCode || null);
+          console.log("Body: "+JSON.stringify(body) || null);
+
+          if(response.statusCode == 200) {
             this.setState({
               confirm: true
             });
           }
-        }.bind(this));
+        });
+      }
+    });
   }
 
   render() {
@@ -262,30 +295,36 @@ class ManageTablesPage extends Component {
 				<FormFields>
 					<fieldset>
 					  <FormField label="Venue" htmlFor="tableVenue">
-					    <select id="tableVenue" onChange={this.onVenueChange}>
-                {this.getVenueOptions()}
+					    <select id="tableVenue" onChange={this.onVenueChange} defaultValue={this.state.venueId = (this.state.venues[0])? this.state.venues[0]._id : null}>
+              {this.state.venues.map((value, index) => {
+                return <option key={index} value={value._id}>{value.name}</option>;
+              })}
 						  </select>
 					  </FormField>
 					  <FormField label="Table Type" htmlFor="tableType">
-					    <select id="tableType" onChange={this.onTypeChange}>
-						    {this.getTypeOptions()}
+					    <select id="tableType" onChange={this.onTypeChange} defaultValue={this.state.tableTypeId = (this.state.tableTypes[0])? this.state.tableTypes[0]._id : null}>
+              {this.state.tableTypes.map((value, index) => {
+                return <option key={index} value={value._id}>{value.name}</option>;
+              })}
 						  </select>
 					  </FormField>
 					  <FormField label=" Name" htmlFor="tableName">
 					    <input id="tableName" type="text" onChange={this.setName}/>
 					  </FormField>
           <FormField label="Image">
-          {this.state.files.length > 0 ? 
-            <Box align="center" justify="center">
-             <div>{this.state.files.map((file) => <img src={file.preview} /> )}</div>
+          {this.state.image ? 
+            <Box align="center" justify="center"> 
+              <div> 
+                <img src={this.state.image.preview} width="200" />
+              </div>
               <Box>
-              <Button label="Cancel" onClick={this.onRemoveImage} plain={true} icon={<CloseIcon />}/>
+                <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
               </Box>
             </Box> :
             <Box align="center" justify="center">
-            <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop}>
-              Drop image here or click to select image to upload. 
-            </Dropzone>
+              <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
+                Drop image here or click to select image to upload. 
+              </Dropzone>
             </Box>
           }
            </FormField>
