@@ -85,6 +85,9 @@ class ManageTablesPage extends Component {
   getVenues = (options) => {
     PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
+        if(body > 0) {
+          this.setState.venueId = body[0]._id;
+        }
         this.setState({venues: body});
       }
     });
@@ -293,14 +296,14 @@ class ManageTablesPage extends Component {
 				<FormFields>
 					<fieldset>
 					  <FormField label="Venue" htmlFor="tableVenue">
-					    <select id="tableVenue" onChange={this.onVenueChange} defaultValue={this.state.venueId = (this.state.venues[0])? this.state.venues[0]._id : null}>
+					    <select id="tableVenue" onChange={this.onVenueChange}>
               {this.state.venues.map((value, index) => {
                 return <option key={index} value={value._id}>{value.name}</option>;
               })}
 						  </select>
 					  </FormField>
 					  <FormField label="Table Type" htmlFor="tableType">
-					    <select id="tableType" onChange={this.onTypeChange} defaultValue={this.state.tableTypeId = (this.state.tableTypes[0])? this.state.tableTypes[0]._id : null}>
+					    <select id="tableType" onChange={this.onTypeChange}>
               {this.state.tableTypes.map((value, index) => {
                 return <option key={index} value={value._id}>{value.name}</option>;
               })}
