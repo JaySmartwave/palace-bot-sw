@@ -60,8 +60,6 @@ class ManageEventsPage extends Component {
     this.handleRecurring = this.handleRecurring.bind(this);
     this.closeSetup = this.closeSetup.bind(this);
     this.onVenueAdd = this.onVenueAdd.bind(this);
-    this.onVenueChange = this.onVenueChange.bind(this);
-    this.getVenueOptions = this.getVenueOptions.bind(this);
     this.onDayAdd = this.onDayAdd.bind(this);
     this.onTimeChange = this.onTimeChange.bind(this);
     this.testFunc = this.testFunc.bind(this);
@@ -124,9 +122,12 @@ class ManageEventsPage extends Component {
     console.log(isRecurring)
   }
 
-  getVenues(options) {
+  getVenues = (options) => {
     PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
+        if(body > 0) {
+          this.setState.selectedVenue = body[0]._id;
+        }
         this.setState({venues: body});
       }
     });
@@ -154,10 +155,12 @@ class ManageEventsPage extends Component {
   }
 
   onVenueChange = (event) => {
-    let venueCode = event.target.value;
+    let venueId = event.nativeEvent.target.selectedIndex;
+    let venueCode = event.nativeEvent.target[venueId].value;
     this.setState({
       selectedVenue: venueCode
     });
+    console.log(this.state.selectedVenue);
   }
 
   closeSetup(){
@@ -180,30 +183,11 @@ class ManageEventsPage extends Component {
   }
 
   onVenueAdd(value) {
-    console.log('You\'ve selected:', value);
     this.setState({ value });
   }
 
   onDayAdd(selectedDays) {
-    console.log('You\'ve selected:', selectedDays);
     this.setState({ selectedDays });
-  }
-
-  getVenueOptions(){
-    let stateVenues = this.state.venues;
-
-    return stateVenues.map(function(venue, i) {
-
-      // console.log(venue);
-      return (
-        <option key={i} value={venue._id}> {venue.name} </option>
-        );
-      // return venue.map(function(venueData, j) {
-      //   console.log(venueData);
-      // });
-      // return <option key={item._id} value={item.value}> {item.label} </option>;
-
-    }.bind(this));
   }
 
   setName(event) {
@@ -323,7 +307,7 @@ class ManageEventsPage extends Component {
                   />*/}
                   {//single
                   }
-                  <select name="venueEvent" onChange={this.onVenueChange} defaultValue={this.state.selectedVenue = (this.state.venues[0])? this.state.venues[0]._id : null}>
+                  <select name="venueEvent" onChange={this.onVenueChange}>
                   {this.state.venues.map((value, index) => {
                     return <option key={index} value={value._id}>{value.name}</option>;
                   })}
