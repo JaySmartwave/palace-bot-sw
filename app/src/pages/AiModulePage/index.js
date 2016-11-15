@@ -23,8 +23,10 @@ class AiModulePage extends Component {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.state = {
-      isMobile: false,
-      queries: []
+    	organisationId: '5800471acb97300011c68cf7',
+    	isMobile: false,
+    	answered: [],
+    	unanswered: []
     };
 
   }
@@ -32,6 +34,15 @@ class AiModulePage extends Component {
 
   }
   componentDidMount() {
+  	PartyBot.replies.getReplyPerOrganisation(this.state, (err, res, body) => {
+  		body.filter( (value) => {
+  			if(typeof value.reply === 'undefined') {
+  				this.setState({unanswered: this.state.unanswered.concat(value)});
+  			} else {
+  				this.setState({answered: this.state.unanswered.concat(value)});
+  			}
+  		});
+  	});
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
@@ -75,35 +86,19 @@ class AiModulePage extends Component {
 		      </tr>
 		      </thead>
 		      <tbody>
-		    {/*this.state.venues.map((result) => (
-		      <tr key={id}>
-		      <td className={styles.queCol}> {query} </td>
-		      <td> {frequency} </td>
-		      <td>
-		      	<Box justify="center" align="center">
-		          <Button label="Edit Reply" icon={<EditIcon />} onClick={this.testFunc} />
-		      	</Box>
-		      </td>
-		      </tr>
-		      ))*/}
-		      <tr>
-		      <td className={styles.queCol}> Where's the venue? </td>
-		      <td> 2 </td>
-		      <td>
-		      	<Box justify="center" align="center">
-		          <Button label="Edit Reply" icon={<EditIcon />} onClick={this.testFunc} />
-		      	</Box>
-		      </td>
-		      </tr>
-		      <tr>
-		      <td className={styles.queCol}> How much is the ticket? </td>
-		      <td> 5 </td>
-		      <td>
-		      	<Box justify="center" align="center">
-		          <Button label="Edit Reply" icon={<EditIcon />} onClick={this.testFunc} />
-		      	</Box>
-		      </td>
-		      </tr>
+		      {
+		      	this.state.unanswered.map((result) => (
+		      		<tr key={result._id}>
+		      			<td className={styles.queCol}>{result.entity}</td>
+		      			<td>1</td>
+		      			<td>
+		      			<Box justify="center" align="center">
+		      				<Button label="Edit Reply" icon={<EditIcon />} onClick={this.testFunc} />
+		      			</Box>
+		      			</td>
+		      		</tr>
+		      		))
+		      }
 		    </tbody>
 		    </Table>
 		  </Tab>
@@ -116,41 +111,25 @@ class AiModulePage extends Component {
 		    <Table selectable={false}>
 		      <thead>
 		      <tr>
-		      <th className={styles.queCol}> Query </th>
-		      <th> Frequency</th>
-		      <th> </th>
+		      <th className={styles.queCol}>Query</th>
+		      <th>Frequency</th>
+		      <th></th>
 		      </tr>
 		      </thead>
 		      <tbody>
-		    {/*this.state.venues.map((result) => (
-		      <tr key={id}>
-		      <td className={styles.queCol}> {query} </td>
-		      <td> {frequency} </td>
-		      <td>
-		      	<Box justify="center" align="center">
-		          <Button label="Edit Reply" icon={<EditIcon />} onClick={this.testFunc} />
-		      	</Box>
-		      </td>
-		      </tr>
-		      ))*/}
-		      <tr>
-		      <td className={styles.queCol}> How to get there from C5? </td>
-		      <td> 6 </td>
-		      <td>
-		      	<Box justify="center" align="center">
-		          <Button label="View Reply" icon={<EditIcon />} onClick={this.testFunc} />
-		      	</Box>
-		      </td>
-		      </tr>
-		      <tr>
-		      <td className={styles.queCol}> Until when can I buy tickets for Overtime? </td>
-		      <td> 5 </td>
-		      <td>
-		      	<Box justify="center" align="center">
-		          <Button label="View Reply" icon={<EditIcon />} onClick={this.testFunc} />
-		      	</Box>
-		      </td>
-		      </tr>
+		      {
+		      	this.state.answered.map((result) => (
+		      		<tr key={result._id}>
+		      			<td className={styles.queCol}>{result.entity}</td>
+		      			<td>1</td>
+		      			<td>
+		      			<Box justify="center" align="center">
+		      				<Button label="Edit Reply" icon={<EditIcon />} onClick={this.testFunc} />
+		      			</Box>
+		      			</td>
+		      		</tr>
+		      		))
+		      }
 		    </tbody>
 		    </Table>
 		  </Tab>

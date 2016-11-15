@@ -70,7 +70,7 @@ class SidebarNav extends Component {
           </Link>
           <Menu separator="bottom"/>
           <Link
-            to="/aiModule"
+            to="/ai-module"
             activeClassName="active"
           >
             AI Module

@@ -31,7 +31,7 @@ const routes = (
         <Route path="/tableBookings" component={Pages.TableBookingsPage} />
         <Route path="/tickets" component={Pages.TicketsPage} />
         <Route path="/tickets/add" component={Pages.ManageTicketsPage} />
-        <Route path="/aiModule" component={Pages.AiModulePage} />
+        <Route path="/ai-module" component={Pages.AiModulePage} />
         <Route path="/login" component={Pages.LoginPage} />
         <Route path="/table-types" component={Pages.TableTypesPage} />
         <Route path="/table-types/add" component={Pages.ManageTableTypesPage} />
