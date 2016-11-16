@@ -35,11 +35,12 @@ class AiModulePage extends Component {
   }
   componentDidMount() {
   	PartyBot.replies.getReplyPerOrganisation(this.state, (err, res, body) => {
+      console.log(body);
   		body.filter( (value) => {
   			if(typeof value.reply === 'undefined') {
   				this.setState({unanswered: this.state.unanswered.concat(value)});
   			} else {
-  				this.setState({answered: this.state.unanswered.concat(value)});
+  				this.setState({answered: this.state.answered.concat(value)});
   			}
   		});
   	});
@@ -93,7 +94,9 @@ class AiModulePage extends Component {
 		      			<td>1</td>
 		      			<td>
 		      			<Box justify="center" align="center">
-		      				<Button label="Edit Reply" icon={<EditIcon />} onClick={this.testFunc} />
+                  <Link to={'/ai-module/'+result._id}>
+		      				  <Button label="Edit Reply" icon={<EditIcon />} onClick={function() { return; }} />
+                  </Link>
 		      			</Box>
 		      			</td>
 		      		</tr>
@@ -124,7 +127,9 @@ class AiModulePage extends Component {
 		      			<td>1</td>
 		      			<td>
 		      			<Box justify="center" align="center">
-		      				<Button label="Edit Reply" icon={<EditIcon />} onClick={this.testFunc} />
+                  <Link to={'/ai-module/'+result._id}>
+		      				  <Button label="Edit Reply" icon={<EditIcon />} onClick={function() { return; }} />
+                  </Link>
 		      			</Box>
 		      			</td>
 		      		</tr>
