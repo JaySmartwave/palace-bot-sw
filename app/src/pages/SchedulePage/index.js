@@ -97,9 +97,11 @@ class SchedulePage extends Component {
         <td>{moment('10/17/2016', 'MM/DD/YYYY').format('dddd, MM/DD/YYYY')}</td>
         <td>
         	<Box justify="center" align="center">
-            <Button className={styles.button} label="Edit Event" icon={<EditIcon />} onClick={this.testFunc} />
+            <Link to={`/event-schedule/${result._id}`} activeClassName="active">
+              <Button className={styles.button} label="Edit Event" icon={<EditIcon />} onClick={this.testFunc} />
+            </Link>
             <Link to={'editTables'} activeClassName="active">
-            <Button className={styles.button} label="Edit Tables" icon={<EditIcon />} onClick={this.testFunc} />
+              <Button className={styles.button} label="Edit Tables" icon={<EditIcon />} onClick={this.testFunc} />
             </Link>
         	</Box>
         </td>

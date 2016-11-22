@@ -58,6 +58,7 @@ class ManageEventsPage extends Component {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.handleRecurring = this.handleRecurring.bind(this);
+    this.handleImageUpload = this.handleImageUpload.bind(this);
     this.closeSetup = this.closeSetup.bind(this);
     this.onVenueAdd = this.onVenueAdd.bind(this);
     this.onDayAdd = this.onDayAdd.bind(this);
@@ -71,12 +72,16 @@ class ManageEventsPage extends Component {
     this.setName = this.setName.bind(this);
     this.setDescription = this.setDescription.bind(this);
     this.submitCreate = this.submitCreate.bind(this);
+    this.submitSave = this.submitSave.bind(this);
 
     this.state = {
       organisationId: '5800471acb97300011c68cf7',
       isMobile: false,
       isRecurring: false,
       files: [],
+      image: null,
+      prevImage: null,
+      isNewImage: false,
       eventId: null,
       name: '',
       description: '',
@@ -96,11 +101,32 @@ class ManageEventsPage extends Component {
   }
   componentDidMount() {
     let options = {
-      organisationId: this.state.organisationId
+      organisationId: this.state.organisationId,
+      eventId: this.props.params.event_id
     };
+
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
+    PartyBot.events.get(options, (err, response, body) => {
+      console.log('Error: ' + err);
+      console.log('Status Code: ' + response.statusCode);
+      console.log(body);
+      if(!err && response.statusCode == 200) {
+        this.setState({
+          eventId: body.event._id,
+          name: body.event.name,
+          description: body.event.description,
+          venueId: body.event.venueId,
+          image: {
+            preview: body.event.image
+          },
+          prevImage : {
+            preview: body.event.image
+          }
+        });
+      }
+    });
     this.getVenues(options);
   }
   componentWillUnmount() {
@@ -172,14 +198,16 @@ class ManageEventsPage extends Component {
 
   onDrop(files) {
   	this.setState({
-       image: files[0]
+       image: files[0],
+       isNewImage: true
      });
   }
 
   onRemoveImage() {
     this.setState({
-       image: null
-     });
+      image: this.state.prevImage,
+      isNewImage: false
+    });
   }
 
   onVenueAdd(value) {
@@ -195,6 +223,65 @@ class ManageEventsPage extends Component {
   }
   setDescription(event) {
     this.setState({description: event.target.value});
+  }
+
+  handleImageUpload(file, callback) {
+    if(this.state.isNewImage) {
+      let options = {
+        url: CLOUDINARY_UPLOAD_URL,
+        formData: {
+          file: file
+        }
+      };
+      let upload = request.post(CLOUDINARY_UPLOAD_URL)
+      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+      .field('file', file);
+
+      upload.end((err, response) => {
+        if (err) {
+          console.error(err);
+        }
+
+        if (response.body.secure_url !== '') {
+          callback(null, response.body.secure_url)
+        } else {
+          callback(err, '');
+        }
+      });
+    } else {
+      callback(null, null);
+    }
+  }
+
+  submitSave(event) {
+    event.preventDefault();
+    console.log("Sending put request");
+    this.handleImageUpload(this.state.image, (err, imageLink) => {
+      if (err) {
+        console.log(err);
+      } else {
+        let updateParams = {
+          eventId: this.state.eventId,
+          name: this.state.name,
+          description: this.state.description,
+          image: imageLink || this.state.prevImage.preview,
+          oted: null
+        };
+        console.log(updateParams);
+        PartyBot.events.update(updateParams, (err, response, body) => {
+          console.log(err);
+          console.log(response.statusCode);
+          console.log(body);
+          if(!err && response.statusCode == 200) {
+            this.setState({
+              confirm: true
+            });
+          } else {
+
+          }
+        });
+      }
+    });
   }
 
   submitCreate(event) {
@@ -227,30 +314,6 @@ class ManageEventsPage extends Component {
 
           }
         });
-      }
-    });
-  }
-
-  handleImageUpload(file, callback) {
-    let options = {
-      url: CLOUDINARY_UPLOAD_URL,
-      formData: {
-        file: file
-      }
-    };
-    let upload = request.post(CLOUDINARY_UPLOAD_URL)
-    .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-    .field('file', file);
-
-    upload.end((err, response) => {
-      if (err) {
-        console.error(err);
-      }
-
-      if (response.body.secure_url !== '') {
-        callback(null, response.body.secure_url)
-      } else {
-        callback(err, '');
       }
     });
   }
@@ -314,10 +377,10 @@ class ManageEventsPage extends Component {
                   </select>
                 </Box> 
                 <FormField label="Event Name" htmlFor="eventName">
-                  <input id="eventName" type="text" onChange={this.setName}/>
+                  <input id="eventName" type="text" onChange={this.setName} value={this.state.name}/>
                 </FormField>
                 <FormField label="Description" htmlFor="venueDescription">
-                  <input id="venueAddress" type="text" onChange={this.setDescription}/>
+                  <input id="venueAddress" type="text" onChange={this.setDescription} value={this.state.description}/>
                 </FormField>
                 <FormField htmlFor="checkboxes">
                   <CheckBox id="isGuestList" onChange={this.testFunc} label="Guest List" />
@@ -378,11 +441,11 @@ class ManageEventsPage extends Component {
             <Footer pad={{"vertical": "medium"}}>
               {this.state.eventId !== null ? 
                <Heading align="center">
-               <Button label="Save Changes" primary={true} onClick={this.submitSave} />
+                <Button label="Save Changes" primary={true} onClick={this.submitSave} />
                </Heading>
                : 
                <Heading align="center">
-               <Button label="Create Event" primary={true} onClick={this.submitCreate} />
+                <Button label="Create Event" primary={true} onClick={this.submitCreate} />
                </Heading>
              }
             </Footer>

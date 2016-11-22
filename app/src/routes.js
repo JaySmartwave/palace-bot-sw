@@ -18,7 +18,7 @@ const routes = (
         <Route path="/events" component={Pages.EventsPage} />
         <Route path="/event-schedule" component={Pages.SchedulePage} />
         <Route path="/event-schedule/add" component={Pages.ManageEventsPage} />
-        <Route path="/event-schedule/:event_id" component={Pages.SchedulePage} />
+        <Route path="/event-schedule/:event_id" component={Pages.ManageEventsPage} />
         <Route path="/venues" component={Pages.VenuesPage} />
         <Route path="/venues/add" component={Pages.ManageVenuesPage} />
         <Route path="/venues/:venueId" component={Pages.ManageVenuesPage} />
