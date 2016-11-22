@@ -95,7 +95,7 @@ class VenuesPage extends Component {
                 <td></td>
                 <td>
                   <Box justify="center" align="center">
-                    <Link to={'manageVenues/' + venueData._id} activeClassName="active">
+                    <Link to={'/venues/' + venueData._id} activeClassName="active">
                       <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
                     </Link>
                   </Box>  

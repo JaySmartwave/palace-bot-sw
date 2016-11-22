@@ -34,15 +34,18 @@ class ManageVenuesPage extends Component {
     this.handleImageUpload = this.handleImageUpload.bind(this);
     this.setAddress = this.setAddress.bind(this);
     this.submitCreate = this.submitCreate.bind(this);
+    this.submitSave = this.submitSave.bind(this);
     this.state = {
       organisationId: '5800471acb97300011c68cf7',
       isMobile: false,
       image: null,
+      prevImage: {},
       venueId: null,
       name: 'Name',
       description: 'Description',
       location: { address: 'Address' },
-      confirm: false
+      confirm: false,
+      isNewImage: false
     };
   }
 
@@ -61,14 +64,19 @@ class ManageVenuesPage extends Component {
         venueId: paramsVenueId
       }
       PartyBot.venues.getWithOriganisationIdAndVenueId(options, (err, response, body) => {
-        console.log(response.statusCode);
-        console.log(body);
-        console.log(err);
+        
         if(!err && response.statusCode == 200) {
           this.setState({
             name: body.name,
             description: body.description,
-            venueId: paramsVenueId
+            location: body.location,
+            venueId: paramsVenueId,
+            image: {
+              preview: body.image
+            },
+            prevImage : {
+              preview: body.image
+            }
           })
         }
       });
@@ -94,33 +102,38 @@ class ManageVenuesPage extends Component {
   }
   onDrop(file) {
     this.setState({
-       image: file[0]
+       image: file[0],
+       isNewImage: true
      });
-    console.log(file[0]);
   }
   handleImageUpload(file, callback) {
-    let options = {
-      url: CLOUDINARY_UPLOAD_URL,
-      formData: {
-        file: file
-      }
-    };
-    let upload = request.post(CLOUDINARY_UPLOAD_URL)
-    .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-    .field('file', file);
+    if(this.state.isNewImage) {
+      let options = {
+        url: CLOUDINARY_UPLOAD_URL,
+        formData: {
+          file: file
+        }
+      };
+      let upload = request.post(CLOUDINARY_UPLOAD_URL)
+      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+      .field('file', file);
 
-    upload.end((err, response) => {
-      if (err) {
-        console.error(err);
-      }
+      upload.end((err, response) => {
+        if (err) {
+          console.error(err);
+        }
 
-      if (response.body.secure_url !== '') {
-        console.log(response.body.secure_url);
-        callback(null, response.body.secure_url)
-      } else {
-        callback(err, '');
-      }
-    });
+        if (response.body.secure_url !== '') {
+          console.log(response.body.secure_url);
+          callback(null, response.body.secure_url)
+        } else {
+          callback(err, '');
+        }
+      });
+    } else {
+      callback(null, null);
+    }
+    
   }
   closeSetup() {
     this.setState({
@@ -130,7 +143,8 @@ class ManageVenuesPage extends Component {
   }
   onRemoveImage() {
     this.setState({
-      image: null
+      image: this.state.prevImage,
+      isNewImage: false
     });
   }
   setName(event) {
@@ -158,10 +172,8 @@ class ManageVenuesPage extends Component {
           location: this.state.location,
           image: imageLink
         };
-        console.log(createParams);
         PartyBot.venues.create(createParams, (err, response, body) => {
           if(response.statusCode == 200) {
-            console.log(body);
             this.setState({
               confirm: true
             });
@@ -170,6 +182,35 @@ class ManageVenuesPage extends Component {
       }
     });
   }
+
+  submitSave(event) {
+    event.preventDefault();
+    this.handleImageUpload(this.state.image, (err, imageLink) => {
+      if (err) {
+        console.log(err);
+      } else {
+        let objState = this.state;
+        let updateParams = { 
+          venueId: this.state.venueId,
+          name: this.state.name,
+          description: this.state.description,
+          location: this.state.location,
+          image: imageLink || this.state.prevImage.preview
+        };
+        PartyBot.venues.updateWithId(updateParams, (error, response, body) => {
+          console.log(error);
+          console.log(response.statusCode);
+          console.log(body);
+          if(!error && response.statusCode == 200) {
+            this.setState({
+              confirm: true
+            });
+          }
+        });
+      }
+    });
+  }
+
   render() {
     const {
       router,
@@ -205,7 +246,7 @@ class ManageVenuesPage extends Component {
         }
         </Box>
         <Box direction="row" justify="center" align="center" wrap={true} pad="small" margin="small">
-          <Form onSubmit={this.submitCreate}>
+          <Form>
             <FormFields>
               <fieldset>
                 <FormField label="Name" htmlFor="venueName">

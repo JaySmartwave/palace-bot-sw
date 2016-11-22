@@ -18,11 +18,13 @@ const routes = (
         <Route path="/events" component={Pages.EventsPage} />
         <Route path="/event-schedule" component={Pages.SchedulePage} />
         <Route path="/event-schedule/add" component={Pages.ManageEventsPage} />
+        <Route path="/event-schedule/:event_id" component={Pages.SchedulePage} />
         <Route path="/venues" component={Pages.VenuesPage} />
         <Route path="/venues/add" component={Pages.ManageVenuesPage} />
         <Route path="/venues/:venueId" component={Pages.ManageVenuesPage} />
         <Route path="/tables" component={Pages.TablesPage} />
         <Route path="/tables/add" component={Pages.ManageTablesPage} />
+        <Route path="/tables/:table_id" component={Pages.ManageTablesPage} />
         <Route path="/promoters" component={Pages.PromoterPage} />
         <Route path="/alerts" component={Pages.AlertsPage} />
         <Route path="/managePromoters" component={Pages.ManagePromotersPage} />
@@ -31,11 +33,13 @@ const routes = (
         <Route path="/tableBookings" component={Pages.TableBookingsPage} />
         <Route path="/tickets" component={Pages.TicketsPage} />
         <Route path="/tickets/add" component={Pages.ManageTicketsPage} />
+        <Route path="/tickets/:ticket_id" component={Pages.ManageTicketsPage} />
         <Route path="/ai-module" component={Pages.AiModulePage} />
         <Route path="/ai-module/:reply_id" component={Pages.ManageReplyPage} />
         <Route path="/login" component={Pages.LoginPage} />
         <Route path="/table-types" component={Pages.TableTypesPage} />
         <Route path="/table-types/add" component={Pages.ManageTableTypesPage} />
+        <Route path="/table-types/:table_type_id" component={Pages.ManageTableTypesPage} />
         <Route path="*" component={Pages.NotFoundPage} />
       </Route>
     </Router>
