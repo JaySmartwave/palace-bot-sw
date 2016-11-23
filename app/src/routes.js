@@ -36,7 +36,8 @@ const routes = (
         <Route path="/login" component={Pages.LoginPage} />
         <Route path="/table-types" component={Pages.TableTypesPage} />
         <Route path="/table-types/add" component={Pages.ManageTableTypesPage} />
-        <Route path="*" component={Pages.NotFoundPage} />
+        <Route path="/manageAiModule" component={Pages.ManageAiModulePage} />
+          <Route path="*" component={Pages.NotFoundPage} />
       </Route>
     </Router>
   </ApolloProvider>
