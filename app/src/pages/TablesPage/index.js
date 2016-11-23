@@ -129,11 +129,11 @@ class TablesPage extends Component {
       <Table selectable={false}>
       <thead>
       <tr>
-      <th> Type </th>
-      <th> Name </th>
-      <th> Venue </th>
-      <th> Price </th>
-      <th> </th>
+      <th>Type</th>
+      <th>Name</th>
+      <th>Venue</th>
+      <th>Price</th>
+      <th></th>
       </tr>
       </thead>
       <tbody>
@@ -144,7 +144,9 @@ class TablesPage extends Component {
       <td> {result.description} </td>
       <td> {result.price} </td>
       <td>
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
+        <Link to={`/tables/${result._id}`}> 
+          <Button label="Edit" icon={<EditIcon />} onClick={() => {}} />
+        </Link>
       </td>
       </tr>
       ))}

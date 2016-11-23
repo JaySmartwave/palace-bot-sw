@@ -20,8 +20,8 @@ import request from 'superagent';
 import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_UPLOAD_URL } from '../../constants';
 
 class ManageTablesPage extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.handleMobile = this.handleMobile.bind(this);
     this.getTableVariants = this.getTableVariants.bind(this);
     this.closeSetup = this.closeSetup.bind(this);
@@ -34,7 +34,7 @@ class ManageTablesPage extends Component {
     this.submitSave = this.submitSave.bind(this);
     this.state = {
       isMobile: false,
-      tableId: null,
+      tableId: props.params.table_id || null,
       confirm: false,
       name: '',
       variants: [],
@@ -44,13 +44,15 @@ class ManageTablesPage extends Component {
       tableTypes: [],
       tableTypeId: null,
       tags: 'table',
-      image: null
+      image: null,
+      prevImage: null,
+      isNewImage: null
     };
   }
 
   componentWillMount() {
     if (this.state.tableId) {
-      this.setState({variants: VARIANTS});
+      this.setState({variants: []});
     }
   }
 
@@ -69,6 +71,15 @@ class ManageTablesPage extends Component {
       venue_id: this.state.venueid
     }
     this.getTableTypes(ttOptions);
+    // IF TABLE ID EXISTS
+    if(this.props.params.table_id) {
+      console.log(this.props.params.table_id)
+      let tOptions = {
+        organisationId: this.state.organisationId,
+        productId: this.props.params.table_id
+      }
+      this.getTable(tOptions);
+    }
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -80,7 +91,7 @@ class ManageTablesPage extends Component {
     this.setState({
       isMobile,
     });
-  }
+  };
 
   getVenues = (options) => {
     PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
@@ -97,6 +108,23 @@ class ManageTablesPage extends Component {
     PartyBot.tableTypes.getTableTypesInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
         this.setState({tableTypes: body});
+      }
+    });
+  }
+
+  getTable = (options) => {
+    PartyBot.products.getProductsInOrganisation(options, (error, response, body) => {
+      if(response.statusCode == 200) {
+        console.log(body);
+        this.setState({
+          name: body.name,
+          image: {
+            preview: body.image
+          },
+          prevImage: {
+            preview: body.image
+          }
+        });
       }
     });
   }
@@ -198,32 +226,64 @@ class ManageTablesPage extends Component {
     });
   }
 
-  handleImageUpload = (file, callback) => {
-    let options = {
-      url: CLOUDINARY_UPLOAD_URL,
-      formData: {
-        file: file
-      }
-    };
-    let upload = request.post(CLOUDINARY_UPLOAD_URL)
-    .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-    .field('file', file);
+  handleImageUpload(file, callback) {
+    if(this.state.isNewImage) {
+      let options = {
+        url: CLOUDINARY_UPLOAD_URL,
+        formData: {
+          file: file
+        }
+      };
+      let upload = request.post(CLOUDINARY_UPLOAD_URL)
+      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+      .field('file', file);
 
-    upload.end((err, response) => {
-      if (err) {
-        console.error(err);
-      }
+      upload.end((err, response) => {
+        if (err) {
+          console.error(err);
+        }
 
-      if (response.body.secure_url !== '') {
-        callback(null, response.body.secure_url)
-      } else {
-        callback(err, '');
-      }
-    });
+        if (response.body.secure_url !== '') {
+          console.log(response.body.secure_url);
+          callback(null, response.body.secure_url)
+        } else {
+          callback(err, '');
+        }
+      });
+    } else {
+      callback(null, null);
+    } 
   }
 
   submitSave() {
-    console.log("Trigger Save");
+    event.preventDefault();
+    this.handleImageUpload(this.state.image, (err, imageLink) => { 
+      if(err) {
+        console.log(err);
+      } else {
+        let updateParams = {
+          name: this.state.name,
+          organisationId: this.state.organisationId,
+          productId: this.state.tableId,
+          // venueId: this.state.venueId,
+          // tags: this.state.tags,
+          // table_type: this.state.tableTypeId,
+          image: imageLink || this.state.prevImage.preview
+        };
+        console.log(updateParams);
+        PartyBot.products.update(updateParams, (errors, response, body) => {
+          console.log("Errors: "+JSON.stringify(errors, null, 2) || null);
+          console.log("Response status code: "+response.statusCode || null);
+          console.log("Body: "+JSON.stringify(body) || null);
+
+          if(response.statusCode == 200) {
+            this.setState({
+              confirm: true
+            });
+          }
+        });
+      }
+    });
   }
 
   submitCreate = () => {
@@ -310,7 +370,7 @@ class ManageTablesPage extends Component {
 						  </select>
 					  </FormField>
 					  <FormField label=" Name" htmlFor="tableName">
-					    <input id="tableName" type="text" onChange={this.setName}/>
+					    <input id="tableName" type="text" onChange={this.setName} value={this.state.name}/>
 					  </FormField>
           <FormField label="Image">
           {this.state.image ? 
