@@ -93,9 +93,6 @@ class TableTypesPage extends Component {
       isMobile,
     });
   }
-  testFunc() {
-  	console.log('test');
-  }
   render() {
     const { router, } = this.context;
     const { isMobile, } = this.state;
@@ -114,7 +111,7 @@ class TableTypesPage extends Component {
       </Heading>
       <Menu direction='row' align='center' responsive={false}>
         <Link to={'/table-types/add'} activeClassName="active">
-          <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
+          <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={() => {}} />
         </Link>
       </Menu>
       </Header>
@@ -136,7 +133,9 @@ class TableTypesPage extends Component {
       <td>VENUES</td>
       <td>{result.no_of_pax}</td>
       <td>
+        <Link to={`/table-types/${result._id}`}>
           <Button label="Edit" icon={<EditIcon />} onClick={() => {}} />
+        </Link>
       </td>
       </tr>
       ))}
