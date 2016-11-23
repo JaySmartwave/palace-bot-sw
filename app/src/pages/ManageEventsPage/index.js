@@ -73,7 +73,7 @@ class ManageEventsPage extends Component {
     this.setDescription = this.setDescription.bind(this);
     this.submitCreate = this.submitCreate.bind(this);
     this.submitSave = this.submitSave.bind(this);
-
+    this.submitDelete = this.submitDelete.bind(this);
     this.state = {
       organisationId: '5800471acb97300011c68cf7',
       isMobile: false,
@@ -251,6 +251,20 @@ class ManageEventsPage extends Component {
     } else {
       callback(null, null);
     }
+  }
+
+  submitDelete (event) {
+    event.preventDefault();
+    let params = _.pick(this.state, ['organisationId', 'eventId']);
+    PartyBot.events.deleteEvent(params, (error, response, body) => {
+      if(!err && response.statusCode == 200) {
+        this.setState({
+          confirm: true
+        });
+      } else {
+
+      }
+    });
   }
 
   submitSave(event) {
@@ -442,6 +456,7 @@ class ManageEventsPage extends Component {
               {this.state.eventId !== null ? 
                <Heading align="center">
                 <Button label="Save Changes" primary={true} onClick={this.submitSave} />
+                <Button label="Delete" primary={true} onClick={this.submitDelete} />
                </Heading>
                : 
                <Heading align="center">

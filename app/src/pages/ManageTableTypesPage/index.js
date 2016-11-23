@@ -31,6 +31,7 @@ class ManageTableTypesPage extends Component {
     this.setName = this.setName.bind(this);
     this.submitCreate = this.submitCreate.bind(this);
     this.submitSave = this.submitSave.bind(this);
+    this.submitDelete = this.submitDelete.bind(this);
     this.state = {
       organisationId: '5800471acb97300011c68cf7',
       no_of_pax: null,
@@ -130,6 +131,20 @@ class ManageTableTypesPage extends Component {
     } else {
       callback(null, null);
     } 
+  }
+
+  submitDelete (event) {
+    event.preventDefault();
+    let params = _.pick(this.state, ['organisationId', 'tableTypeId']);
+    PartyBot.tableTypes.deleteTableType(params, (error, response, body) => {
+      if(!error && response.statusCode == 200) {
+        this.setState({
+          confirm: true
+        });
+      } else {
+
+      }
+    });
   }
 
   submitSave(event) {
@@ -310,11 +325,12 @@ class ManageTableTypesPage extends Component {
         {
           this.state.tableTypeId !== null ? 
           <Heading align="center">
-          <Button label="Save Changes" primary={true} onClick={this.submitSave} />
+            <Button label="Save Changes" primary={true} onClick={this.submitSave} />
+            <Button label="Delete" primary={true} onClick={this.submitDelete} />
           </Heading>
           : 
           <Heading align="center">
-          <Button label="Create Table Type" primary={true} onClick={this.submitCreate} />
+            <Button label="Create Table Type" primary={true} onClick={this.submitCreate} />
           </Heading>
         }
         </Footer>
