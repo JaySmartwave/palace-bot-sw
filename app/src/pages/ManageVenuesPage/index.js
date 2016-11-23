@@ -18,6 +18,7 @@ import Header from 'grommet/components/Header';
 import Section from 'grommet/components/Section';
 import Paragraph from 'grommet/components/Paragraph';
 import request from 'superagent';
+import _ from 'underscore';
 import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_UPLOAD_URL } from '../../constants';
 const organisationId = '5800471acb97300011c68cf7';
 class ManageVenuesPage extends Component {
@@ -35,6 +36,7 @@ class ManageVenuesPage extends Component {
     this.setAddress = this.setAddress.bind(this);
     this.submitCreate = this.submitCreate.bind(this);
     this.submitSave = this.submitSave.bind(this);
+    this.delete = this.delete.bind(this);
     this.state = {
       organisationId: '5800471acb97300011c68cf7',
       isMobile: false,
@@ -64,7 +66,7 @@ class ManageVenuesPage extends Component {
         venueId: paramsVenueId
       }
       PartyBot.venues.getWithOriganisationIdAndVenueId(options, (err, response, body) => {
-        
+        console.log("Success getVenue");
         if(!err && response.statusCode == 200) {
           this.setState({
             name: body.name,
@@ -198,9 +200,6 @@ class ManageVenuesPage extends Component {
           image: imageLink || this.state.prevImage.preview
         };
         PartyBot.venues.updateWithId(updateParams, (error, response, body) => {
-          console.log(error);
-          console.log(response.statusCode);
-          console.log(body);
           if(!error && response.statusCode == 200) {
             this.setState({
               confirm: true
@@ -208,6 +207,16 @@ class ManageVenuesPage extends Component {
           }
         });
       }
+    });
+  }
+
+  delete = (event) => {
+    event.preventDefault();
+    let params = _.pick(this.state, ['organisationId', 'venueId']);
+    PartyBot.venues.deleteWithId(params, (error, response, body) => {
+      console.log(error);
+      console.log(response.statusCode);
+      console.log(body);
     });
   }
 
@@ -281,6 +290,7 @@ class ManageVenuesPage extends Component {
             {this.state.venueId !== null ? 
               <Heading align="center">
                 <Button label="Save Changes" primary={true} onClick={this.submitSave.bind(this)} />
+                <Button label="Delete" primary={true} onClick={this.delete.bind(this)} />
               </Heading>
               : 
               <Heading align="center">
