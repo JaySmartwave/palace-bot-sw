@@ -32,6 +32,7 @@ class ManageTablesPage extends Component {
     this.addVariant = this.addVariant.bind(this);
     this.removeVariant = this.removeVariant.bind(this);
     this.submitSave = this.submitSave.bind(this);
+    this.submitDelete = this.submitDelete.bind(this);
     this.state = {
       isMobile: false,
       tableId: props.params.table_id || null,
@@ -255,6 +256,26 @@ class ManageTablesPage extends Component {
     } 
   }
 
+  submitDelete (event) {
+    event.preventDefault();
+    let delParams = {
+      organisationId: this.state.organisationId,
+      productId: this.state.tableId
+    };
+    PartyBot.products.deleteProduct(delParams, (error, response, body) => {
+      if(!error && response.statusCode == 200) {
+        console.log(error);
+        console.log(response);
+        console.log(body);
+        this.setState({
+          confirm: true
+        });
+      } else {
+
+      }
+    });
+  }
+
   submitSave() {
     event.preventDefault();
     this.handleImageUpload(this.state.image, (err, imageLink) => { 
@@ -419,22 +440,23 @@ class ManageTablesPage extends Component {
              </Footer>
             </FormField>
             */}
-           <Footer pad={{"vertical": "medium"}}>
-           {
-            this.state.tableId !== null ? 
-             <Heading align="center">
-             <Button label="Save Changes" primary={true} onClick={this.submitSave} />
-             </Heading>
-             : 
-             <Heading align="center">
-             <Button label="Create Table" primary={true} onClick={this.submitCreate} />
-             </Heading>
-           }
-           </Footer>
-				   </Form>
-           </Box>
-           </div>
-           );
+            <Footer pad={{"vertical": "medium"}}>
+            {
+              this.state.tableId !== null ? 
+              <Heading align="center">
+                <Button label="Save Changes" primary={true} onClick={this.submitSave} />
+                <Button label="Delete" primary={true} onClick={this.submitDelete} />
+              </Heading>
+              : 
+              <Heading align="center">
+                <Button label="Create Table" primary={true} onClick={this.submitCreate} />
+              </Heading>
+            }
+            </Footer>
+            </Form>
+            </Box>
+            </div>
+            );
   }
 }
 
