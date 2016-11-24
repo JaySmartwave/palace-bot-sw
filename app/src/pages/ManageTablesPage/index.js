@@ -42,6 +42,8 @@ class ManageTablesPage extends Component {
       organisationId: '5800471acb97300011c68cf7',
       venues: [],
       venueId: null,
+      events: [],
+      eventId: null,
       tableTypes: [],
       tableTypeId: null,
       tags: 'table',
@@ -67,11 +69,7 @@ class ManageTablesPage extends Component {
     };
 
     this.getVenues(options);
-    let ttOptions = {
-      organisationId: this.state.organisationId,
-      venue_id: this.state.venueid
-    }
-    this.getTableTypes(ttOptions);
+    
     // IF TABLE ID EXISTS
     if(this.props.params.table_id) {
       console.log(this.props.params.table_id)
@@ -97,10 +95,30 @@ class ManageTablesPage extends Component {
   getVenues = (options) => {
     PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
-        if(body > 0) {
-          this.setState.venueId = body[0]._id;
+        if(body.length > 0) {
+          this.setState({venueId: body[0]._id});
+          let ttOptions = {
+            organisationId: this.state.organisationId,
+            venue_id: this.state.venueId
+          }
+          this.getEvents(ttOptions);
+          this.getTableTypes(ttOptions);
         }
         this.setState({venues: body});
+      }
+    });
+  }
+
+  getEvents = (options) => {
+    PartyBot.events.getEventsInOrganisation(options, (err, response, body) => {
+      // console.log('Error: ' + err);
+      // console.log('Status Code: ' + response.statusCode);
+      // console.log(body);
+      if(!err && response.statusCode == 200) {
+        if(body.length > 0) {
+          this.setState({eventId: body[0]._id});
+        }
+        this.setState({events: body});
       }
     });
   }
@@ -138,6 +156,7 @@ class ManageTablesPage extends Component {
       venue_id: id
     };
     this.getTableTypes(options);
+    this.getEvents(options);
   }
 
   getVenueOptions = () => {
@@ -199,8 +218,12 @@ class ManageTablesPage extends Component {
     return this.state.variants.map(function (item) {
       return <div key={item.variantId}>
                 <FormField label="Event" htmlFor="tableName">
-                  <select id="tableVenue" onChange={this.setName}>
-                    {this.getEventOptions()}
+                  <select id="tableVenue" onChange={() => {}} value={this.state.eventId}>
+                  {
+                    this.state.events.map(function(value, index) {
+                      return (<option value={value._id}>{value.name}</option>)
+                    })
+                  }
                   </select>
                 </FormField>
                 <FormField label="Price(Php)" htmlFor="tablePrice">
@@ -339,6 +362,7 @@ class ManageTablesPage extends Component {
   }
 
   render() {
+    console.log(this.state.venueId);
     const {
       router,
     } = this.context;
@@ -379,7 +403,7 @@ class ManageTablesPage extends Component {
 				<FormFields>
 					<fieldset>
 					  <FormField label="Venue" htmlFor="tableVenue">
-					    <select id="tableVenue" onChange={this.onVenueChange}>
+					    <select id="tableVenue" onChange={this.onVenueChange} value={this.state.venueId}>
               {this.state.venues.map((value, index) => {
                 return <option key={index} value={value._id}>{value.name}</option>;
               })}
@@ -425,23 +449,6 @@ class ManageTablesPage extends Component {
             //Dynamic Price/Event Component
             this.getTableVariants()
             }
-            {/*<FormField label="Event" htmlFor="tableName">
-              <select id="tableVenue" onChange={this.onVenueChange}>
-                {this.getEventOptions()}
-              </select>
-            </FormField>
-            <FormField label="Price(Php)" htmlFor="tablePrice">
-              <input id="tablePrice" type="number" value={0} onChange={this.testFunc}/>
-            </FormField>
-            <FormField>
-              <Footer>
-               <Heading align="center">
-               <Button className={styles.eventButton} label="Save" primary={true} onClick={this.testFunc} />
-               <Button className={styles.eventButton} label="Remove" onClick={this.testFunc} />
-               </Heading>
-             </Footer>
-            </FormField>
-            */}
             <Footer pad={{"vertical": "medium"}}>
             {
               this.state.tableId !== null ? 
