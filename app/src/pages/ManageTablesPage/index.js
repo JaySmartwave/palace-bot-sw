@@ -218,12 +218,14 @@ class ManageTablesPage extends Component {
 
   onDrop(file) {
     this.setState({
-       image: file[0]
+       image: file[0],
+       isNewImage: true
      });
   }
   onRemoveImage() {
     this.setState({
-      image: null
+      image: this.state.prevImage,
+      isNewImage: false
     });
   }
 

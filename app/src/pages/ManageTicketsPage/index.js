@@ -24,8 +24,8 @@ import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_S
 let organisationId =  "5800471acb97300011c68cf7";
 
 class ManageTicketsPage extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.handleMobile = this.handleMobile.bind(this);
     this.onVenueChange = this.onVenueChange.bind(this);
     this.getEventOptions = this.getEventOptions.bind(this);
@@ -34,12 +34,13 @@ class ManageTicketsPage extends Component {
     this.setName = this.setName.bind(this);
     this.setDescription = this.setDescription.bind(this);
     this.setUrl = this.setUrl.bind(this);
+    this.submitDelete = this.submitDelete.bind(this);
     this.submitSave = this.submitSave.bind(this);
     this.submitCreate = this.submitCreate.bind(this);
     this.state = {
       isMobile: false,
       events: [],
-      ticketId: null, // id mock test
+      ticketId: props.params.ticket_id || null, // id mock test
       name: '',
       description: '',
       ticket_url: '',
@@ -50,9 +51,12 @@ class ManageTicketsPage extends Component {
       organisationId: organisationId,
       venueId: null,
       venues: [],
-      files: []
+      image: null,
+      prevImage: null,
+      isNewImage: null
     };
   }
+
   componentDidMount() {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
@@ -61,6 +65,15 @@ class ManageTicketsPage extends Component {
       organisationId: this.state.organisationId
     };
     this.getVenues(options);
+
+    if(this.props.params.ticket_id) {
+      let tOptions = {
+        organisationId: this.state.organisationId,
+        productId: this.props.params.ticket_id
+      };
+
+      this.getTicket(tOptions);
+    }
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -77,7 +90,30 @@ class ManageTicketsPage extends Component {
   getVenues = (options) => {
     PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
+        if(body.length > 0) {
+          this.setState({ selectedVenue: body[0]._id})
+        }
         this.setState({venues: body});
+      }
+    });
+  }
+  getTicket = (options) => {
+    PartyBot.products.getProducts(options, (errors, response, body) => {
+      if(response.statusCode == 200) {
+        console.log(body);
+        this.setState({
+          name: body.name,
+          description: body.description,
+          ticket_url: body.ticket_url,
+          venueId: body._venue_id,
+          selectedVenue: body._venue_id,
+          image: {
+            preview: body.image
+          },
+          prevImage: {
+            preview: body.image
+          },
+        });
       }
     });
   }
@@ -124,41 +160,93 @@ class ManageTicketsPage extends Component {
     this.setState({ticket_url: event.target.value});
   }
   onDrop = (file) => {
-    console.log(file)
     this.setState({
-     image: file[0]
+     image: file[0],
+     isNewImage: true
    });
   }
   onRemoveImage = () => {
     this.setState({
-      image: null
+      image: this.state.prevImage,
+      isNewImage: false
     });
   }
   handleImageUpload = (file, callback) => {
-    let options = {
-      url: CLOUDINARY_UPLOAD_URL,
-      formData: {
-        file: file
-      }
+    if(this.state.isNewImage) {
+      let options = {
+        url: CLOUDINARY_UPLOAD_URL,
+        formData: {
+          file: file
+        }
+      };
+      let upload = request.post(CLOUDINARY_UPLOAD_URL)
+      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+      .field('file', file);
+
+      upload.end((err, response) => {
+        if (err) {
+          console.error(err);
+        }
+
+        if (response.body.secure_url !== '') {
+          console.log(response.body.secure_url);
+          callback(null, response.body.secure_url)
+        } else {
+          callback(err, '');
+        }
+      });
+    } else {
+      callback(null, null);
+    }
+  }
+
+  submitDelete() {
+    event.preventDefault();
+    let delParams = {
+      organisationId: this.state.organisationId,
+      productId: this.state.ticketId
     };
-    let upload = request.post(CLOUDINARY_UPLOAD_URL)
-    .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-    .field('file', file);
-
-    upload.end((err, response) => {
-      if (err) {
-        console.error(err);
-      }
-
-      if (response.body.secure_url !== '') {
-        callback(null, response.body.secure_url)
+    PartyBot.products.deleteProduct(delParams, (error, response, body) => {
+      if(!error && response.statusCode == 200) {
+        console.log(error);
+        console.log(response);
+        console.log(body);
+        this.setState({
+          confirm: true
+        });
       } else {
-        callback(err, '');
+
       }
     });
   }
-  submitSave() {
 
+  submitSave() {
+    console.log("Save Clicked!");
+    this.handleImageUpload(this.state.image, (err, imageLink) => { 
+      if(err) {
+        console.log(err);
+      } else {
+        let udpateParams = {
+          productId: this.state.ticketId,
+          name: this.state.name,
+          venueId: this.state.selectedVenue,
+          ticket_url: this.state.ticket_url,
+          image: imageLink || this.state.prevImage.preview
+        };
+
+        PartyBot.products.update(udpateParams, (errors, response, body) => {
+          console.log("Errors: "+JSON.stringify(errors, null, 2) || null);
+          console.log("Response status code: "+response.statusCode || null);
+          console.log("Body: "+JSON.stringify(body) || null);
+
+          if(response.statusCode == 200) {
+            this.setState({
+              confirm: true
+            });
+          }
+        });
+      }
+    });
   }
   submitCreate = () => {
     console.log("Create Clicked!");
@@ -238,19 +326,19 @@ class ManageTicketsPage extends Component {
                 </select>
                 </Box> */}
                 <FormField label="Name" htmlFor="ticketName">
-                  <input id="ticketName" type="text" onChange={this.setName}/>
+                  <input id="ticketName" type="text" onChange={this.setName} value={this.state.name}/>
                 </FormField>
                 <FormField label="Description" htmlFor="ticketDesc">
-                  <input id="ticketDescription" type="text" onChange={this.setDescription}/>
+                  <input id="ticketDescription" type="text" onChange={this.setDescription} value={this.state.description}/>
                 </FormField>
                 <FormField label="URL" htmlFor="ticketUrl">
-                  <input id="ticketUrl" type="text" onChange={this.setUrl}/>
+                  <input id="ticketUrl" type="text" onChange={this.setUrl} value={this.state.ticket_url}/>
                 </FormField>
                 <FormField label="Venue" htmlFor="ticketVenue">
-                  <select id="ticketVenue" onChange={this.onVenueChange} defaultValue={this.state.selectedVenue = (this.state.venues[0])? this.state.venues[0]._id : null}>
+                  <select id="ticketVenue" onChange={this.onVenueChange} value={this.state.selectedVenue}>
                   {
                     this.state.venues.map((value, index) => {
-                      return <option key={index} value={value._id}>{value.name}</option>; 
+                      return <option key={index} value={value._id}>{value.name}</option> 
                     })
                   }
                   </select>
@@ -277,7 +365,8 @@ class ManageTicketsPage extends Component {
             <Footer pad={{"vertical": "medium"}}>
             {this.state.ticketId !== null ? 
               <Heading align="center">
-              <Button label="Save Changes" primary={true} onClick={this.submitSave} />
+                <Button label="Save Changes" primary={true} onClick={this.submitSave} />
+                <Button label="Delete" primary={true} onClick={ this.submitDelete } />
               </Heading>
               : 
               <Heading align="center">

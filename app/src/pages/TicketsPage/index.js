@@ -144,7 +144,9 @@ class TicketsPage extends Component {
         <td> {result.venue} </td>
         <td>
         <Box justify="center" align="center">
-        <Button label="Edit" icon={<EditIcon />} onClick={function(){}} />
+          <Link to={`/tickets/${result._id}`}>
+            <Button label="Edit" icon={<EditIcon />} onClick={function(){}} />
+          </Link>
         </Box>
         </td>
         </tr>
