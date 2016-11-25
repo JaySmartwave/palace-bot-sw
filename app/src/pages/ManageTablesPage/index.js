@@ -18,7 +18,7 @@ import Section from 'grommet/components/Section';
 import Paragraph from 'grommet/components/Paragraph';
 import request from 'superagent';
 import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_UPLOAD_URL } from '../../constants';
-
+import Immutable from 'immutable';
 class ManageTablesPage extends Component {
   constructor(props) {
     super(props);
@@ -27,10 +27,7 @@ class ManageTablesPage extends Component {
     this.closeSetup = this.closeSetup.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.onRemoveImage = this.onRemoveImage.bind(this);
-    this.onEventChange = this.onEventChange.bind(this);
-    this.getEventOptions = this.getEventOptions.bind(this);
     this.addVariant = this.addVariant.bind(this);
-    this.removeVariant = this.removeVariant.bind(this);
     this.submitSave = this.submitSave.bind(this);
     this.submitDelete = this.submitDelete.bind(this);
     this.state = {
@@ -41,15 +38,16 @@ class ManageTablesPage extends Component {
       variants: [],
       organisationId: '5800471acb97300011c68cf7',
       venues: [],
-      venueId: null,
+      venueId: '',
       events: [],
-      eventId: null,
+      eventId: '',
       tableTypes: [],
-      tableTypeId: null,
+      tableTypeId: undefined,
       tags: 'table',
       image: null,
       prevImage: null,
-      isNewImage: null
+      isNewImage: null,
+      prices: []
     };
   }
 
@@ -67,12 +65,9 @@ class ManageTablesPage extends Component {
     let options = {
       organisationId: this.state.organisationId
     };
-
     this.getVenues(options);
-    
     // IF TABLE ID EXISTS
     if(this.props.params.table_id) {
-      console.log(this.props.params.table_id)
       let tOptions = {
         organisationId: this.state.organisationId,
         productId: this.props.params.table_id
@@ -104,21 +99,20 @@ class ManageTablesPage extends Component {
           this.getEvents(ttOptions);
           this.getTableTypes(ttOptions);
         }
-        this.setState({venues: body});
+        this.setState({venues: body, events: []});
       }
     });
   }
 
   getEvents = (options) => {
     PartyBot.events.getEventsInOrganisation(options, (err, response, body) => {
-      // console.log('Error: ' + err);
-      // console.log('Status Code: ' + response.statusCode);
-      // console.log(body);
       if(!err && response.statusCode == 200) {
         if(body.length > 0) {
           this.setState({eventId: body[0]._id});
         }
-        this.setState({events: body});
+        body.map((value, index) =>{
+          this.setState({events: this.state.events.concat({ _event: value._id, name: value.name, selected: false })});
+        });
       }
     });
   }
@@ -126,6 +120,9 @@ class ManageTablesPage extends Component {
   getTableTypes = (options) => {
     PartyBot.tableTypes.getTableTypesInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
+        if(body.length > 0) {
+          this.setState({tableTypeId: body[0]._id});
+        }
         this.setState({tableTypes: body});
       }
     });
@@ -134,7 +131,6 @@ class ManageTablesPage extends Component {
   getTable = (options) => {
     PartyBot.products.getProductsInOrganisation(options, (error, response, body) => {
       if(response.statusCode == 200) {
-        console.log(body);
         this.setState({
           name: body.name,
           image: {
@@ -142,15 +138,19 @@ class ManageTablesPage extends Component {
           },
           prevImage: {
             preview: body.image
-          }
+          },
+          variants: body.prices.map((value, index) => {
+            return {  _event: value._event, price: value.price }
+          })
         });
+
       }
     });
   }
 
   onVenueChange = (event) => {
     let id = event.target.value;
-    this.setState({ venueId: id});
+    this.setState({ venueId: id, events: [], variants: []});
     let options = {
       organisationId: this.state.organisationId,
       venue_id: id
@@ -159,21 +159,18 @@ class ManageTablesPage extends Component {
     this.getEvents(options);
   }
 
-  getVenueOptions = () => {
-    return this.state.venues.map((value, index) => {
-      return <option key={index} value={value._id}>{value.name}</option>;
-    });
+  onEventChange = (item, index, event) => {
+    // var id = event.nativeEvent.target.selectedIndex;
+    console.log(event.target.value);
+    let variants = Immutable.List(this.state.variants);
+    let mutated = variants.set(index, { _event: event.target.value, price: item.price});
+    this.setState( { variants: mutated.toArray() } );
   }
 
-  onEventChange(event) {
-    var id = event.nativeEvent.target.selectedIndex;
-    //this.setState or props
-  }
-
-  getEventOptions(){
-    // return EVENTS.map(function (item) {
-    //   return <option key={item.eventId} value={item.eventId}>{item.eventName}</option>;
-    // }.bind(this));
+  onPriceChange = (item, index, event) => {
+    let variants = Immutable.List(this.state.variants);
+    let mutated = variants.set(index, { _event: item._event, price: event.target.value});
+    this.setState( { variants: mutated.toArray() } );
   }
 
   closeSetup(){
@@ -186,15 +183,16 @@ class ManageTablesPage extends Component {
   addVariant() { // will create then get?
     var newArray = this.state.variants.slice();    
     newArray.push({ 
-        variantId: Math.floor(Math.random() * 999) + 1  , //auto increment
-        eventId: '001', // default value
-        tablePrice: 0 // default value
+        _event: '', // default value
+        price: 0 // default value
       });   
     this.setState({variants:newArray})
   }
 
-  removeVariant(){ // delete variant ID
-      console.log(this.props.id)
+  removeVariant(index, event){ // delete variant ID
+    let variants = Immutable.List(this.state.variants);
+    let mutated = variants.remove(index);
+    console.log(mutated.toArray());
   }
 
   onTypeChange = (event) => {
@@ -215,28 +213,28 @@ class ManageTablesPage extends Component {
   }
 
   getTableVariants(){
-    return this.state.variants.map(function (item) {
-      return <div key={item.variantId}>
+    return this.state.variants.map( (item, index) => {
+      return <div key={index}>
                 <FormField label="Event" htmlFor="tableName">
-                  <select id="tableVenue" onChange={() => {}} value={this.state.eventId}>
+                  <select id="tableVenue" onChange={this.onEventChange.bind(this, item, index)} value={item._event}>
                   {
                     this.state.events.map(function(value, index) {
-                      return (<option value={value._id}>{value.name}</option>)
+                      return (<option key={index} value={value._event}>{value.name}</option>)
                     })
                   }
                   </select>
                 </FormField>
                 <FormField label="Price(Php)" htmlFor="tablePrice">
-                  <input id="tablePrice" type="number" value={item.tablePrice} onChange={this.onEventChange}/>
+                  <input type="number" onChange={this.onPriceChange.bind(this, item, index)} value={item.price}/>
                 </FormField>
                 <Footer pad={{"vertical": "small"}}>
                    <Heading align="center">
-                    <Button className={styles.eventButton} label="Update" primary={true} onClick={this.onEventChange} />
-                    <Button id={item.variantId} className={styles.eventButton} label="Remove" onClick={this.removeVariant} />
+                    <Button className={styles.eventButton} label="Update" primary={true} onClick={() => {}} />
+                    <Button className={styles.eventButton} label="Remove" onClick={this.removeVariant.bind(this, index)} />
                    </Heading>
                  </Footer>
              </div>;
-    }.bind(this));
+    });
   }
 
   onDrop(file) {
@@ -270,7 +268,6 @@ class ManageTablesPage extends Component {
         }
 
         if (response.body.secure_url !== '') {
-          console.log(response.body.secure_url);
           callback(null, response.body.secure_url)
         } else {
           callback(err, '');
@@ -289,9 +286,6 @@ class ManageTablesPage extends Component {
     };
     PartyBot.products.deleteProduct(delParams, (error, response, body) => {
       if(!error && response.statusCode == 200) {
-        console.log(error);
-        console.log(response);
-        console.log(body);
         this.setState({
           confirm: true
         });
@@ -316,12 +310,8 @@ class ManageTablesPage extends Component {
           // table_type: this.state.tableTypeId,
           image: imageLink || this.state.prevImage.preview
         };
-        console.log(updateParams);
-        PartyBot.products.update(updateParams, (errors, response, body) => {
-          console.log("Errors: "+JSON.stringify(errors, null, 2) || null);
-          console.log("Response status code: "+response.statusCode || null);
-          console.log("Body: "+JSON.stringify(body) || null);
 
+        PartyBot.products.update(updateParams, (errors, response, body) => {
           if(response.statusCode == 200) {
             this.setState({
               confirm: true
@@ -344,17 +334,18 @@ class ManageTablesPage extends Component {
           venueId: this.state.venueId,
           tags: this.state.tags,
           table_type: this.state.tableTypeId,
-          image: imageLink
+          image: imageLink,
+          prices: this.state.variants
         };
+        // console.log(createParams);
         PartyBot.products.create(createParams, (errors, response, body) => {
-          console.log("Errors: "+JSON.stringify(errors, null, 2) || null);
-          console.log("Response status code: "+response.statusCode || null);
-          console.log("Body: "+JSON.stringify(body) || null);
-
+          console.log(errors);
+          console.log(response.statusCode);
+          console.log(body);
           if(response.statusCode == 200) {
-            this.setState({
-              confirm: true
-            });
+            // this.setState({
+            //   confirm: true
+            // });
           }
         });
       }
@@ -362,7 +353,6 @@ class ManageTablesPage extends Component {
   }
 
   render() {
-    console.log(this.state.venueId);
     const {
       router,
     } = this.context;
@@ -387,7 +377,7 @@ class ManageTablesPage extends Component {
       :
       null
       }
-      <Box pad={{ vertical: 'medium' }}>
+      <Box>
         {this.state.tableId !== null ? 
     	<Heading align="center">
             Edit Table
@@ -398,7 +388,7 @@ class ManageTablesPage extends Component {
         </Heading>
     	}
           </Box>
-			<Box direction="row" justify="center" align="center" wrap={true} pad="small	" margin="small">
+			<Box direction="row" justify="center" align="center" wrap={true} margin="small">
 				<Form>
 				<FormFields>
 					<fieldset>
@@ -410,7 +400,7 @@ class ManageTablesPage extends Component {
 						  </select>
 					  </FormField>
 					  <FormField label="Table Type" htmlFor="tableType">
-					    <select id="tableType" onChange={this.onTypeChange}>
+					    <select id="tableType" onChange={this.onTypeChange} value={this.state.tableTypeId}>
               {this.state.tableTypes.map((value, index) => {
                 return <option key={index} value={value._id}>{value.name}</option>;
               })}
