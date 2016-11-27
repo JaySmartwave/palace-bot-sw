@@ -26,7 +26,6 @@ class ManageTablesPage extends Component {
     this.getTableVariants = this.getTableVariants.bind(this);
     this.closeSetup = this.closeSetup.bind(this);
     this.onDrop = this.onDrop.bind(this);
-    this.onRemoveImage = this.onRemoveImage.bind(this);
     this.addVariant = this.addVariant.bind(this);
     this.submitSave = this.submitSave.bind(this);
     this.submitDelete = this.submitDelete.bind(this);
@@ -243,9 +242,9 @@ class ManageTablesPage extends Component {
        isNewImage: true
      });
   }
-  onRemoveImage() {
+  onRemoveImage = () => {
     this.setState({
-      image: this.state.prevImage,
+      image: null,
       isNewImage: false
     });
   }
@@ -296,6 +295,7 @@ class ManageTablesPage extends Component {
   }
 
   submitSave() {
+    console.log("Sending Save");
     event.preventDefault();
     this.handleImageUpload(this.state.image, (err, imageLink) => { 
       if(err) {
@@ -305,12 +305,12 @@ class ManageTablesPage extends Component {
           name: this.state.name,
           organisationId: this.state.organisationId,
           productId: this.state.tableId,
-          // venueId: this.state.venueId,
-          // tags: this.state.tags,
-          // table_type: this.state.tableTypeId,
-          image: imageLink || this.state.prevImage.preview
-        };
+          venueId: this.state.venueId,
+          table_type: this.state.tableTypeId,
+          image: imageLink || this.state.prevImage.preview,
+          prices: this.state.variants
 
+        };
         PartyBot.products.update(updateParams, (errors, response, body) => {
           if(response.statusCode == 200) {
             this.setState({
