@@ -25,32 +25,32 @@ import Section from 'grommet/components/Section';
 import Paragraph from 'grommet/components/Paragraph';
 import request from 'superagent';
 import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_UPLOAD_URL } from '../../constants';
-
+import Immutable from 'immutable';
 const DAYS = [{ 
-  value: '001', 
+  value: 0, 
   label: 'Sunday' 
 }, { 
-  value: '002', 
+  value: 1, 
   label: 'Monday'
 }, { 
-  value: '003',
+  value: 2,
   label: 'Tuesday'
 }, { 
-  value: '004',
+  value: 3,
   label: 'Wednesday'
 }, { 
-  value: '005',
+  value: 4,
   label: 'Thursday'
 }, { 
-  value: '006', 
+  value: 5, 
   label: 'Friday'
 }, {
- value: '007',
+ value: 6,
  label: 'Saturday'
 }];
 
-const showSecond = true;
-const str = showSecond ? 'HH:mm:ss' : 'HH:mm';
+const showSecond = false;
+const str = showSecond ? 'HH:mm:ss' : 'hh:mm a';
 
 class ManageEventsPage extends Component {
 
@@ -61,11 +61,7 @@ class ManageEventsPage extends Component {
     this.handleImageUpload = this.handleImageUpload.bind(this);
     this.closeSetup = this.closeSetup.bind(this);
     this.onVenueAdd = this.onVenueAdd.bind(this);
-    this.onDayAdd = this.onDayAdd.bind(this);
-    this.onTimeChange = this.onTimeChange.bind(this);
-    this.testFunc = this.testFunc.bind(this);
-    this.setStartDate = this.setStartDate.bind(this);
-    this.setEndDate = this.setEndDate.bind(this);
+    this.onDayChange = this.onDayChange.bind(this);
     this.onRemoveImage = this.onRemoveImage.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.onRemoveImage = this.onRemoveImage.bind(this);
@@ -78,7 +74,13 @@ class ManageEventsPage extends Component {
       organisationId: '5800471acb97300011c68cf7',
       isMobile: false,
       isRecurring: false,
-      files: [],
+      recurrence: null,
+      oted: {
+        start_date: moment(),
+        end_date: moment(),
+        start_time: moment(),
+        end_time: moment()
+      },
       image: null,
       prevImage: null,
       isNewImage: false,
@@ -90,44 +92,29 @@ class ManageEventsPage extends Component {
       confirm: false,
       days: DAYS,
       value: [],
-      selectedDays: [],
       selectedVenue: '',
-      startDate: moment(),
-      endDate: moment()
+      rsvp_cutoff: moment()
     };
   }
   componentWillMount() {
     
   }
   componentDidMount() {
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.handleMobile);
+    }
+
     let options = {
       organisationId: this.state.organisationId,
       eventId: this.props.params.event_id
     };
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', this.handleMobile);
-    }
-    PartyBot.events.get(options, (err, response, body) => {
-      console.log('Error: ' + err);
-      console.log('Status Code: ' + response.statusCode);
-      console.log(body);
-      if(!err && response.statusCode == 200) {
-        this.setState({
-          eventId: body.event._id,
-          name: body.event.name,
-          description: body.event.description,
-          venueId: body.event.venueId,
-          image: {
-            preview: body.event.image
-          },
-          prevImage : {
-            preview: body.event.image
-          }
-        });
-      }
-    });
     this.getVenues(options);
+
+    if(this.props.params.event_id) {      
+      this.getEvent(options);
+    }
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -142,51 +129,138 @@ class ManageEventsPage extends Component {
   }
   handleRecurring() {
     var active = !this.state.isRecurring;
-    this.setState({
-      isRecurring: active,
+    if(active) {
+      this.setState({
+        isRecurring: active,
+        oted: null,
+        recurrence: {
+          start_time: moment(),
+          end_time: moment()
+        }
+      });
+    } else {
+      this.setState({
+        isRecurring: active,
+        recurrence: null,
+        oted: {
+          start_date: moment(),
+          end_date: moment()
+        }
+      });
+    }
+    
+  }
+
+  getEvent = (options) => {
+    PartyBot.events.get(options, (err, response, body) => {
+      console.log(body);
+      if(!err && response.statusCode == 200) {
+        this.setState({
+          isRecurring: body.event.recurrence ? true: false,
+          eventId: body.event._id,
+          name: body.event.name,
+          description: body.event.description,
+          selectedVenue: body.event._venue_id,
+          image: {
+            preview: body.event.image
+          },
+          prevImage : {
+            preview: body.event.image
+          },
+          oted: body.event.oted ? {
+            start_date: moment(body.event.oted.start_date),
+            end_date: moment(body.event.oted.end_date),
+            start_time: moment(body.event.oted.start_date),
+            end_time: moment(body.event.oted.end_date)
+          } : null,
+          recurrence: body.event.recurrence ? {
+            start_time: moment(body.event.recurrence.start_time, 'HH:mm a'),
+            end_time: moment(body.event.recurrence.end_time, 'HH:mm a'),
+            day: body.event.recurrence.day
+          } : null
+        });
+      }
     });
-    console.log(isRecurring)
   }
 
   getVenues = (options) => {
     PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
-        if(body > 0) {
-          this.setState.selectedVenue = body[0]._id;
+        if(body.length > 0) {
+          this.setState({selectedVenue: body[0]._id});
         }
         this.setState({venues: body});
       }
     });
   }
 
-  testFunc() { // TEST functions here
-    console.log("test");
-  }
-
-  setStartDate(date) {
+  onOtedStartDateChange = (value) => {
+    let mapped = Immutable.Map(this.state.oted);
+    let changed = mapped.set('start_date', value);
     this.setState({
-      startDate: date
+      oted: changed.toObject()
     });
   }
 
-  setEndDate(date) {
+  onOtedEndDateChange = (value) => {
+    let mapped = Immutable.Map(this.state.oted);
+    let changed = mapped.set('end_date', value);
     this.setState({
-      endDate: date
+      oted: changed.toObject()
     });
   }
 
+  onOtedStartTimeChange = (value) => {
+    let mapped = Immutable.Map(this.state.oted);
+    let changed = mapped.set('start_time', value);
+    this.setState({
+      oted: changed.toObject()
+    });
+  }
 
-  onTimeChange(value) {
-    console.log(value && value.format(str));
+  onOtedEndTimeChange = (value) => {
+
+    let mapped = Immutable.Map(this.state.oted);
+    let changed = mapped.set('end_time', value);
+    this.setState({
+      oted: changed.toObject()
+    });
+  }
+
+  onRecStartTimeChange = (value) => {
+    let mapped = Immutable.Map(this.state.recurrence);
+    let changed = mapped.set('start_time', value);
+    this.setState({
+      recurrence: changed.toObject()
+    });
+  }
+
+  onRecEndTimeChange = (value) => {
+    let mapped = Immutable.Map(this.state.recurrence);
+    let changed = mapped.set('end_time', value);
+    this.setState({
+      recurrence: changed.toObject()
+    });
+  }
+
+  onDayChange(selectedDay) {
+    let mapped = Immutable.Map(this.state.recurrence);
+    let changed = mapped.set('day', selectedDay.value);
+    this.setState({
+      recurrence: changed.toObject()
+    });
+  }
+
+  onCutOffChange(value) {
+    this.setState({ rsvp_cutoff: value });
+    // console.log(value && value.format(str));
   }
 
   onVenueChange = (event) => {
-    let venueId = event.nativeEvent.target.selectedIndex;
-    let venueCode = event.nativeEvent.target[venueId].value;
+    let venueCode = event.target.value;
     this.setState({
       selectedVenue: venueCode
     });
-    console.log(this.state.selectedVenue);
   }
 
   closeSetup(){
@@ -212,10 +286,6 @@ class ManageEventsPage extends Component {
 
   onVenueAdd(value) {
     this.setState({ value });
-  }
-
-  onDayAdd(selectedDays) {
-    this.setState({ selectedDays });
   }
 
   setName(event) {
@@ -269,19 +339,31 @@ class ManageEventsPage extends Component {
 
   submitSave(event) {
     event.preventDefault();
-    console.log("Sending put request");
+    console.log("Sending save");
     this.handleImageUpload(this.state.image, (err, imageLink) => {
       if (err) {
         console.log(err);
       } else {
         let updateParams = {
+          organisationId: this.state.organisationId,
+          _venue_id: this.state.selectedVenue,
           eventId: this.state.eventId,
           name: this.state.name,
           description: this.state.description,
           image: imageLink || this.state.prevImage.preview,
           oted: null
         };
-        console.log(updateParams);
+
+        updateParams.oted = (this.state.oted ? { 
+          start_date: moment(this.state.oted.start_date.format('YYYY-MM-DD') + ' ' + this.state.oted.start_time.format(str+'ZZ')),
+          end_date: moment(this.state.oted.end_date.format('YYYY-MM-DD') + ' ' + this.state.oted.end_time.format(str+'ZZ')) }
+           : null);
+        updateParams.recurrence = (this.state.recurrence ? {
+          start_time: this.state.recurrence.start_time.format(str),
+          end_time: this.state.recurrence.end_time.format(str),
+          day: this.state.recurrence.day }
+           : null);
+
         PartyBot.events.update(updateParams, (err, response, body) => {
           console.log(err);
           console.log(response.statusCode);
@@ -300,26 +382,28 @@ class ManageEventsPage extends Component {
 
   submitCreate(event) {
     event.preventDefault();
-    console.log("Sending post request");
+    console.log("Sending create");
     this.handleImageUpload(this.state.image, (err, imageLink) => {
       if (err) {
         console.log(err);
       } else {
-        let objState = this.state;
-        let staticVenueId = this.state.selectedVenue;
-
         let createParams = {
-          venueId: staticVenueId,
+          venueId: this.state.selectedVenue,
           organisationId: this.state.organisationId,
-          name: objState.name,
-          description: objState.description,
+          name: this.state.name,
+          description: this.state.description,
           image: imageLink,
-          oted: null
-        };
+        }
+        createParams.oted = (this.state.oted ? { 
+          start_date: moment(this.state.oted.start_date.format('YYYY-MM-DD') + ' ' + this.state.oted.start_time.format(str+'ZZ')),
+          end_date: moment(this.state.oted.end_date.format('YYYY-MM-DD') + ' ' + this.state.oted.end_time.format(str+'ZZ')) }
+           : null);
+        createParams.recurrence = (this.state.recurrence ? {
+          start_time: this.state.recurrence.start_time.format(str),
+          end_time: this.state.recurrence.end_time.format(str) }
+           : null);
+        console.log(createParams);
         PartyBot.events.create(createParams, (err, response, body) => {
-          console.log(err);
-          console.log(response.statusCode);
-          console.log(body);
           if(!err && response.statusCode == 201) {
             this.setState({
               confirm: true
@@ -384,55 +468,95 @@ class ManageEventsPage extends Component {
                   />*/}
                   {//single
                   }
-                  <select name="venueEvent" onChange={this.onVenueChange}>
+                  <select name="venueEvent" onChange={this.onVenueChange} value={this.state.selectedVenue}>
                   {this.state.venues.map((value, index) => {
                     return <option key={index} value={value._id}>{value.name}</option>;
                   })}
                   </select>
-                </Box> 
+                </Box>
+
                 <FormField label="Event Name" htmlFor="eventName">
                   <input id="eventName" type="text" onChange={this.setName} value={this.state.name}/>
                 </FormField>
+
                 <FormField label="Description" htmlFor="venueDescription">
                   <input id="venueAddress" type="text" onChange={this.setDescription} value={this.state.description}/>
                 </FormField>
+
                 <FormField htmlFor="checkboxes">
-                  <CheckBox id="isGuestList" onChange={this.testFunc} label="Guest List" />
-                  <CheckBox id="isTableBoookings" onChange={this.testFunc} label="Table Bookings" />
-                  <CheckBox id="isTickets" onChange={this.testFunc} label="Tickets" />
+                  <CheckBox id="isGuestList" onChange={() => {}} label="Guest List" />
+                  <CheckBox id="isTableBoookings" onChange={() => {}} label="Table Bookings" />
+                  <CheckBox id="isTickets" onChange={() => {}} label="Tickets" />
                 </FormField>
+
                 <FormField label="Cutoff" htmlFor="cutOff">
                   <TimePicker
                   style={{ margin: 10 }}
                   showSecond={showSecond}
+                  value={this.state.rsvp_cutoff}
                   defaultValue={moment()}
-                  onChange={this.onTimeChange}
+                  format='hh:mm a'
+                  onChange={this.onCutOffChange.bind(this)}
                   />
                 </FormField>
-                <FormField label="Starts At" htmlFor="startsAt">
-                  {this.state.isRecurring !== true ? 
-                    <DatePicker className={styles.dpckr} selected={this.state.startDate} onChange={this.handleChange} />
-                    : null    
-                  }     
-                  <TimePicker style={{ margin: 10 }} showSecond={showSecond} defaultValue={moment()} onChange={this.onTimeChange} />
-                </FormField>
-                <FormField label="Ends At" htmlFor="endsAt">  
-                  {this.state.isRecurring !== true ?
-                    <DatePicker className={styles.dpckr} selected={this.state.endDate} onChange={this.handleChange} />
-                    : null
-                  } 
-                  <TimePicker style={{ margin: 10 }} showSecond={showSecond} defaultValue={moment()} onChange={this.onTimeChange} />       
-                </FormField>
+
                 <FormField htmlFor="isRecurring">
-                  <CheckBox id="isRecurring" onChange={this.handleRecurring} label="Recurring" />
+                  <CheckBox id="isRecurring" onChange={this.handleRecurring} label="Recurring" checked={this.state.isRecurring}/>
                 </FormField>
-                {this.state.isRecurring !== false ? 
-                  <Box separator="all">
-                    <FormField label="Days" htmlFor="eventDays" />
-                    <Select name="eventDays" options={this.state.days} value={this.state.selectedDays} onChange={this.onDayAdd}  multi={true} />
-                  </Box>
-                  : null
+
+                { this.state.isRecurring ?
+                  <div>
+                    <FormField label="Starts At" htmlFor="startsAt">
+                      <TimePicker 
+                      style={{ margin: 10 }}
+                      showSecond={false}
+                      defaultValue={moment()}
+                      value={this.state.recurrence.start_time}
+                      format='hh:mm a'
+                      onChange={this.onRecStartTimeChange} />
+                    </FormField> 
+
+                    <FormField label="Ends At" htmlFor="endsAt">
+                      <TimePicker
+                      style={{ margin: 10 }}
+                      showSecond={showSecond}
+                      defaultValue={moment()}
+                      value={this.state.recurrence.end_time}
+                      format='hh:mm a'
+                      onChange={this.onRecEndTimeChange} />       
+                    </FormField>
+
+                    <Box separator="all">
+                      <FormField label="Days" htmlFor="eventDays" />
+                      <Select name="eventDays" options={this.state.days} value={this.state.recurrence.day} onChange={this.onDayChange} />
+                    </Box>
+                  </div> :
+                  <div>
+                    <FormField label="Starts At" htmlFor="startsAt">
+                      <DatePicker className={styles.dpckr} selected={this.state.oted.start_date} onChange={this.onOtedStartDateChange} />
+                      <TimePicker
+                      style={{ margin: 10 }}
+                      showSecond={false}
+                      defaultValue={moment()}
+                      value={this.state.oted.start_time}
+                      format='hh:mm a'
+                      onChange={this.onOtedStartTimeChange} />
+                    </FormField> 
+
+                    <FormField label="Ends At" htmlFor="endsAt">
+                      <DatePicker className={styles.dpckr} selected={this.state.oted.end_date} onChange={this.onOtedEndDateChange} />
+                      <TimePicker
+                      style={{ margin: 10 }}
+                      showSecond={showSecond}
+                      defaultValue={moment()}
+                      value={this.state.oted.end_time}
+                      format='hh:mm a'
+                      onChange={this.onOtedEndTimeChange} />
+                    </FormField>
+                  </div>
+
                 }
+                
                 <FormField label="Image">
                   {this.state.image ? 
                   <Box align="center" justify="center"> 

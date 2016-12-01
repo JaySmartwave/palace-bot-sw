@@ -46,7 +46,7 @@ class Main extends Component {
     } = this.state;
     return (
       <App centered={false}>
-        { window.localStorage.sessToken ? 
+        { window.localStorage.access_token ? 
         <SidebarNav
           navActive={navIsActive}
           onToggleNav={this.handleToggleNav}
