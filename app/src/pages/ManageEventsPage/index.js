@@ -168,14 +168,14 @@ class ManageEventsPage extends Component {
             preview: body.event.image
           },
           oted: body.event.oted ? {
-            start_date: moment(body.event.oted.start_date),
-            end_date: moment(body.event.oted.end_date),
-            start_time: moment(body.event.oted.start_date),
-            end_time: moment(body.event.oted.end_date)
+            start_date: body.event.oted.start_date ? moment(body.event.oted.start_date): moment(),
+            end_date: body.event.oted.start_date ? moment(body.event.oted.end_date): moment(),
+            start_time: body.event.oted.start_time? moment(body.event.oted.start_date): moment(),
+            end_time: body.event.oted.end_time? moment(body.event.oted.end_date): moment()
           } : null,
           recurrence: body.event.recurrence ? {
-            start_time: moment(body.event.recurrence.start_time, 'HH:mm a'),
-            end_time: moment(body.event.recurrence.end_time, 'HH:mm a'),
+            start_time: body.event.recurrence.start_time? moment(body.event.recurrence.start_time, 'HH:mm a'): moment(),
+            end_time: body.event.recurrence.end_time? moment(body.event.recurrence.end_time, 'HH:mm a'): moment(),
             day: body.event.recurrence.day
           } : null
         });
@@ -400,7 +400,8 @@ class ManageEventsPage extends Component {
            : null);
         createParams.recurrence = (this.state.recurrence ? {
           start_time: this.state.recurrence.start_time.format(str),
-          end_time: this.state.recurrence.end_time.format(str) }
+          end_time: this.state.recurrence.end_time.format(str),
+          day: this.state.recurrence.day }
            : null);
         console.log(createParams);
         PartyBot.events.create(createParams, (err, response, body) => {
