@@ -59,9 +59,6 @@ class PromoterPage extends Component {
       isMobile,
     });
   }
-  testFunc() {
-  	console.log('test');
-  }
   render() {
     const { router, } = this.context;
     const { isMobile, } = this.state;
@@ -73,8 +70,8 @@ class PromoterPage extends Component {
       <Header justify='between'>
       <Heading> </Heading>
       <Menu direction='row' align='center' responsive={false}>
-        <Link to={'managePromoters'} activeClassName="active">
-          <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={this.testFunc} />
+        <Link to={'/promoters/add'} activeClassName="active">
+          <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={() => {}} />
         </Link>
       </Menu>
       </Header>
@@ -90,56 +87,18 @@ class PromoterPage extends Component {
       <tbody>
     {this.state.promoters.map((result) => (
       <tr key={result._id}>
-      <td> {result.name.last} </td>
+      <td> {`${result.name.first} ${result.name.last}`} </td>
       <td> {result.image} </td>
-      <td> {result.slug} </td>
+      <td> {result.promoter_code} </td>
       <td>
       	<Box justify="center" align="center">
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
+          <Link to={`promoters/${result._id}`}>
+            <Button label="Edit" icon={<EditIcon />} onClick={() => {}} />
+          </Link>
       	</Box>
       </td>
       </tr>
       ))}
-      {/*<tr>
-      <td> Pam Lee </td>
-      <td> Pool Club </td>
-      <td> PAM143 </td>
-      <td>
-      	<Box justify="center" align="center">
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-      	</Box>
-      </td>
-      </tr>
-      <tr>
-      <td> Denise Yao </td>
-      <td> Valkyrie </td>
-      <td> DEN123 </td>
-      <td>
-      	<Box justify="center" align="center">
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-      	</Box>
-      </td>
-      </tr>
-      <tr>
-      <td> Ara Adriatico </td>
-      <td> Revel </td>
-      <td> ARA789 </td>
-      <td>
-      	<Box justify="center" align="center">
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-      	</Box>
-      </td>
-      </tr>
-      <tr>
-      <td> Marie Shindo </td>
-      <td> Valkyrie </td>
-      <td> MAR888 </td>
-      <td>
-        <Box justify="center" align="center">
-          <Button label="Edit" icon={<EditIcon />} onClick={this.testFunc} />
-        </Box>
-      </td>
-      </tr>*/}
     </tbody>
     </Table>
     </div>

@@ -26,8 +26,9 @@ const routes = (
         <Route path="/tables/add" component={Pages.ManageTablesPage} />
         <Route path="/tables/:table_id" component={Pages.ManageTablesPage} />
         <Route path="/promoters" component={Pages.PromoterPage} />
+        <Route path="/promoters/add" component={Pages.ManagePromotersPage} />
+        <Route path="/promoters/:promoter_id" component={Pages.ManagePromotersPage} />
         <Route path="/alerts" component={Pages.AlertsPage} />
-        <Route path="/managePromoters" component={Pages.ManagePromotersPage} />
         <Route path="/editTables" component={Pages.EditTablesPage} />
         <Route path="/guestList" component={Pages.GuestListPage} />
         <Route path="/tableBookings" component={Pages.TableBookingsPage} />
