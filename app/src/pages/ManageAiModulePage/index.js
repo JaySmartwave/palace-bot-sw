@@ -20,31 +20,55 @@ import Paragraph from 'grommet/components/Paragraph';
 let organisationId =  "5800471acb97300011c68cf7";
 
 class ManageAiModulePage extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.handleMobile = this.handleMobile.bind(this);
     this.closeSetup = this.closeSetup.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.setIntent = this.setIntent.bind(this);
+    this.handleChangeIntent = this.handleChangeIntent.bind(this);
+    this.setEntity = this.setEntity.bind(this);
+    this.setReply = this.setReply.bind(this);
     this.state = {
       isMobile: false,
       confirm: false,
       venues: [],
-      intents: [],
       organisationId: organisationId,
-      tags: [],
       selectedVenue: '',
-      selectedIntent: 'AskSomething'
+      venueId: [],
+      intent: [],
+      entity: '',
+      reply: '',
+      isNew: false
     };
   }
   componentDidMount() {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
-    let options = {
-      organisationId: this.state.organisationId
-    };
-    this.getVenues(options);
+    let paramsQueryId = this.props.params.queryId
+    if (paramsQueryId) {
+      let options = {
+        organisationId: this.state.organisationId,
+        queryId: paramsQueryId
+      }
+
+      this.getVenues(options);
+      PartyBot.queries.getQueryPerOrganisation(options, (err, res, body) => {
+        if(!err) {
+          this.setState({
+            selectedVenue: body._venue_id || null,
+            intent: body.intent,
+            entity: body.entity,
+            reply: body.reply || ''
+          });
+        }
+      });
+    }else{
+      let options = {
+        organisationId: this.state.organisationId,
+      }
+      this.setState({ isNew: true})
+      this.getVenues(options);
+    }
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -65,15 +89,60 @@ class ManageAiModulePage extends Component {
     this.context.router.push('/ai-module');
   }
 
-  handleChange(tags) {
-    this.setState({tags})
+  handleChangeIntent(intent) {
+    this.setState({intent})
   }
 
-  setIntent() {
+  setEntity() {
     this.setState({
-		selectedIntent: event.target.value
+		entity: event.target.value
 	}); 
   }
+
+  setReply() {
+    this.setState({
+    reply: event.target.value
+  }); 
+  }
+
+  submitCreate(event) {
+    event.preventDefault();
+        let objState = this.state;
+        let params = { 
+          organisationId: this.state.organisationId, 
+          venueId: this.state.selectedVenue,
+          entity: this.state.entity,
+          intent: this.state.intent,
+          reply: this.state.reply,
+        };
+        PartyBot.queries.createQuery(params, (err, response, body) => {
+          if(response.statusCode == 201) {
+            this.setState({
+              confirm: true
+            });
+          }
+        });
+    }
+
+  submitSave(event) {
+    event.preventDefault();
+        let objState = this.state;
+        let params = { 
+          organisationId: this.state.organisationId, 
+          venueId: this.state.selectedVenue,
+          entity: this.state.entity,
+          intent: this.state.intent,
+          reply: this.state.reply,
+          queryId: this.props.params.queryId
+        };
+        PartyBot.queries.updateQuery(params, (err, response, body) => {
+          if(response.statusCode == 200) {
+            this.setState({
+              confirm: true
+            });
+          }
+        });
+    }
 
   onVenueChange = (event) => {
     let venueId = event.nativeEvent.target.selectedIndex;
@@ -131,33 +200,30 @@ class ManageAiModulePage extends Component {
                 <fieldset>
                 <Box separator="all">
                   <FormField label="Venue" htmlFor="tableVenue" />
-                  <select name="venueEvent" onChange={this.onVenueChange}>
+                  <select name="venueEvent" onChange={this.onVenueChange} value={this.state.selectedVenue}>
                     {this.state.venues.map((value, index) => {
                     return <option key={index} value={value._id}>{value.name}</option>;
                   })}
                   </select>
                 </Box>
                 <FormField label="Intent" htmlFor="aiIntent">
-                   <select name="venueEvent" onChange={this.setIntent}>
-                   	  <option value="AskSomething">AskSomething</option>
-					  <option value="Greet">Greet</option>
-					  <option value="Confirm">Confirm</option>
-					  <option value="Negative">Negative</option>
-					  <option value="Appreciate">Appreciate</option>
-					  <option value="Curse">Curse</option>
-                  </select>
+                  <TagsInput value={this.state.intent} onChange={::this.handleChangeIntent} /> 
                 </FormField>
                 <FormField label="Entity" htmlFor="aiEntity">
-                  <TagsInput value={this.state.tags} onChange={::this.handleChange} />     
+                  <input id="aiEntity" type="text" value={this.state.entity} onChange={this.setEntity}/>    
                 </FormField>
                 <FormField label="Reply" htmlFor="aiReply">
-                  <input id="aiReply" type="text" onChange={this.setReply}/>
+                  <input id="aiReply" type="text" value={this.state.reply} onChange={this.setReply}/>
                 </FormField>
               </fieldset>
             </FormFields>
             <Footer pad={{"vertical": "medium"}}>
               <Heading align="center">
-              <Button label="Save Changes" primary={true} onClick={this.submitSave} />
+              {!this.state.isNew ? 
+                <Button label="Save Changes" primary={true} onClick={this.submitSave.bind(this)} />
+              : 
+                <Button label="Create AI Rule" primary={true} onClick={this.submitCreate.bind(this)} />
+              }
               </Heading>
             </Footer>
           </Form>

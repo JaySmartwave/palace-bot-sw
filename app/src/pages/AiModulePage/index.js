@@ -34,7 +34,7 @@ class AiModulePage extends Component {
 
   }
   componentDidMount() {
-  	PartyBot.replies.getReplyPerOrganisation(this.state, (err, res, body) => {
+  	PartyBot.queries.getQueryPerOrganisation(this.state, (err, res, body) => {
       console.log(body);
   		body.filter( (value) => {
   			if(typeof value.reply === 'undefined') {
@@ -82,7 +82,6 @@ class AiModulePage extends Component {
 		      <thead>
 		      <tr>
 		      <th className={styles.queCol}> Query </th>
-		      <th> Frequency</th>
 		      <th> </th>
 		      </tr>
 		      </thead>
@@ -90,8 +89,7 @@ class AiModulePage extends Component {
 		      {
 		      	this.state.unanswered.map((result) => (
 		      		<tr key={result._id}>
-		      			<td className={styles.queCol}>{result.intent}</td>
-		      			<td>1</td>
+		      			<td className={styles.queCol}>{result.intent.join(', ')}</td>
 		      			<td>
 		      			<Box justify="center" align="center">
                   <Link to={'/ai-module/'+result._id}>
@@ -115,7 +113,6 @@ class AiModulePage extends Component {
 		      <thead>
 		      <tr>
 		      <th className={styles.queCol}>Query</th>
-		      <th>Frequency</th>
 		      <th></th>
 		      </tr>
 		      </thead>
@@ -123,8 +120,7 @@ class AiModulePage extends Component {
 		      {
 		      	this.state.answered.map((result) => (
 		      		<tr key={result._id}>
-		      			<td className={styles.queCol}>{result.intent}</td>
-		      			<td>1</td>
+		      			<td className={styles.queCol}>{result.intent.join(', ')}</td>
 		      			<td>
 		      			<Box justify="center" align="center">
                   <Link to={'/ai-module/'+result._id}>
