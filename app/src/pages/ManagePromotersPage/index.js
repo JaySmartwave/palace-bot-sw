@@ -27,7 +27,7 @@ class ManagePromotersPage extends Component {
       selectedVenues: [],
       selectedEvents: [],
       promoterCode: '',
-      name: {}
+      name: { first: '', last: '' }
     };
   }
   componentDidMount() {
@@ -42,6 +42,7 @@ class ManagePromotersPage extends Component {
     this.getVenues(options);
     this.getEvents(options);
     if(this.props.params.promoter_id) {
+      this.setState({promoterId: this.props.params.promoter_id});
       let pOptions = {
         organisationId: this.state.organisationId,
         promoterId: this.props.params.promoter_id
@@ -78,6 +79,9 @@ class ManagePromotersPage extends Component {
           this.setState({
             eventId: body[0]._id,
             events: body.map((value, index) => {
+              return { value: value._id, label: value.name, venueId: value._venue_id };
+            }),
+            eventOptions: body.map((value, index) => {
               return { value: value._id, label: value.name, venueId: value._venue_id };
             })
           });
@@ -135,14 +139,14 @@ class ManagePromotersPage extends Component {
     this.setState({ selectedEvents });
   }
 
-  onFirstChangeName = (event) => {
+  onChangeFirstName = (event) => {
     event.preventDefault();
     let mapped = Immutable.Map(this.state.name);
     let changed = mapped.set('first', event.target.value);
     this.setState({ name: changed.toObject() });
   }
 
-  onLastChangeName = (event) => {
+  onChangeLastName = (event) => {
     event.preventDefault();
     let mapped = Immutable.Map(this.state.name);
     let changed = mapped.set('last', event.target.value);
@@ -152,6 +156,32 @@ class ManagePromotersPage extends Component {
   onChangePromoterCode = (event) => {
     event.preventDefault();
     this.setState({ promoterCode: event.target.value });
+  }
+
+  submitSave = (event) => {
+    event.preventDefault()
+    var updateParams = {
+      organisationId: this.state.organisationId,
+      _venue_id: this.state.selectedVenues.map((value, index) => {
+        return value.value;
+      }),
+      _event_id: this.state.selectedEvents.map((value, index) => {
+        return value.value;
+      }),
+      name: this.state.name,
+      promoter_code: this.state.promoterCode,
+      promoterId: this.state.promoterId
+    }
+    console.log(updateParams);
+    PartyBot.promoters.updatePromoter(updateParams, (error, response, body) => {
+      console.log(body);
+      console.log(response.statusCode);
+      if(response.statusCode == 200) {  
+        this.setState({
+          confirm: true
+        });
+      }
+    });
   }
 
   submitCreate = (event) => {
@@ -204,14 +234,14 @@ class ManagePromotersPage extends Component {
 				<Form>
 				<FormFields>
 					<fieldset>
-            <FormField label="First Name" htmlFor="promoterName">
-              <input id="promoterName" type="text" value={this.state.name.first} onChange={this.onFirstChangeName}/>
+            <FormField label="First Name" htmlFor="promoterFirstName">
+              <input id="promoterFirstName" type="text" onChange={this.onChangeFirstName} value={this.state.name.first}/>
             </FormField>
-					  <FormField label="Last Name" htmlFor="promoterName">
-					    <input id="promoterName" type="text" value={this.state.name.last} onChange={this.onLastChangeName}/>
+					  <FormField label="Last Name" htmlFor="promoterLastName">
+					    <input id="promoterLastName" type="text" onChange={this.onChangeLastName} value={this.state.name.last} />
 					  </FormField>
 					  <FormField label="Code" htmlFor="promoterCode">
-					    <input id="promoterCode" type="text" value={this.state.promoterCode} onChange={this.onChangePromoterCode}/>
+					    <input id="promoterCode" type="text" onChange={this.onChangePromoterCode} value={this.state.promoterCode} />
 					  </FormField>
               <Box separator="all">
                 <FormField label="Venue" htmlFor="promoterVenue" />
@@ -239,7 +269,7 @@ class ManagePromotersPage extends Component {
 				  <Footer pad={{"vertical": "medium"}}>
 			  	        {this.state.promoterId !== null ? 
 				    	<Heading align="center">
-				            <Button label="Save Changes" primary={true} onClick={() => {}} />
+				            <Button label="Save Changes" primary={true} onClick={this.submitSave} />
 				        </Heading>
 				        : 
 				    	<Heading align="center">
