@@ -32,7 +32,7 @@ const routes = (
         <Route path="/alerts" component={Pages.AlertsPage} />
         <Route path="/editTables" component={Pages.EditTablesPage} />
         <Route path="/guestList/:event_id" component={Pages.GuestListPage} />
-        <Route path="/tableBookings/:event_id" component={Pages.TableBookingsPage} />
+        <Route path="/tableBookings/:product_id" component={Pages.TableBookingsPage} />
         <Route path="/tickets" component={Pages.TicketsPage} />
         <Route path="/tickets/add" component={Pages.ManageTicketsPage} />
         <Route path="/tickets/:ticket_id" component={Pages.ManageTicketsPage} />

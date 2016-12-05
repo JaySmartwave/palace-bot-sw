@@ -31,9 +31,25 @@ class TableBookingsPage extends Component {
 
   }
   componentDidMount() {
+
+    let paramsGet = {
+      organisationId: '5800471acb97300011c68cf7',
+      product_id: this.props.params.product_id
+    };
+
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
+
+    PartyBot.orders.getOrders(paramsGet, function(err, response, body) {
+      console.log('Error: ' + err);
+      console.log('Status Code: ' + response.statusCode);
+      console.log(body);
+      if(!err && response.statusCode == 200) {
+        this.setState({tableBooking: body});
+      }
+    }.bind(this));
+
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -55,42 +71,43 @@ class TableBookingsPage extends Component {
     return (
       <div className={styles.container}>
       <Box pad={{ vertical: 'medium' }}>
-  	   	<Heading align="center">
-            Event Name
-        </Heading>
-        <Heading align="center" tag="h3">
-            Table Bookings
-      	</Heading>
+      <Heading align="center">
+      Event Name
+      </Heading>
+      <Heading align="center" tag="h3">
+      Table Bookings
+      </Heading>
       </Box>
       <Table selectable={false}>
       <thead>
       <tr>
-      <th> Name </th>
-      <th> Table Type</th>
-      <th> Table Name </th>
-  	  <th> Date/Time Inquired </th>
-      <th> Status </th>
+      <th>Name</th>
+      <th>Promoter</th>
+      <th>Status</th>
+      <th>Date/Time Inquired</th>
+      <th>Action</th>
       </tr>
       </thead>
       <tbody>
-    {/*this.state.venues.map((result) => (
-      <tr key={id}>
-      <td> {name} </td>
-      <td> {promoter} </td>
-      <td> {status} </td>
-      <td>
-      	<Box justify="center" align="center">
-    		{this.guest.status !== 'Approved' ? 
-				<Button className={styles.button} label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
-				<Button className={styles.button} label="Decline" icon={<CloseIcon />} onClick={this.testFunc} />
-	        : 
-		        null
-	    	}
-      	</Box>
+      {this.state.tableBooking.map((result) => (
+        <tr key={result._id}>
+        <td>{result.order_items.map(item => item.name)}</td>
+        <td>{result.promoter_code}</td>
+        <td>{result.status}</td>
+        <td>{result.created_at}</td>
+        <td>
+        <Box justify="center" align="center">
+        {result.status !== 'Approved' ? 
+        <Button className={styles.button} label="Decline" icon={<CloseIcon />} onClick={this.testFunc} />
+        : 
+        <Button className={styles.button} label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
+      }
+      </Box>
       </td>
       </tr>
-      ))*/}
-      <tr>
+      ))
+    }
+      {/* <tr>
       <td> name </td>
       <td> table type </td>
       <td> table name </td>
@@ -123,8 +140,8 @@ class TableBookingsPage extends Component {
 				<Button className={styles.button} label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
 				<Button className={styles.button} label="Decline" icon={<CloseIcon />} onClick={this.testFunc} />
       	</Box>
-      </td>
-      </tr>
+      </td> 
+    </tr>*/}
     </tbody>
     </Table>
     </div>
