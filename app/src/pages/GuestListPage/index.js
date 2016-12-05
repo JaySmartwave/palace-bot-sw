@@ -18,18 +18,18 @@ import DocumentCsvIcon from 'grommet/components/icons/base/DocumentCsv';
 import ActionsIcon from 'grommet/components/icons/base/Actions';
 
 const FILTER = [ 
-    { value: '001', label: 'Approved' }, 
-    { value: '002', label: 'Pending' },
-  ];
-      
+{ value: '001', label: 'Approved' }, 
+{ value: '002', label: 'Pending' },
+];
+
 const EXAMPLE = [ //test 
-    { id: '001', name: 'Oscar', promoter: 'Jolibee', status: 'Pending'}, 
-    { id: '002', name: 'BJ', promoter: 'KFC', status: 'Pending'},
-    { id: '003', name: 'Jay', promoter: 'Jolibee', status: 'Pending'},
-    { id: '004', name: 'David', promoter: 'KFC', status: 'Approved'}, 
-    { id: '005', name: 'Barbo', promoter: 'Jolibee', status: 'Pending'},
-    { id: '006', name: 'Mendoza', promoter: 'KFC', status: 'Approved'},
-  ];
+{ id: '001', name: 'Oscar', promoter: 'Jolibee', status: 'Pending'}, 
+{ id: '002', name: 'BJ', promoter: 'KFC', status: 'Pending'},
+{ id: '003', name: 'Jay', promoter: 'Jolibee', status: 'Pending'},
+{ id: '004', name: 'David', promoter: 'KFC', status: 'Approved'}, 
+{ id: '005', name: 'Barbo', promoter: 'Jolibee', status: 'Pending'},
+{ id: '006', name: 'Mendoza', promoter: 'KFC', status: 'Approved'},
+];
 
 class GuestListPage extends Component {
   constructor() {
@@ -45,7 +45,7 @@ class GuestListPage extends Component {
       example: EXAMPLE, //test
       activeFilter: '', 
       isAllSelected: false
-     };
+    };
 
   }
   componentWillMount () {
@@ -55,11 +55,11 @@ class GuestListPage extends Component {
   onFilterChange(event) {
     let filterId = event.nativeEvent.target.selectedIndex;
     let filterCode = event.nativeEvent.target[filterId].value;
-    console.log('Selected Venue: ' + filterCode);
+    // console.log('Selected Venue: ' + filterCode);
     this.setState({
       activeFilter: filterCode
     }.bind(this));
-    console.log(this.state.activeFilter);
+    // console.log(this.state.activeFilter);
   }
 
   getFilterOptions(){
@@ -72,9 +72,27 @@ class GuestListPage extends Component {
   }
 
   componentDidMount() {
+
+    let paramsGet = {
+      organisationId: '5800471acb97300011c68cf7',
+      event_id: this.props.params.event_id
+    };
+
+    // console.log(paramsGet);
+
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
+
+    PartyBot.orders.getOrders(paramsGet, function(err, response, body) {
+      console.log('Error: ' + err);
+      console.log('Status Code: ' + response.statusCode);
+      console.log(body);
+      if(!err && response.statusCode == 200) {
+        this.setState({selectedGuest: body});
+      }
+    }.bind(this));
+
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -87,10 +105,6 @@ class GuestListPage extends Component {
       isMobile,
     });
   }
-  testFunc() {
-  	console.log(this.state.selectedGuest);
-  }
-
   selectAll(){
     var active = !this.state.isAllSelected;
     this.setState({
@@ -101,66 +115,69 @@ class GuestListPage extends Component {
   }
 
   checkToggle(){
-      console.log(this.prop.id);
+    // console.log(this.prop.id);
       // TO DO:
       // add/remove id to/from [selectedGuest]
-  }
+    }
 
-  render() {
-    const { router, } = this.context;
-    const { isMobile, } = this.state;
-    return (
-      <div className={styles.container}>
-      <Box pad={{ vertical: 'medium' }}>
-  	   	<Heading align="center">
-            Event Name
+    render() {
+
+      console.log(this.state.selectedGuest);
+
+      const { router, } = this.context;
+      const { isMobile, } = this.state;
+      return (
+        <div className={styles.container}>
+        <Box pad={{ vertical: 'medium' }}>
+        <Heading align="center">
+        Event Name
         </Heading>
         <Heading align="center" tag="h3">
-            Guest List
-      	</Heading>
-      </Box>
-      <Header justify='between'>
-      <Heading> 
-        <select name="filter"
-          onChange={this.onFilterChange}
-          className={styles.filSel}>
-          {this.getFilterOptions()}
-        </select>
-      </Heading>
-      <Menu direction='row' align='center' responsive={false}>
-          <Button className={styles.expBut} label="Export to CSV" icon={<DocumentCsvIcon />} onClick={this.testFunc} />
-      </Menu>
-      </Header>
-      <Table selectable={false}>
-      <thead>
-      <tr>
-      <th> 
-        <Box align="center">
-          <CheckBox name="label" onChange={this.selectAll} />
+        Guest List
+        </Heading>
         </Box>
-      </th>
-      <th> Name </th>
-      <th> Promoter</th>
-      <th> Status </th>
-      <th> 
+        <Header justify='between'>
+        <Heading> 
+        <select name="filter"
+        onChange={this.onFilterChange}
+        className={styles.filSel}>
+        {this.getFilterOptions()}
+        </select>
+        </Heading>
+        <Menu direction='row' align='center' responsive={false}>
+        <Button className={styles.expBut} label="Export to CSV" icon={<DocumentCsvIcon />} onClick={this.testFunc} />
+        </Menu>
+        </Header>
+        <Table selectable={false}>
+        <thead>
+        <tr>
+        <th> 
+        <Box align="center">
+        <CheckBox name="label" onChange={this.selectAll} />
+        </Box>
+        </th>
+        <th> Name </th>
+        <th> Promoter</th>
+        <th> Status </th>
+        <th> 
         <Box align="center">
         {this.state.selectedGuest.length > 1 ?
           <Menu icon={<ActionsIcon />} label="Actions">
-            <Anchor>
-              Accept
-            </Anchor>
-            <Anchor>
-              Decline
-            </Anchor>
+          <Anchor>
+          Accept
+          </Anchor>
+          <Anchor>
+          Decline
+          </Anchor>
           </Menu>
-        :
+          :
           null
         }
         </Box>
-      </th>
-      </tr>
-      </thead>
-      <tbody>
+        </th>
+        </tr>
+        </thead>
+        <tbody>
     {/*this.state.venues.map((result) => (
       <tr key={id}>
       <td> <CheckBox id="{result.name}" name="label" onChange={...} checked={this.state.isAllSelected} /> </td>
@@ -177,43 +194,43 @@ class GuestListPage extends Component {
       	</Box>
       </td>
       </tr>
-      ))*/}
-      {this.state.example.map((sample) => (
-        <tr key={sample.id}>
-        {sample.status === 'Pending' ? 
-              <td>
-                <Box align="center">
-                  <CheckBox id={sample.id} onChange={this.testFunc} checked={this.state.isAllSelected}/>
-                </Box>
-              </td>
-          : 
-              <td> </td>
-        }
-        <td> {sample.name} </td>
-        <td> {sample.promoter} </td>
-        <td> {sample.status} </td>
-        <td>
-          <Box justify="center" align="center">
-          {sample.status === 'Pending' ? 
-          <Button label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
-            : 
-              <td> </td>
-          }
-          </Box>
-        </td>
-        </tr>
-        )) 
-      }
-    </tbody>
-    </Table>
-    </div>
-    );
+    ))*/}
+    {this.state.selectedGuest.map((value) => (
+      <tr key={value._id}>
+      {value.status === 'pending' ? 
+      <td>
+      <Box align="center">
+      <CheckBox id={value._id} onChange={this.testFunc} checked={this.state.isAllSelected}/>
+      </Box>
+      </td>
+      : 
+      <td> </td>
+    }
+    <td> {value.order_items.map(item => item.name)} </td>
+    <td> {value.promoter_code} </td>
+    <td> {value.status} </td>
+    <td>
+    <Box justify="center" align="center">
+    {value.status === 'pending' ? 
+    <Button label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
+    : 
+    <td> </td>
   }
-}
+  </Box>
+  </td>
+  </tr>
+  )) 
+  }
+  </tbody>
+  </Table>
+  </div>
+  );
+    }
+  }
 
-GuestListPage.contextTypes = {
-  router: PropTypes.object.isRequired,
-  guestList: PropTypes.array
-};
+  GuestListPage.contextTypes = {
+    router: PropTypes.object.isRequired,
+    guestList: PropTypes.array
+  };
 
-export default cssModules(GuestListPage, styles);
+  export default cssModules(GuestListPage, styles);

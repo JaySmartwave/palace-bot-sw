@@ -98,11 +98,11 @@ class EventsPage extends Component {
 			</td>
 			<td>
 			<Box justify="center" align="center">
-			<Link to={'/events'}>
+			<Link to={'/guestList/' + result._id}>
 			<Button className={styles.button} label="Guest List" onClick={() => {}} />
 			</Link>
 			<br/>
-			<Link to={'/events'}>
+			<Link to={'/tableBookings/' + result._id}>
 			<Button className={styles.button} label="Table Bookings" onClick={() => {}} />
 			</Link>
 			</Box>
