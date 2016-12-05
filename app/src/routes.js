@@ -15,6 +15,7 @@ const routes = (
         <IndexRoute component={Pages.LandingPage} />
         <Route path="/home" component={Pages.LandingPage} name="Home" />
         <Route path="/about" component={Pages.AboutPage} />
+        <Route path="/dashboards" component={Pages.EventsPage} />
         <Route path="/events" component={Pages.EventsPage} />
         <Route path="/event-schedule" component={Pages.SchedulePage} />
         <Route path="/event-schedule/add" component={Pages.ManageEventsPage} />

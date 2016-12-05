@@ -20,7 +20,6 @@ import { Link } from 'react-router';
 let options = {
   organisationId: '5800471acb97300011c68cf7',
 };
-let venueId = '57f4681dbb6c3c23633eecc2';
 
 class EventsPage extends Component {
 
@@ -38,7 +37,7 @@ class EventsPage extends Component {
 		if (typeof window !== 'undefined') {
 			window.addEventListener('resize', this.handleMobile);
 		}
-		PartyBot.events.getEventsInOrganisation(options, function(err, response, body) {
+		PartyBot.events.getSorted(options, function(err, response, body) {
 			console.log('Error: ' + err);
 			console.log('Status Code: ' + response.statusCode);
 			console.log(body);
@@ -58,33 +57,32 @@ class EventsPage extends Component {
 			isMobile,
 		});
 	}
-	testFunc() {
-		console.log('test');
-	}
+
 	render() {
 
 		const { router, } = this.context;
 		const { isMobile, } = this.state;
 		return (
 			<div className={styles.container}>
-			<Box pad={{ vertical: 'medium' }}>
-			<Heading align='center'> Events </Heading>
+			<Box>
+			<Heading align='center'>Events</Heading>
 			</Box>
 			<Table selectable={false}>
 			<thead>
 			<tr>
 			<th>Image</th>
 			<th>Description</th>
+			<th>Date</th>
 			<th></th>
 			</tr>
 			</thead>
 			<tbody>
-		{/* Kailangan ng key sa mga repeating elements.. like <li>, <ol>, <tr>, <dd> ..etc*/}
-		{this.state.events.map((result) => (
+		{this.state.events.map((result) => {
+			return(
 			<tr key={result._id}>
 			<td> 
 			<Box justify="center" align="center">
-			<img src="http://place-hold.it/240/1E90FF/ffffff&text=Placeholder&fontsize=28" height="200" alt="" />
+			<img src={result.image} width="200" alt="" />
 			</Box>
 			</td>
 			<td>
@@ -96,18 +94,22 @@ class EventsPage extends Component {
 			</Box> 
 			</td>
 			<td>
+			{result.next_date}
+			</td>
+			<td>
 			<Box justify="center" align="center">
-			<Link to={'guestList'}>
-			<Button className={styles.button} label="Guest List" onClick={this.testFunc} />
+			<Link to={'/events'}>
+			<Button className={styles.button} label="Guest List" onClick={() => {}} />
 			</Link>
 			<br/>
-			<Link to={'tableBookings'}>
-			<Button className={styles.button} label="Table Bookings" onClick={this.testFunc} />
+			<Link to={'/events'}>
+			<Button className={styles.button} label="Table Bookings" onClick={() => {}} />
 			</Link>
 			</Box>
 			</td>
 			</tr>
-			))}
+			)})
+		}
 		</tbody>
 		</Table>
 		</div>

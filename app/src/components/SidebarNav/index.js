@@ -19,10 +19,10 @@ class SidebarNav extends Component {
         <AppHeader {...this.props} />
         <Menu primary>
           <IndexLink
-            to="/events"
+            to="/dashboards"
             activeClassName="active"
           >
-            Events
+            Dashboard
           </IndexLink>
           <Menu separator="bottom"/>          
           <Link
