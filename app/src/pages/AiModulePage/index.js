@@ -89,7 +89,7 @@ class AiModulePage extends Component {
 		      {
 		      	this.state.unanswered.map((result) => (
 		      		<tr key={result._id}>
-		      			<td className={styles.queCol}>{result.intent.join(', ')}</td>
+		      			<td className={styles.queCol}>{result.entity.join(', ')}</td>
 		      			<td>
 		      			<Box justify="center" align="center">
                   <Link to={'/ai-module/'+result._id}>
@@ -120,7 +120,7 @@ class AiModulePage extends Component {
 		      {
 		      	this.state.answered.map((result) => (
 		      		<tr key={result._id}>
-		      			<td className={styles.queCol}>{result.intent.join(', ')}</td>
+		      			<td className={styles.queCol}>{result.entity.join(', ')}</td>
 		      			<td>
 		      			<Box justify="center" align="center">
                   <Link to={'/ai-module/'+result._id}>

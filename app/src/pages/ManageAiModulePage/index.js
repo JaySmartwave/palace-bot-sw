@@ -34,8 +34,8 @@ class ManageAiModulePage extends Component {
       organisationId: organisationId,
       selectedVenue: '',
       venueId: [],
-      intent: [],
-      entity: '',
+      intent: '',
+      entity: [],
       reply: '',
       isNew: false
     };
@@ -89,8 +89,8 @@ class ManageAiModulePage extends Component {
     this.context.router.push('/ai-module');
   }
 
-  handleChangeIntent(intent) {
-    this.setState({intent})
+  handleChangeEntity(entity) {
+    this.setState({entity})
   }
 
   setEntity() {
@@ -207,10 +207,10 @@ class ManageAiModulePage extends Component {
                   </select>
                 </Box>
                 <FormField label="Intent" htmlFor="aiIntent">
-                  <TagsInput value={this.state.intent} onChange={::this.handleChangeIntent} /> 
+                  <TagsInput value={this.state.entity} onChange={::this.handleChangeEntity} /> 
                 </FormField>
                 <FormField label="Entity" htmlFor="aiEntity">
-                  <input id="aiEntity" type="text" value={this.state.entity} onChange={this.setEntity}/>    
+                  <input id="aiEntity" type="text" value={this.state.intent} onChange={this.setIntent}/>    
                 </FormField>
                 <FormField label="Reply" htmlFor="aiReply">
                   <input id="aiReply" type="text" value={this.state.reply} onChange={this.setReply}/>
