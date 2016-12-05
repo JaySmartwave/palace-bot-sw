@@ -35,9 +35,8 @@ class AiModulePage extends Component {
   }
   componentDidMount() {
   	PartyBot.queries.getQueryPerOrganisation(this.state, (err, res, body) => {
-      console.log(body);
   		body.filter( (value) => {
-  			if(typeof value.reply === 'undefined') {
+  			if(typeof value.reply === 'undefined' || value.reply == '') {
   				this.setState({unanswered: this.state.unanswered.concat(value)});
   			} else {
   				this.setState({answered: this.state.answered.concat(value)});
@@ -73,7 +72,7 @@ class AiModulePage extends Component {
       <Header justify='between'>
       <Heading> </Heading>
       <Menu direction='row' align='center' responsive={false}>
-          <Button className={styles.upCsv} label="Upload CSV" icon={<DocumentCsvIcon />} onClick={this.testFunc} />
+          <Button className={styles.upCsv} label="Upload CSV" icon={<DocumentCsvIcon />} onClick={() => {}} />
       </Menu>
       </Header>
      	<Tabs>
@@ -93,7 +92,7 @@ class AiModulePage extends Component {
 		      			<td>
 		      			<Box justify="center" align="center">
                   <Link to={'/ai-module/'+result._id}>
-		      				  <Button label="Edit Reply" icon={<EditIcon />} onClick={function() { return; }} />
+		      				  <Button label="Edit Reply" icon={<EditIcon />} onClick={() => {}} />
                   </Link>
 		      			</Box>
 		      			</td>

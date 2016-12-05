@@ -24,8 +24,8 @@ class ManageAiModulePage extends Component {
     super(props);
     this.handleMobile = this.handleMobile.bind(this);
     this.closeSetup = this.closeSetup.bind(this);
-    this.handleChangeIntent = this.handleChangeIntent.bind(this);
-    this.setEntity = this.setEntity.bind(this);
+    this.handleChangeEntity = this.handleChangeEntity.bind(this);
+    this.setIntent = this.setIntent.bind(this);
     this.setReply = this.setReply.bind(this);
     this.state = {
       isMobile: false,
@@ -93,56 +93,58 @@ class ManageAiModulePage extends Component {
     this.setState({entity})
   }
 
-  setEntity() {
+  setIntent(event) {
     this.setState({
-		entity: event.target.value
-	}); 
+      intent: event.target.value
+    }); 
   }
 
-  setReply() {
+  setReply(event) {
     this.setState({
-    reply: event.target.value
-  }); 
+      reply: event.target.value
+    }); 
   }
 
   submitCreate(event) {
     event.preventDefault();
-        let objState = this.state;
-        let params = { 
-          organisationId: this.state.organisationId, 
-          venueId: this.state.selectedVenue,
-          entity: this.state.entity,
-          intent: this.state.intent,
-          reply: this.state.reply,
-        };
-        PartyBot.queries.createQuery(params, (err, response, body) => {
-          if(response.statusCode == 201) {
-            this.setState({
-              confirm: true
-            });
-          }
+    let objState = this.state;
+    let params = { 
+      organisationId: this.state.organisationId, 
+      venueId: this.state.selectedVenue,
+      entity: this.state.entity,
+      intent: this.state.intent,
+      reply: this.state.reply,
+    };
+
+    PartyBot.queries.createQuery(params, (err, response, body) => {
+      if(response.statusCode == 201) {
+        this.setState({
+          confirm: true
         });
-    }
+      }
+    });
+  }
 
   submitSave(event) {
     event.preventDefault();
-        let objState = this.state;
-        let params = { 
-          organisationId: this.state.organisationId, 
-          venueId: this.state.selectedVenue,
-          entity: this.state.entity,
-          intent: this.state.intent,
-          reply: this.state.reply,
-          queryId: this.props.params.queryId
-        };
-        PartyBot.queries.updateQuery(params, (err, response, body) => {
-          if(response.statusCode == 200) {
-            this.setState({
-              confirm: true
-            });
-          }
+    let objState = this.state;
+    let params = { 
+      organisationId: this.state.organisationId, 
+      venueId: this.state.selectedVenue,
+      entity: this.state.entity,
+      intent: this.state.intent,
+      reply: this.state.reply,
+      queryId: this.props.params.queryId
+    };
+
+    PartyBot.queries.updateQuery(params, (err, response, body) => {
+      if(response.statusCode == 200) {
+        this.setState({
+          confirm: true
         });
-    }
+      }
+    });
+  }
 
   onVenueChange = (event) => {
     let venueId = event.nativeEvent.target.selectedIndex;
@@ -155,9 +157,9 @@ class ManageAiModulePage extends Component {
   getVenues = (options) => {
     PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
-        if(body > 0) {
-          this.setState.selectedVenue = body[0]._id;
-        }
+        // if(body > 0) {
+        //   this.setState.selectedVenue = body[0]._id;
+        // }
         this.setState({venues: body});
       }
     });
@@ -206,14 +208,14 @@ class ManageAiModulePage extends Component {
                   })}
                   </select>
                 </Box>
-                <FormField label="Intent" htmlFor="aiIntent">
-                  <TagsInput value={this.state.entity} onChange={::this.handleChangeEntity} /> 
+                <FormField label="Entity" htmlFor="aiIntent">
+                  <TagsInput value={this.state.entity} onChange={this.handleChangeEntity} /> 
                 </FormField>
-                <FormField label="Entity" htmlFor="aiEntity">
-                  <input id="aiEntity" type="text" value={this.state.intent} onChange={this.setIntent}/>    
+                <FormField label="Intent" htmlFor="aiEntity">
+                  <input id="aiEntity" type="text"  onChange={this.setIntent} value={this.state.intent} />
                 </FormField>
                 <FormField label="Reply" htmlFor="aiReply">
-                  <input id="aiReply" type="text" value={this.state.reply} onChange={this.setReply}/>
+                  <input id="aiReply" type="text" onChange={this.setReply} value={this.state.reply} />
                 </FormField>
               </fieldset>
             </FormFields>
