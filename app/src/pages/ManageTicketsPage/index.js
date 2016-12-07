@@ -48,6 +48,7 @@ class ManageTicketsPage extends Component {
       selectedVenue: null,
       tags: 'ticket',
       confirm: false,
+      action: 'created',
       organisationId: organisationId,
       venueId: null,
       venues: [],
@@ -100,7 +101,6 @@ class ManageTicketsPage extends Component {
   getTicket = (options) => {
     PartyBot.products.getProducts(options, (errors, response, body) => {
       if(response.statusCode == 200) {
-        console.log(body);
         this.setState({
           name: body.name,
           description: body.description,
@@ -128,7 +128,6 @@ class ManageTicketsPage extends Component {
   onVenueChange(event) {
     let venueId = event.nativeEvent.target.selectedIndex;
     let venueCode = event.nativeEvent.target[venueId].value;
-    console.log('Selected Venue: ' + venueCode);
     this.setState({
       selectedVenue: venueCode
     });
@@ -141,7 +140,7 @@ class ManageTicketsPage extends Component {
   onEventChange(event) {
     let eventId = event.nativeEvent.target.selectedIndex;
     let eventCode = event.nativeEvent.target[eventId].value;
-    console.log('Selected Venue: ' + eventCode);
+
     this.setState({
       selectedEvent: eventCode
     });
@@ -189,7 +188,6 @@ class ManageTicketsPage extends Component {
         }
 
         if (response.body.secure_url !== '') {
-          console.log(response.body.secure_url);
           callback(null, response.body.secure_url)
         } else {
           callback(err, '');
@@ -208,11 +206,9 @@ class ManageTicketsPage extends Component {
     };
     PartyBot.products.deleteProduct(delParams, (error, response, body) => {
       if(!error && response.statusCode == 200) {
-        console.log(error);
-        console.log(response);
-        console.log(body);
         this.setState({
-          confirm: true
+          confirm: true,
+          action: 'delete'
         });
       } else {
 
@@ -235,13 +231,11 @@ class ManageTicketsPage extends Component {
         };
 
         PartyBot.products.update(udpateParams, (errors, response, body) => {
-          console.log("Errors: "+JSON.stringify(errors, null, 2) || null);
-          console.log("Response status code: "+response.statusCode || null);
-          console.log("Body: "+JSON.stringify(body) || null);
-
+          
           if(response.statusCode == 200) {
             this.setState({
-              confirm: true
+              confirm: true,
+              action: 'edited'
             });
           }
         });
@@ -260,17 +254,17 @@ class ManageTicketsPage extends Component {
           venueId: this.state.selectedVenue,
           tags: this.state.tags,
           ticket_url: this.state.ticket_url,
-          image: imageLink
+          image: imageLink,
+          prices: {
+            price: 0
+          }
         };
-
         PartyBot.products.create(createParams, (errors, response, body) => {
-          console.log("Errors: "+JSON.stringify(errors, null, 2) || null);
-          console.log("Response status code: "+response.statusCode || null);
-          console.log("Body: "+JSON.stringify(body) || null);
-
+          
           if(response.statusCode == 200) {
             this.setState({
-              confirm: true
+              confirm: true,
+              action:'created'
             });
           }
         });
@@ -294,7 +288,7 @@ class ManageTicketsPage extends Component {
         {this.state.confirm !== false ? 
           <Layer align="center">
             <Header>
-            Ticket successfully created.
+            Ticket successfully {this.state.action}.
             </Header>
             <Section>
               <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />} />

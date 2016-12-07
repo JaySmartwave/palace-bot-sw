@@ -116,7 +116,7 @@ class ManagePromotersPage extends Component {
     });
   }
   onVenueAdd = (selectedVenues) => {
-    // console.log(selectedVenues);
+
     var eventsOptions = [];
     selectedVenues.map((value, index) => {
       this.state.events.filter((eValue, eIndex) => {
@@ -164,6 +164,13 @@ class ManagePromotersPage extends Component {
     this.setState({ promoterCode: event.target.value });
   }
 
+  closeSetup = () => {
+    this.setState({
+     confirm: false
+   });
+    this.context.router.push('/promoters');
+  }
+
   submitSave = (event) => {
     event.preventDefault()
     var updateParams = {
@@ -201,11 +208,9 @@ class ManagePromotersPage extends Component {
       name: this.state.name,
       promoter_code: this.state.promoterCode
     }
-    // console.log(createParams);
+
     PartyBot.promoters.create(createParams, (error, response, body) => {
       if(response.statusCode == 200) {
-        console.log(body);
-        console.log(response.statusCode);
         this.setState({
           confirm: true,
           action: 'created'
@@ -226,7 +231,7 @@ class ManagePromotersPage extends Component {
       {this.state.confirm !== false ? 
           <Layer align="center">
             <Header>
-              Event successfully {this.state.action}.
+              Promoter successfully {this.state.action}.
             </Header>
             <Section>
               <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
