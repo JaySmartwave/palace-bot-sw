@@ -9,6 +9,10 @@ import Button from 'grommet/components/Button';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import FormFields from 'grommet/components/FormFields';
+import CloseIcon from 'grommet/components/icons/base/Close';
+import Layer from 'grommet/components/Layer';
+import Header from 'grommet/components/Header';
+import Section from 'grommet/components/Section';
 import Select from 'react-select';
 import _ from 'underscore';
 import Immutable from 'immutable';
@@ -27,7 +31,9 @@ class ManagePromotersPage extends Component {
       selectedVenues: [],
       selectedEvents: [],
       promoterCode: '',
-      name: { first: '', last: '' }
+      name: { first: '', last: '' },
+      confirm: false,
+      action: 'created'
     };
   }
   componentDidMount() {
@@ -172,13 +178,11 @@ class ManagePromotersPage extends Component {
       promoter_code: this.state.promoterCode,
       promoterId: this.state.promoterId
     }
-    console.log(updateParams);
     PartyBot.promoters.updatePromoter(updateParams, (error, response, body) => {
-      console.log(body);
-      console.log(response.statusCode);
       if(response.statusCode == 200) {  
         this.setState({
-          confirm: true
+          confirm: true,
+          action: 'edited'
         });
       }
     });
@@ -203,7 +207,8 @@ class ManagePromotersPage extends Component {
         console.log(body);
         console.log(response.statusCode);
         this.setState({
-          confirm: true
+          confirm: true,
+          action: 'created'
         });
       }
     });
@@ -218,6 +223,17 @@ class ManagePromotersPage extends Component {
     } = this.state;
     return (
       <div className={styles.container}>
+      {this.state.confirm !== false ? 
+          <Layer align="center">
+            <Header>
+              Event successfully {this.state.action}.
+            </Header>
+            <Section>
+              <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
+            </Section>
+          </Layer>
+          : null
+        }
       <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
         <Box>
         {this.state.promoterId !== null ? 

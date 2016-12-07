@@ -89,7 +89,7 @@ class ManageEventsPage extends Component {
       description: '',
       venueId: '',
       venues: [],
-      confirm: true,
+      confirm: false,
       days: DAYS,
       value: [],
       selectedVenue: '',
