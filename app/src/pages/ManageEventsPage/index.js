@@ -89,10 +89,11 @@ class ManageEventsPage extends Component {
       description: '',
       venueId: '',
       venues: [],
-      confirm: false,
+      confirm: true,
       days: DAYS,
       value: [],
       selectedVenue: '',
+      action:'created',
       rsvp_cutoff: moment()
     };
   }
@@ -151,16 +152,27 @@ class ManageEventsPage extends Component {
     
   }
 
+
+  getVenues = (options) => {
+    PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
+      if(response.statusCode == 200) {
+        if(body.length > 0) {
+          this.setState({selectedVenue: body[0]._id});
+        }
+        this.setState({venues: body});
+      }
+    });
+  }
+
   getEvent = (options) => {
     PartyBot.events.get(options, (err, response, body) => {
-      console.log(body);
       if(!err && response.statusCode == 200) {
         this.setState({
           isRecurring: body.event.recurrence ? true: false,
           eventId: body.event._id,
           name: body.event.name,
           description: body.event.description,
-          selectedVenue: body.event._venue_id,
+          selectedVenue: body.event._venue_id._id,
           image: {
             preview: body.event.image
           },
@@ -179,17 +191,6 @@ class ManageEventsPage extends Component {
             day: body.event.recurrence.day
           } : null
         });
-      }
-    });
-  }
-
-  getVenues = (options) => {
-    PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
-      if(response.statusCode == 200) {
-        if(body.length > 0) {
-          this.setState({selectedVenue: body[0]._id});
-        }
-        this.setState({venues: body});
       }
     });
   }
@@ -257,9 +258,8 @@ class ManageEventsPage extends Component {
   }
 
   onVenueChange = (event) => {
-    let venueCode = event.target.value;
     this.setState({
-      selectedVenue: venueCode
+      selectedVenue: event.target.value
     });
   }
 
@@ -329,7 +329,8 @@ class ManageEventsPage extends Component {
     PartyBot.events.deleteEvent(params, (error, response, body) => {
       if(!err && response.statusCode == 200) {
         this.setState({
-          confirm: true
+          confirm: true,
+          action: 'deleted'
         });
       } else {
 
@@ -370,7 +371,8 @@ class ManageEventsPage extends Component {
           console.log(body);
           if(!err && response.statusCode == 200) {
             this.setState({
-              confirm: true
+              confirm: true,
+              action: 'edited'
             });
           } else {
 
@@ -407,7 +409,8 @@ class ManageEventsPage extends Component {
         PartyBot.events.create(createParams, (err, response, body) => {
           if(!err && response.statusCode == 201) {
             this.setState({
-              confirm: true
+              confirm: true,
+              action: 'created'
             });
           } else {
 
@@ -434,7 +437,7 @@ class ManageEventsPage extends Component {
         {this.state.confirm !== false ? 
           <Layer align="center">
             <Header>
-              Event successfully created.
+              Event successfully {this.state.action}.
             </Header>
             <Section>
               <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
