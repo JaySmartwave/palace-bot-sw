@@ -326,8 +326,13 @@ class ManageEventsPage extends Component {
   submitDelete (event) {
     event.preventDefault();
     let params = _.pick(this.state, ['organisationId', 'eventId']);
+    console.log(params);
     PartyBot.events.deleteEvent(params, (error, response, body) => {
-      if(!err && response.statusCode == 200) {
+      console.log(error);
+      console.log(response.statusCode);
+      console.log(body);
+      if(!error && response.statusCode == 200) {
+        console.log(response.statusCode);
         this.setState({
           confirm: true,
           action: 'deleted'
