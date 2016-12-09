@@ -37,7 +37,7 @@ class ManageAiModulePage extends Component {
       intent: '',
       entity: [],
       reply: '',
-      isNew: false
+      isNew: true
     };
   }
   componentDidMount() {
@@ -55,10 +55,11 @@ class ManageAiModulePage extends Component {
       PartyBot.queries.getQueryPerOrganisation(options, (err, res, body) => {
         if(!err) {
           this.setState({
-            selectedVenue: body._venue_id || null,
+            selectedVenue: body._venue_id? body._venue_id._id: null,
             intent: body.intent,
             entity: body.entity,
-            reply: body.reply || ''
+            reply: body.reply || '',
+            isNew: false
           });
         }
       });
@@ -66,7 +67,6 @@ class ManageAiModulePage extends Component {
       let options = {
         organisationId: this.state.organisationId,
       }
-      this.setState({ isNew: true})
       this.getVenues(options);
     }
   }
@@ -157,15 +157,17 @@ class ManageAiModulePage extends Component {
   getVenues = (options) => {
     PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
-        // if(body > 0) {
-        //   this.setState.selectedVenue = body[0]._id;
-        // }
+        if(body > 0) {
+          this.setState.selectedVenue = body[0]._id;
+        }
+        let options = body.unshift({_id: null, name: ""});
         this.setState({venues: body});
       }
     });
   }
 
   render() {
+    console.log(this.state);
     let tags = this.state.tags;
 	let suggestions = this.state.suggestions;
     const {
