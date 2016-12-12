@@ -38,9 +38,6 @@ class EventsPage extends Component {
 			window.addEventListener('resize', this.handleMobile);
 		}
 		PartyBot.events.getSorted(options, function(err, response, body) {
-			console.log('Error: ' + err);
-			console.log('Status Code: ' + response.statusCode);
-			console.log(body);
 			if(!err && response.statusCode == 200) {
 				this.setState({events: body});
 			}
@@ -78,6 +75,16 @@ class EventsPage extends Component {
 			</thead>
 			<tbody>
 		{this.state.events.map((result) => {
+			let monthNames = [
+                "January", "February", "March",
+                "April", "May", "June", "July",
+                "August", "September", "October",
+                "November", "December"
+                ];
+            let dayNames = [
+            	"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+            ];
+			let nextDate = new Date(result.next_date);
 			return(
 			<tr key={result._id}>
 			<td> 
@@ -94,15 +101,15 @@ class EventsPage extends Component {
 			</Box> 
 			</td>
 			<td>
-			{result.next_date}
+			{`${nextDate.toDateString()}`}
 			</td>
 			<td>
 			<Box justify="center" align="center">
-			<Link to={'/guestList/' + result._id}>
+			<Link to={`/guest-lists/${result._id}/date/${nextDate.getFullYear()}-${nextDate.getMonth()}-${nextDate.getDate()}`}>
 			<Button className={styles.button} label="Guest List" onClick={() => {}} />
 			</Link>
 			<br/>
-			<Link to={'/tableBookings/' + result._id}>
+			<Link to={'/table-bookings/' + result._id}>
 			<Button className={styles.button} label="Table Bookings" onClick={() => {}} />
 			</Link>
 			</Box>

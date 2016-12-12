@@ -75,7 +75,8 @@ class GuestListPage extends Component {
 
     let paramsGet = {
       organisationId: '5800471acb97300011c68cf7',
-      event_id: this.props.params.event_id
+      event_id: this.props.params.event_id,
+      order_type: 'guest-list'
     };
 
     // console.log(paramsGet);
@@ -85,9 +86,6 @@ class GuestListPage extends Component {
     }
 
     PartyBot.orders.getOrders(paramsGet, function(err, response, body) {
-      console.log('Error: ' + err);
-      console.log('Status Code: ' + response.statusCode);
-      console.log(body);
       if(!err && response.statusCode == 200) {
         this.setState({selectedGuest: body});
       }
@@ -128,103 +126,102 @@ class GuestListPage extends Component {
       const { isMobile, } = this.state;
       return (
         <div className={styles.container}>
-        <Box pad={{ vertical: 'medium' }}>
-        <Heading align="center">
-        Event Name
-        </Heading>
-        <Heading align="center" tag="h3">
-        Guest List
-        </Heading>
-        </Box>
-        <Header justify='between'>
-        <Heading> 
-        <select name="filter"
-        onChange={this.onFilterChange}
-        className={styles.filSel}>
-        {this.getFilterOptions()}
-        </select>
-        </Heading>
-        <Menu direction='row' align='center' responsive={false}>
-        <Button className={styles.expBut} label="Export to CSV" icon={<DocumentCsvIcon />} onClick={this.testFunc} />
-        </Menu>
-        </Header>
-        <Table selectable={false}>
-        <thead>
-        <tr>
-        <th> 
-        <Box align="center">
-        <CheckBox name="label" onChange={this.selectAll} />
-        </Box>
-        </th>
-        <th> Name </th>
-        <th> Promoter</th>
-        <th> Status </th>
-        <th> 
-        <Box align="center">
-        {this.state.selectedGuest.length > 1 ?
-          <Menu icon={<ActionsIcon />} label="Actions">
-          <Anchor>
-          Accept
-          </Anchor>
-          <Anchor>
-          Decline
-          </Anchor>
-          </Menu>
-          :
-          null
-        }
-        </Box>
-        </th>
-        </tr>
-        </thead>
-        <tbody>
-    {/*this.state.venues.map((result) => (
-      <tr key={id}>
-      <td> <CheckBox id="{result.name}" name="label" onChange={...} checked={this.state.isAllSelected} /> </td>
-      <td> {name} </td>
-      <td> {promoter} </td>
-      <td> {status} </td>
-      <td>
-      	<Box justify="center" align="center">
-    		{this.guest.status !== 'Approved' ? 
-				<Button label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
-	        : 
-		        null
-	    	}
-      	</Box>
-      </td>
-      </tr>
-    ))*/}
-    {this.state.selectedGuest.map((value) => (
-      <tr key={value._id}>
-      {value.status === 'pending' ? 
-      <td>
-      <Box align="center">
-      <CheckBox id={value._id} onChange={this.testFunc} checked={this.state.isAllSelected}/>
-      </Box>
-      </td>
-      : 
-      <td> </td>
-    }
-    <td> {value.order_items.map(item => item.name)} </td>
-    <td> {value.promoter_code} </td>
-    <td> {value.status} </td>
-    <td>
-    <Box justify="center" align="center">
-    {value.status === 'pending' ? 
-    <Button label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
-    : 
-    <td> </td>
-  }
-  </Box>
-  </td>
-  </tr>
-  )) 
-  }
-  </tbody>
-  </Table>
-  </div>
-  );
+          <Box pad={{ vertical: 'medium' }}>
+            <Heading align="center">
+              Event Name
+            </Heading>
+            <Heading align="center" tag="h3">
+              Guest List
+            </Heading>
+          </Box>
+          <Header justify='between'>
+            <Heading> 
+              <select name="filter"
+              onChange={this.onFilterChange}
+              className={styles.filSel}>
+                {this.getFilterOptions()}
+              </select>
+            </Heading>
+            <Menu direction='row' align='center' responsive={false}>
+              <Button className={styles.expBut} label="Export to CSV" icon={<DocumentCsvIcon />} onClick={() => {}} />
+            </Menu>
+          </Header>
+          <Table selectable={false}>
+            <thead>
+              <tr>
+                <th> 
+                  <Box align="center">
+                    <CheckBox name="label" onChange={this.selectAll} />
+                  </Box>
+                </th>
+                <th>Name</th>
+                <th>Promoter</th>
+                <th>Status</th>
+                <th>
+                  <Box align="center">
+                  {this.state.selectedGuest.length > 1 ?
+                    <Menu icon={<ActionsIcon />} label="Actions">
+                    <Anchor>
+                    Accept
+                    </Anchor>
+                    <Anchor>
+                    Decline
+                    </Anchor>
+                    </Menu>
+                    :
+                    null
+                  }
+                  </Box>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+            {/*this.state.venues.map((result) => (
+              <tr key={id}>
+              <td> <CheckBox id="{result.name}" name="label" onChange={...} checked={this.state.isAllSelected} /> </td>
+              <td> {name} </td>
+              <td> {promoter} </td>
+              <td> {status} </td>
+              <td>
+              	<Box justify="center" align="center">
+            		{this.guest.status !== 'Approved' ? 
+        				<Button label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
+        	        : 
+        		        null
+        	    	}
+              	</Box>
+              </td>
+              </tr>
+            ))*/}
+            {this.state.selectedGuest.map((value) => (
+              <tr key={value._id}>
+              {value.status === 'pending' ? 
+                <td>
+                <Box align="center">
+                  <CheckBox id={value._id} onChange={() => {}} checked={this.state.isAllSelected}/>
+                </Box>
+                </td>
+                : 
+                <td></td>
+              }
+                <td>{value.order_items.map(item => item.name)}</td>
+                <td>{value.promoter_code}</td>
+                <td>{value.status}</td>
+                <td>
+                  <Box justify="center" align="center">
+                    {value.status === 'pending' ? 
+                    <Button label="Approve" icon={<CheckmarkIcon />} onClick={() => {}} />
+                    :
+                    ""
+                    }
+                  </Box>
+                </td>
+              </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+        );
     }
   }
 

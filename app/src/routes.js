@@ -31,8 +31,8 @@ const routes = (
         <Route path="/promoters/:promoter_id" component={Pages.ManagePromotersPage} />
         <Route path="/alerts" component={Pages.AlertsPage} />
         <Route path="/editTables" component={Pages.EditTablesPage} />
-        <Route path="/guestList/:event_id" component={Pages.GuestListPage} />
-        <Route path="/tableBookings/:product_id" component={Pages.TableBookingsPage} />
+        <Route path="/guest-lists/:event_id/date/:event_date" component={Pages.GuestListPage} />
+        <Route path="/table-bookings/:product_id" component={Pages.TableBookingsPage} />
         <Route path="/tickets" component={Pages.TicketsPage} />
         <Route path="/tickets/add" component={Pages.ManageTicketsPage} />
         <Route path="/tickets/:ticket_id" component={Pages.ManageTicketsPage} />
