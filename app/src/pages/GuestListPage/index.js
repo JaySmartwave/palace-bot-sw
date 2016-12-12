@@ -19,7 +19,7 @@ import ActionsIcon from 'grommet/components/icons/base/Actions';
 import Layer from 'grommet/components/Layer';
 import Section from 'grommet/components/Section';
 import CloseIcon from 'grommet/components/icons/base/Close';
-
+import csv from 'json2csv';
 const FILTER = [ 
 { value: 'all', label: 'All' }, 
 { value: 'approved', label: 'Approved' }, 
@@ -122,6 +122,22 @@ class GuestListPage extends Component {
     window.location.reload();
   }
 
+  exportToCSV = () => {
+
+    let data = csv({ 
+      data: this.state.selectedGuest
+      .filter((value) => { 
+        if(this.state.activeFilter == 'all') {
+          return true;
+        } else {
+          return this.state.activeFilter == value.status } 
+        })
+    });
+    
+    window.open('data:text/csv;charset=UTF-8,' + encodeURIComponent(data));
+
+  }
+
   updateOrderStatus(orderId, status, event) {
     event.preventDefault();
     let params = {
@@ -183,7 +199,7 @@ class GuestListPage extends Component {
             </select>
           </Heading>
           <Menu direction='row' align='center' responsive={false}>
-            <Button className={styles.expBut} label="Export to CSV" icon={<DocumentCsvIcon />} onClick={() => {}} />
+            <Button className={styles.expBut} label="Export to CSV" icon={<DocumentCsvIcon />} onClick={this.exportToCSV} />
           </Menu>
         </Header>
         <Table selectable={false}>
