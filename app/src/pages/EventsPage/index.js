@@ -105,7 +105,7 @@ class EventsPage extends Component {
 			</td>
 			<td>
 			<Box justify="center" align="center">
-			<Link to={`/guest-lists/${result._id}/date/${nextDate.getFullYear()}-${nextDate.getMonth()}-${nextDate.getDate()}`}>
+			<Link to={`/guest-lists/${result._id}/date/${nextDate.getFullYear()}-${nextDate.getMonth()+1}-${nextDate.getDate()}`}>
 			<Button className={styles.button} label="Guest List" onClick={() => {}} />
 			</Link>
 			<br/>

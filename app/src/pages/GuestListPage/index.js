@@ -22,18 +22,9 @@ const FILTER = [
 { value: '002', label: 'Pending' },
 ];
 
-const EXAMPLE = [ //test 
-{ id: '001', name: 'Oscar', promoter: 'Jolibee', status: 'Pending'}, 
-{ id: '002', name: 'BJ', promoter: 'KFC', status: 'Pending'},
-{ id: '003', name: 'Jay', promoter: 'Jolibee', status: 'Pending'},
-{ id: '004', name: 'David', promoter: 'KFC', status: 'Approved'}, 
-{ id: '005', name: 'Barbo', promoter: 'Jolibee', status: 'Pending'},
-{ id: '006', name: 'Mendoza', promoter: 'KFC', status: 'Approved'},
-];
-
 class GuestListPage extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.handleMobile = this.handleMobile.bind(this);
     this.selectAll = this.selectAll.bind(this);
     this.checkToggle = this.checkToggle.bind(this);
@@ -42,9 +33,10 @@ class GuestListPage extends Component {
       selectedGuest: [],
       guestList: [],
       filter: FILTER,
-      example: EXAMPLE, //test
       activeFilter: '', 
-      isAllSelected: false
+      isAllSelected: false,
+      event_id: props.params.event_id,
+      event_date: props.params.event_date
     };
 
   }
@@ -75,8 +67,8 @@ class GuestListPage extends Component {
 
     let paramsGet = {
       organisationId: '5800471acb97300011c68cf7',
-      event_id: this.props.params.event_id,
-      order_type: 'guest-list'
+      event_id: this.state.event_id,
+      event_date: this.state.event_date
     };
 
     // console.log(paramsGet);
@@ -119,8 +111,6 @@ class GuestListPage extends Component {
     }
 
     render() {
-
-      console.log(this.state.selectedGuest);
 
       const { router, } = this.context;
       const { isMobile, } = this.state;
