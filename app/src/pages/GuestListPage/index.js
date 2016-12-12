@@ -16,10 +16,14 @@ import TableRow from 'grommet/components/TableRow';
 import Search from 'grommet/components/Search';
 import DocumentCsvIcon from 'grommet/components/icons/base/DocumentCsv';
 import ActionsIcon from 'grommet/components/icons/base/Actions';
+import Layer from 'grommet/components/Layer';
+import Section from 'grommet/components/Section';
+import CloseIcon from 'grommet/components/icons/base/Close';
 
 const FILTER = [ 
-{ value: '001', label: 'Approved' }, 
-{ value: '002', label: 'Pending' },
+{ value: 'all', label: 'All' }, 
+{ value: 'approved', label: 'Approved' }, 
+{ value: 'pending', label: 'Pending' },
 ];
 
 class GuestListPage extends Component {
@@ -33,25 +37,17 @@ class GuestListPage extends Component {
       selectedGuest: [],
       guestList: [],
       filter: FILTER,
-      activeFilter: '', 
+      activeFilter: 'all', 
       isAllSelected: false,
+      displayModal: false,
+      modalAction: 'Updating...',
       event_id: props.params.event_id,
-      event_date: props.params.event_date
+      event_date: props.params.event_date,
     };
 
   }
   componentWillMount () {
 
-  }
-
-  onFilterChange(event) {
-    let filterId = event.nativeEvent.target.selectedIndex;
-    let filterCode = event.nativeEvent.target[filterId].value;
-    // console.log('Selected Venue: ' + filterCode);
-    this.setState({
-      activeFilter: filterCode
-    }.bind(this));
-    // console.log(this.state.activeFilter);
   }
 
   getFilterOptions(){
@@ -95,6 +91,16 @@ class GuestListPage extends Component {
       isMobile,
     });
   }
+
+  onFilterChange = (event) => {
+    let filterId = event.nativeEvent.target.selectedIndex;
+    let filterCode = event.nativeEvent.target[filterId].value;
+    console.log(filterCode);
+    this.setState({
+      activeFilter: filterCode
+    });
+  }
+
   selectAll(){
     var active = !this.state.isAllSelected;
     this.setState({
@@ -106,86 +112,137 @@ class GuestListPage extends Component {
 
   checkToggle(){
     // console.log(this.prop.id);
-      // TO DO:
-      // add/remove id to/from [selectedGuest]
-    }
+    // TO DO:
+    // add/remove id to/from [selectedGuest]
+  }
 
-    render() {
+  closeSetup = () => {
+    this.setState({displayModal: false});
+    // this.context.router.push(`/guest-lists/${this.state.event_id}/date/${this.state.event_date}`);
+    window.location.reload();
+  }
 
-      const { router, } = this.context;
-      const { isMobile, } = this.state;
-      return (
-        <div className={styles.container}>
-          <Box pad={{ vertical: 'medium' }}>
-            <Heading align="center">
-              Event Name
-            </Heading>
-            <Heading align="center" tag="h3">
-              Guest List
-            </Heading>
-          </Box>
-          <Header justify='between'>
-            <Heading> 
-              <select name="filter"
-              onChange={this.onFilterChange}
-              className={styles.filSel}>
-                {this.getFilterOptions()}
-              </select>
-            </Heading>
-            <Menu direction='row' align='center' responsive={false}>
-              <Button className={styles.expBut} label="Export to CSV" icon={<DocumentCsvIcon />} onClick={() => {}} />
-            </Menu>
-          </Header>
-          <Table selectable={false}>
-            <thead>
-              <tr>
-                <th> 
-                  <Box align="center">
-                    <CheckBox name="label" onChange={this.selectAll} />
-                  </Box>
-                </th>
-                <th>Name</th>
-                <th>Promoter</th>
-                <th>Status</th>
-                <th>
-                  <Box align="center">
-                  {this.state.selectedGuest.length > 1 ?
-                    <Menu icon={<ActionsIcon />} label="Actions">
-                    <Anchor>
-                    Accept
-                    </Anchor>
-                    <Anchor>
-                    Decline
-                    </Anchor>
-                    </Menu>
-                    :
-                    null
-                  }
-                  </Box>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-            {/*this.state.venues.map((result) => (
-              <tr key={id}>
-              <td> <CheckBox id="{result.name}" name="label" onChange={...} checked={this.state.isAllSelected} /> </td>
-              <td> {name} </td>
-              <td> {promoter} </td>
-              <td> {status} </td>
-              <td>
-              	<Box justify="center" align="center">
-            		{this.guest.status !== 'Approved' ? 
-        				<Button label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
-        	        : 
-        		        null
-        	    	}
-              	</Box>
-              </td>
-              </tr>
-            ))*/}
-            {this.state.selectedGuest.map((value) => (
+  updateOrderStatus(orderId, status, event) {
+    event.preventDefault();
+    let params = {
+      orderId: orderId,
+      status: 'approved'
+    };
+    this.setState({
+      displayModal: true,
+      modalAction: "Updating..."
+    });
+    PartyBot.orders.udpateOrder(params, (error, response, body) => {
+      
+      if(!error && response.statusCode == 200) {
+        this.setState({
+          displayModal: true,
+          modalAction: "Order approved"
+        });
+      } else {
+        this.setState({
+          displayModal: true,
+          modalAction: "Update Failed"
+        });
+      }
+
+    });
+  };
+
+
+  render() {
+    const { router, } = this.context;
+    const { isMobile, } = this.state;
+    return (
+      <div className={styles.container}>
+        {this.state.displayModal !== false ?
+          <Layer align="center">
+            <Header>
+              {this.state.modalAction}.
+            </Header>
+            <Section>
+              <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
+            </Section>
+          </Layer>
+          : null
+        }
+        <Box pad={{ vertical: 'medium' }}>
+          <Heading align="center">
+            Event Name
+          </Heading>
+          <Heading align="center" tag="h3">
+            Guest List
+          </Heading>
+        </Box>
+        <Header justify='between'>
+          <Heading> 
+            <select name="filter" defaultValue="all"
+            onChange={this.onFilterChange}
+            className={styles.filSel}>
+              {this.getFilterOptions()}
+            </select>
+          </Heading>
+          <Menu direction='row' align='center' responsive={false}>
+            <Button className={styles.expBut} label="Export to CSV" icon={<DocumentCsvIcon />} onClick={() => {}} />
+          </Menu>
+        </Header>
+        <Table selectable={false}>
+          <thead>
+            <tr>
+              <th> 
+                <Box align="center">
+                  <CheckBox name="label" onChange={this.selectAll} />
+                </Box>
+              </th>
+              <th>Name</th>
+              <th>Promoter</th>
+              <th>Status</th>
+              <th>
+                <Box align="center">
+                {this.state.selectedGuest.length > 1 ?
+                  <Menu icon={<ActionsIcon />} label="Actions">
+                  <Anchor>
+                  Accept
+                  </Anchor>
+                  <Anchor>
+                  Decline
+                  </Anchor>
+                  </Menu>
+                  :
+                  null
+                }
+                </Box>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+          {/*this.state.venues.map((result) => (
+            <tr key={id}>
+            <td> <CheckBox id="{result.name}" name="label" onChange={...} checked={this.state.isAllSelected} /> </td>
+            <td> {name} </td>
+            <td> {promoter} </td>
+            <td> {status} </td>
+            <td>
+            	<Box justify="center" align="center">
+          		{this.guest.status !== 'Approved' ?
+      				<Button label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
+      	        : 
+      		        null
+      	    	}
+            	</Box>
+            </td>
+            </tr>
+          ))*/}
+          {this.state.selectedGuest
+            .filter((value) => { 
+              if(this.state.activeFilter == 'all') {
+                return true;
+              } else {
+                return this.state.activeFilter == value.status } 
+              })
+            .map((value) =>(
               <tr key={value._id}>
-              {value.status === 'pending' ? 
+              {value.status === 'pending' ?
                 <td>
                 <Box align="center">
                   <CheckBox id={value._id} onChange={() => {}} checked={this.state.isAllSelected}/>
@@ -194,24 +251,25 @@ class GuestListPage extends Component {
                 : 
                 <td></td>
               }
-                <td>{value.order_items.map(item => item.name)}</td>
-                <td>{value.promoter_code}</td>
-                <td>{value.status}</td>
-                <td>
-                  <Box justify="center" align="center">
-                    {value.status === 'pending' ? 
-                    <Button label="Approve" icon={<CheckmarkIcon />} onClick={() => {}} />
-                    :
-                    ""
-                    }
-                  </Box>
-                </td>
-              </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-        );
+              <td>{value.order_items.map(item => item.name)}</td>
+              <td>{value.promoter_code}</td>
+              <td>{value.status}</td>
+              <td>
+                <Box justify="center" align="center">
+                  {value.status === 'pending' ?
+                  <Button label="Approve" icon={<CheckmarkIcon />} onClick={this.updateOrderStatus.bind(this, value._id, "approved")} />
+                  :
+                  ""
+                  }
+                </Box>
+              </td>
+            </tr>
+            )
+          )}
+          </tbody>
+        </Table>
+      </div>
+      );
     }
   }
 
