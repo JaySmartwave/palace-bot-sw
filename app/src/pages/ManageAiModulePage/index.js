@@ -110,7 +110,7 @@ class ManageAiModulePage extends Component {
     let objState = this.state;
     let params = { 
       organisationId: this.state.organisationId, 
-      venueId: this.state.selectedVenue,
+      venue_id: this.state.selectedVenue,
       entity: this.state.entity,
       intent: this.state.intent,
       reply: this.state.reply,
@@ -130,7 +130,7 @@ class ManageAiModulePage extends Component {
     let objState = this.state;
     let params = { 
       organisationId: this.state.organisationId, 
-      venueId: this.state.selectedVenue,
+      _venue_id: this.state.selectedVenue,
       entity: this.state.entity,
       intent: this.state.intent,
       reply: this.state.reply,
@@ -167,7 +167,6 @@ class ManageAiModulePage extends Component {
   }
 
   render() {
-    console.log(this.state);
     let tags = this.state.tags;
 	let suggestions = this.state.suggestions;
     const {
