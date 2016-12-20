@@ -18,27 +18,30 @@ class AlertsPage extends Component {
     this.handleMobile = this.handleMobile.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.state = {
+      organisationId: '5800471acb97300011c68cf7',
       isMobile: false,
       files: [],
-      venues: []
+      venues: [],
+      text: '',
+      image: null
     };
   }
   componentWillMount() {
-  PartyBot.venues.getAllInOrganisation('57f3a273f760e4f8ad97eec5', function(err, response, body) {
-    console.log('Error: ' + err);
-    console.log('Status Code: ' + response.statusCode);      
-      if(!err && response.statusCode == 200) {
-        // console.log(body);
-        this.setState({
-          venues: body
-        });
-      }
-    }.bind(this));
+
   }
   componentDidMount() {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
+    let params = {
+      organisationId: this.state.organisationId
+    };
+    PartyBot.venues.getAllInOrganisation(params, (err, response, body) => {
+      if(!err && response.statusCode == 200) {
+        let options = body.unshift({_id: null, name:'Select Venue'});
+        this.setState({venues: body});
+      }
+    });
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -51,27 +54,16 @@ class AlertsPage extends Component {
       isMobile,
     });
   }
-  testFunc() {
-  	console.log("test! ");
-  }
-  	onDrop(files) {
-  	this.setState({
-    	files: files
-	  });
-  	console.log(files)
-	}
 
-  onVenueChange(event) {
-  let venueId = event.nativeEvent.target.selectedIndex;
-  let venueCode = event.nativeEvent.target[venueId].value;
-  console.log('Selected Venue: ' + venueCode);
-  this.setState({
-    selectedVenue: venueCode
-  });
-    console.log(this.state.selectedVenue);
+  onVenueChange = (event) => {
+    let venueId = event.nativeEvent.target.selectedIndex;
+    let venueCode = event.nativeEvent.target[venueId].value;
+    this.setState({
+      selectedVenue: venueCode
+    });
   }
 
-  getVenueOptions(){
+  getVenueOptions = () => {
     let stateVenues = this.state.venues;
 
     return stateVenues.map(function(venue, i) {
@@ -85,9 +77,36 @@ class AlertsPage extends Component {
       // });
       // return <option key={item._id} value={item.value}> {item.label} </option>;
 
-    }.bind(this));
+    });
   }
 
+  onChangeText = (event) => {
+    this.setState({
+      text: event.target.value
+    });
+  };
+
+  sendAlert = (event) => {
+    let params = {
+      organisationId: this.state.organisationId,
+      channel: 'facebook',
+      fb_page_access_token: 'EAANW2ZALpyZAABAKUoLUhNOhbPvZAgUtPfQ8TZCKfL66jTZBf3zIruIK8veysLrH1hyWCVXbpYtNZAaZA6kK8tvE2FeFsxIJQKK2DVeZBRHOY8I8Eh3B6crAYrMxZBaRomnyzZAI2YyaInG20pCZAp6rwhRwEgDK8VnCbZCYRfZA3cfaVpwZDZD',
+      message: this.state.text
+    };
+
+    PartyBot.sender.sendMessageToSenders(params, (err, response, body) => {
+      console.log(err);
+      console.log(response.statusCode);
+      console.log(body);
+    });
+  }
+
+  onDrop(file) {
+    this.setState({
+       image: file[0],
+       isNewImage: true
+     });
+  }
 
   render() {
     const {
@@ -101,17 +120,17 @@ class AlertsPage extends Component {
     } = this.state;
     return (
       <div className={styles.container}>
-        <Box pad={{ vertical: 'medium' }}>
+        <Box>
     	<Heading align="center" uppercase>
             Alerts
         </Heading>
           </Box>
-			<Box direction="row" justify="center" align="center" wrap={true} pad="small	" margin="small">
+			<Box direction="row" justify="center" align="center" wrap={true} margin="small">
 				<Form>
 				<FormFields>
 					<fieldset>
 					  <FormField label="Text" htmlFor="alertName">
-					    <input id="alertName" type="text"/>
+					    <input id="alertName" type="text" onChange={this.onChangeText} value={this.state.text}/>
 					  </FormField>
 					  <FormField label="Link" htmlFor="alertLink">
 					    <input id="alertLink" type="text"/>
@@ -137,7 +156,7 @@ class AlertsPage extends Component {
 				</FormFields>
 				  <Footer pad={{"vertical": "medium"}}>
 				    	<Heading align="center">
-				            <Button label="Send" primary={true} onClick={this.testFunc} />
+				            <Button label="Send" primary={true} onClick={this.sendAlert} />
 				        </Heading>
 				  </Footer>
 				</Form>
