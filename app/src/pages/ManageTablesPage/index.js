@@ -23,7 +23,6 @@ class ManageTablesPage extends Component {
   constructor(props) {
     super(props);
     this.handleMobile = this.handleMobile.bind(this);
-    this.getTableVariants = this.getTableVariants.bind(this);
     this.closeSetup = this.closeSetup.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.addVariant = this.addVariant.bind(this);
@@ -182,7 +181,7 @@ class ManageTablesPage extends Component {
   addVariant() { // will create then get?
     var newArray = this.state.variants.slice();    
     newArray.push({ 
-        _event: '', // default value
+        _event: this.state.events[0]._event,
         price: 0 // default value
       });   
     this.setState({variants:newArray})
@@ -211,13 +210,13 @@ class ManageTablesPage extends Component {
     });
   }
 
-  getTableVariants(){
+  getTableVariants = () => {
     return this.state.variants.map( (item, index) => {
       return <div key={index}>
                 <FormField label="Event" htmlFor="tableName">
-                  <select id="tableVenue" onChange={this.onEventChange.bind(this, item, index)} value={item._event}>
+                  <select id="tableVenue" onChange={this.onEventChange.bind(this, item, index)} value={item._event||this.state.events[0]._event}>
                   {
-                    this.state.events.map(function(value, index) {
+                    this.state.events.map( (value, index) => {
                       return (<option key={index} value={value._event}>{value.name}</option>)
                     })
                   }
