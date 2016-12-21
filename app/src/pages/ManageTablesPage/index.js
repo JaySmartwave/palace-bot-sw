@@ -342,9 +342,9 @@ class ManageTablesPage extends Component {
           console.log(response.statusCode);
           console.log(body);
           if(response.statusCode == 200) {
-            // this.setState({
-            //   confirm: true
-            // });
+            this.setState({
+              confirm: true
+            });
           }
         });
       }

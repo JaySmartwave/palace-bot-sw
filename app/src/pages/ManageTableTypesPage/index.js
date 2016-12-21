@@ -34,12 +34,12 @@ class ManageTableTypesPage extends Component {
     this.submitDelete = this.submitDelete.bind(this);
     this.state = {
       organisationId: '5800471acb97300011c68cf7',
-      no_of_pax: null,
+      no_of_pax: 0,
       isMobile: false,
       image: null,
       prevImage: null,
       isNewImage: false,
-      tableTypeId: props.params.table_type_id,
+      tableTypeId: props.params.table_type_id || null,
       confirm: false,
       name: '',
       tags: 'tabletypes',
@@ -55,11 +55,17 @@ class ManageTableTypesPage extends Component {
 
     let options = {
       organisationId: this.state.organisationId,
-      tableTypeId: this.state.tableTypeId
     };
-
     this.getVenues(options);
-    this.getTableType(options);
+
+    if(this.state.tableTypeId) {
+      let ttOptions = {
+        organisationId: this.state.organisationId,
+        tableTypeId: this.state.tableTypeId        
+      };
+      this.getTableType(ttOptions);
+    }
+
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
@@ -122,7 +128,6 @@ class ManageTableTypesPage extends Component {
         }
 
         if (response.body.secure_url !== '') {
-          console.log(response.body.secure_url);
           callback(null, response.body.secure_url)
         } else {
           callback(err, '');
@@ -162,13 +167,10 @@ class ManageTableTypesPage extends Component {
           tableTypeId: this.state.tableTypeId,
           no_of_pax: this.state.no_of_pax,
           venue_id: venuesArr,
-          image: imageLink || this.state.prevImage.preview
+          image: imageLink || this.state.prevImage.preview || null
         };
-        console.log(updateParams);
         PartyBot.tableTypes.update(updateParams, (err, response, body) => {
-          console.log(err);
-          console.log(response.statusCode);
-          console.log(body);
+          
           if(response.statusCode == 200) {
             this.setState({
               confirm: true
@@ -282,7 +284,7 @@ class ManageTableTypesPage extends Component {
           </Heading>
         }
       </Box>
-			<Box direction="row" justify="center" align="center" wrap={true} pad="small	" margin="small">
+			<Box direction="row" justify="center" align="center" wrap={true} margin="small">
 				<Form>
 				<FormFields>
 					<fieldset>
