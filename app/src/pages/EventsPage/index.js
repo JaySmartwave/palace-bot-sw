@@ -23,8 +23,8 @@ let options = {
 
 class EventsPage extends Component {
 
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.handleMobile = this.handleMobile.bind(this);
 		this.state = {
 			isMobile: false,

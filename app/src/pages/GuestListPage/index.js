@@ -20,6 +20,8 @@ import Layer from 'grommet/components/Layer';
 import Section from 'grommet/components/Section';
 import CloseIcon from 'grommet/components/icons/base/Close';
 import csv from 'json2csv';
+import _ from 'underscore';
+
 const FILTER = [ 
 { value: 'all', label: 'All' }, 
 { value: 'approved', label: 'Approved' }, 
@@ -61,23 +63,21 @@ class GuestListPage extends Component {
 
   componentDidMount() {
 
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.handleMobile);
+    }
+
     let paramsGet = {
       organisationId: '5800471acb97300011c68cf7',
       event_id: this.state.event_id,
       event_date: this.state.event_date
     };
 
-    // console.log(paramsGet);
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', this.handleMobile);
-    }
-
-    PartyBot.orders.getOrders(paramsGet, function(err, response, body) {
+    PartyBot.orders.getOrders(paramsGet, (err, response, body) => {
       if(!err && response.statusCode == 200) {
         this.setState({selectedGuest: body});
       }
-    }.bind(this));
+    });
 
   }
   componentWillUnmount() {
@@ -95,7 +95,7 @@ class GuestListPage extends Component {
   onFilterChange = (event) => {
     let filterId = event.nativeEvent.target.selectedIndex;
     let filterCode = event.nativeEvent.target[filterId].value;
-    console.log(filterCode);
+
     this.setState({
       activeFilter: filterCode
     });
@@ -111,7 +111,6 @@ class GuestListPage extends Component {
   }
 
   checkToggle(){
-    // console.log(this.prop.id);
     // TO DO:
     // add/remove id to/from [selectedGuest]
   }
@@ -123,19 +122,28 @@ class GuestListPage extends Component {
   }
 
   exportToCSV = () => {
+    let filtered = this.state.selectedGuest
+    .filter((value) => { 
+      if(this.state.activeFilter == 'all') {
+        return true;
+      } else {
+        return this.state.activeFilter == value.status } 
+      });
 
-    let data = csv({ 
-      data: this.state.selectedGuest
-      .filter((value) => { 
-        if(this.state.activeFilter == 'all') {
-          return true;
-        } else {
-          return this.state.activeFilter == value.status } 
-        })
+    let mapped = [];
+    filtered.map((value, index) => {
+      let particulars = _.findWhere(value.particulars, { label: 'party' });
+      particulars.value.map((value2, index2) => {
+        value.invited = value2;
+        mapped.push(_.omit(value, ['particulars', 'order_items']));
+      });
     });
-    
-    window.open('data:text/csv;charset=UTF-8,' + encodeURIComponent(data));
 
+    // console.log(data);
+    let data = csv({ 
+      data: mapped
+    });
+    window.open('data:text/csv;charset=UTF-8,' + encodeURIComponent(data));
   }
 
   updateOrderStatus(orderId, status, event) {
