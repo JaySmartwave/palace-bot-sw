@@ -276,7 +276,7 @@ class GuestListPage extends Component {
                 <td></td>
               }
               <td>{value._user_name/*value.order_items.map(item => item.name)*/}</td>
-              <td>{value.promoter_code}</td>
+              <td>{value.promoter.name.first+' '+value.promoter.name.last}</td>
               <td>{value.status}</td>
               <td>
                 <Box justify="center" align="center">
