@@ -275,7 +275,7 @@ class GuestListPage extends Component {
                 : 
                 <td></td>
               }
-              <td>{value.order_items.map(item => item.name)}</td>
+              <td>{value._user_name/*value.order_items.map(item => item.name)*/}</td>
               <td>{value.promoter_code}</td>
               <td>{value.status}</td>
               <td>
