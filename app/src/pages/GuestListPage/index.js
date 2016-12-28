@@ -135,11 +135,12 @@ class GuestListPage extends Component {
       let particulars = _.findWhere(value.particulars, { label: 'party' });
       particulars.value.map((value2, index2) => {
         value.invited = value2;
-        mapped.push(_.omit(value, ['particulars', 'order_items']));
+        value._promoter = value.promoter?`${value.promoter.name.first} ${value.promoter.name.last}`: `N/A`;
+        mapped.push(_.omit(value, ['particulars', 'order_items', 'promoter', 'currency_code', 'adjustments']));
       });
     });
 
-    // console.log(data);
+
     let data = csv({ 
       data: mapped
     });
