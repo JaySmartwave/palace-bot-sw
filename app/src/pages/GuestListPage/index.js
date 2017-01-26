@@ -70,7 +70,8 @@ class GuestListPage extends Component {
     let paramsGet = {
       organisationId: '5800471acb97300011c68cf7',
       event_id: this.state.event_id,
-      event_date: this.state.event_date
+      event_date: this.state.event_date,
+      order_type: 'guest-list'
     };
 
     PartyBot.orders.getOrders(paramsGet, (err, response, body) => {
@@ -133,6 +134,7 @@ class GuestListPage extends Component {
     let mapped = [];
     filtered.map((value, index) => {
       let particulars = _.findWhere(value.particulars, { label: 'party' });
+      console.log(particulars);
       particulars.value.map((value2, index2) => {
         value.invited = value2;
         value._promoter = value.promoter?`${value.promoter.name.first} ${value.promoter.name.last}`: `N/A`;
