@@ -18,12 +18,18 @@ import FilterIcon from 'grommet/components/icons/base/Filter';
 import Select from 'react-select';
 
 class TableBookingsPage extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.handleMobile = this.handleMobile.bind(this);
     this.state = {
       isMobile: false,
-      tableBooking: []
+      tableBooking: [],
+      activeFilter: 'all', 
+      isAllSelected: false,
+      displayModal: false,
+      modalAction: 'Updating...',
+      event_id: props.params.event_id,
+      event_date: props.params.event_date,
     };
 
   }
@@ -34,21 +40,25 @@ class TableBookingsPage extends Component {
 
     let paramsGet = {
       organisationId: '5800471acb97300011c68cf7',
-      product_id: this.props.params.product_id
+      event_id: this.state.event_id,
+      event_date: this.state.event_date,
+      order_type: 'table-booking'
     };
+
+    console.log(paramsGet);
 
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
 
-    PartyBot.orders.getOrders(paramsGet, function(err, response, body) {
+    PartyBot.orders.getOrders(paramsGet, (err, response, body) => {
       console.log('Error: ' + err);
       console.log('Status Code: ' + response.statusCode);
       console.log(body);
       if(!err && response.statusCode == 200) {
         this.setState({tableBooking: body});
       }
-    }.bind(this));
+    });
 
   }
   componentWillUnmount() {
@@ -82,7 +92,6 @@ class TableBookingsPage extends Component {
       <thead>
       <tr>
       <th>Name</th>
-      <th>Promoter</th>
       <th>Status</th>
       <th>Date/Time Inquired</th>
       <th>Action</th>
@@ -92,7 +101,6 @@ class TableBookingsPage extends Component {
       {this.state.tableBooking.map((result) => (
         <tr key={result._id}>
         <td>{result.order_items.map(item => item.name)}</td>
-        <td>{result.promoter_code}</td>
         <td>{result.status}</td>
         <td>{result.created_at}</td>
         <td>

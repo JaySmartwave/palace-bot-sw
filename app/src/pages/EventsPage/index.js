@@ -109,7 +109,7 @@ class EventsPage extends Component {
 			<Button className={styles.button} label="Guest List" onClick={() => {}} />
 			</Link>
 			<br/>
-			<Link to={'/table-bookings/' + result._id}>
+			<Link to={`/table-bookings/${result._id}/date/${nextDate.getFullYear()}-${nextDate.getMonth()+1}-${nextDate.getDate()}`}>
 			<Button className={styles.button} label="Table Bookings" onClick={() => {}} />
 			</Link>
 			</Box>
