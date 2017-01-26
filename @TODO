@@ -1,0 +1,17 @@
+@TODO - Alerts
+API
+-- Filter senders with fb page access token limit
+-- Limit?
+-- Loop through return documents
+	-- Create  post request to FB Send API
+
+
+CMS
+-- TECH DEPT: Hardcoding Venues with fb_page_access_token
+-- See: Client API?
+-- Edit Select Option Value on Alerts Dropdown
+-- Send fb_page_access_token to API
+
+TECH DEPT:
+
+Saving sender on Users first Run. I thought the session.userData.address.user.id is unique per user. It's probably per conversation
