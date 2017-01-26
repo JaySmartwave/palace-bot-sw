@@ -91,27 +91,19 @@ class TableBookingsPage extends Component {
       <Table selectable={false}>
       <thead>
       <tr>
-      <th>Name</th>
-      <th>Status</th>
+      <th>User</th>
+      <th>Contact no</th>
+      <th>Table Name</th>
       <th>Date/Time Inquired</th>
-      <th>Action</th>
       </tr>
       </thead>
       <tbody>
       {this.state.tableBooking.map((result) => (
         <tr key={result._id}>
+        <td>{result._user_name}</td>
+        <td>{result.contact_no}</td>
         <td>{result.order_items.map(item => item.name)}</td>
-        <td>{result.status}</td>
         <td>{result.created_at}</td>
-        <td>
-        <Box justify="center" align="center">
-        {result.status !== 'Approved' ? 
-        <Button className={styles.button} label="Decline" icon={<CloseIcon />} onClick={this.testFunc} />
-        : 
-        <Button className={styles.button} label="Approve" icon={<CheckmarkIcon />} onClick={this.testFunc} />
-      }
-      </Box>
-      </td>
       </tr>
       ))
     }
