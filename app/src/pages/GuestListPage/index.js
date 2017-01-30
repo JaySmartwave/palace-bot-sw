@@ -35,6 +35,7 @@ class GuestListPage extends Component {
     this.selectAll = this.selectAll.bind(this);
     this.checkToggle = this.checkToggle.bind(this);
     this.state = {
+      organisationId: '5800471acb97300011c68cf7',
       isMobile: false,
       selectedGuest: [],
       guestList: [],
@@ -43,6 +44,7 @@ class GuestListPage extends Component {
       isAllSelected: false,
       displayModal: false,
       modalAction: 'Updating...',
+      event: '',
       event_id: props.params.event_id,
       event_date: props.params.event_date,
     };
@@ -68,7 +70,7 @@ class GuestListPage extends Component {
     }
 
     let paramsGet = {
-      organisationId: '5800471acb97300011c68cf7',
+      organisationId: this.state.organisationId,
       event_id: this.state.event_id,
       event_date: this.state.event_date,
       order_type: 'guest-list'
@@ -80,7 +82,23 @@ class GuestListPage extends Component {
       }
     });
 
+    let options = {
+      organisationId: this.state.organisationId,
+      eventId: this.props.params.event_id
+    };
+
+    this.getEvent(options);
   }
+
+  getEvent = (options) => {
+    PartyBot.events.get(options, (errors, response, body) => {
+      console.log(body);
+      if(response.statusCode == 200) {
+        this.setState({event: body.event});
+      }
+    });
+  }
+
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
       window.removeEventListener('resize', this.handleMobile);
@@ -195,7 +213,7 @@ class GuestListPage extends Component {
         }
         <Box pad={{ vertical: 'medium' }}>
           <Heading align="center">
-            Event Name
+            {this.state.event.name}
           </Heading>
           <Heading align="center" tag="h3">
             Guest List
