@@ -8,6 +8,7 @@ import cors from 'cors';
 
 // constants needed
 const isDeveloping = process.env.NODE_ENV !== 'production';
+console.log(process.env.NODE_ENV);
 const port = isDeveloping ? 1338 : process.env.PORT;
 const app = express();
 const graphqlHTTP = require('express-graphql');

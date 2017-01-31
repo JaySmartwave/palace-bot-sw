@@ -10,7 +10,7 @@ const env = process.env.NODE_ENV || 'development';
 const isProduction = env === 'production';
 const PORT = process.env.PORT || 1337;
 const HOST = '0.0.0.0'; // Set to localhost if need be.
-console.log(env);
+
 module.exports = {
   devtool: isProduction ? '' : 'source-map',
   entry: [
