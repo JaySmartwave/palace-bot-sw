@@ -14,7 +14,7 @@ const HOST = '0.0.0.0'; // Set to localhost if need be.
 module.exports = {
   devtool: isProduction ? '' : 'source-map',
   entry: [
-    path.resolve(ROOT_PATH,'app/src/index.js')
+    path.join(ROOT_PATH,'app/src/index.js')
   ],
   node: {
     fs: "empty",
@@ -26,7 +26,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loaders: isProduction ? [] : [], // ['eslint']
-        include: path.resolve(ROOT_PATH, 'app/src/index')
+        include: path.join(ROOT_PATH, 'app/src/index')
       }
     ],
     loaders: [{
@@ -84,17 +84,17 @@ module.exports = {
   resolve: {
     extensions: ['', '.js', '.jsx', '.json'],
     alias: {
-      components: path.resolve(ROOT_PATH, 'app/src/components'),
-      containers: path.resolve(ROOT_PATH, 'app/src/containers'),
-      pages: path.resolve(ROOT_PATH, 'app/src/pages'),
-      utils: path.resolve(ROOT_PATH, 'app/utils')
+      components: path.join(ROOT_PATH, 'app/src/components'),
+      containers: path.join(ROOT_PATH, 'app/src/containers'),
+      pages: path.join(ROOT_PATH, 'app/src/pages'),
+      utils: path.join(ROOT_PATH, 'app/utils')
     },
   },
   output: {
     path: isProduction ?
-      path.resolve(ROOT_PATH, 'server/public')
+      path.join(ROOT_PATH, 'server/public')
     :
-      path.resolve(ROOT_PATH, 'app/build'),
+      path.join(ROOT_PATH, 'app/build'),
     publicPath: '/',
     filename: isProduction ? '[name].[chunkhash].js' : 'bundle.js',
     chunkFilename: '[name].[chunkhash].chunk.js',
@@ -103,7 +103,7 @@ module.exports = {
     chunks: isProduction,
   },
   devServer: {
-    contentBase: path.resolve(ROOT_PATH, 'app/build'),
+    contentBase: path.join(ROOT_PATH, 'app/build'),
     historyApiFallback: true,
     hot: true,
     inline: true,
