@@ -28,10 +28,6 @@ if (isDeveloping) {
 
 app.use(express.static(__dirname + '/public'));
 
-graphql(schema, query).then((result) => {
-  console.log(JSON.stringify(result))
-});
-
 (async () => {
   try {
     app.use(
@@ -52,16 +48,5 @@ graphql(schema, query).then((result) => {
       );
     });
 
-    let json = await graphql(schema, introspectionQuery);
-    fs.writeFile(
-      './server/schema/schema.json',
-      JSON.stringify(json, null, 2),
-      err => {
-        if (err) throw err;
-        console.log("JSON Schema Created")
-      });
-  } catch (err) {
-    console.log(err);
-  }
 })();
 /* eslint-enable */

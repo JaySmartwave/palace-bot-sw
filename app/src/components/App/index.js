@@ -54,11 +54,10 @@ class Main extends Component {
           <Header
             direction="row"
             justify="between"
-            large
             pad={{ horizontal: 'medium', between: 'small' }}
           >
             {navIsActive ?
-              <div />
+              ''
             :
               <Title onClick={this.handleToggleNav} a11yTitle="Open Menu Left">
                 <Logo inverse={false} />

@@ -25,9 +25,8 @@ class EventsPage extends Component {
 
 	constructor(props) {
 		super(props);
-		this.handleMobile = this.handleMobile.bind(this);
 		this.state = {
-			isMobile: false,
+			isMobile: true,
 			events: []
 		};
 
@@ -36,24 +35,32 @@ class EventsPage extends Component {
 	componentDidMount() {
 		if (typeof window !== 'undefined') {
 			window.addEventListener('resize', this.handleMobile);
+			window.addEventListener('onload', this.handleMobile);
 		}
-		PartyBot.events.getSorted(options, function(err, response, body) {
+		PartyBot.events.getSorted(options, (err, response, body) => {
 			if(!err && response.statusCode == 200) {
 				this.setState({events: body});
 			}
-		}.bind(this));
+		});
 	}
 	componentWillUnmount() {
 		if (typeof window !== 'undefined') {
 			window.removeEventListener('resize', this.handleMobile);
 		}   
 	}
-	handleMobile() {
-		const isMobile = window.innerWidth <= 768;
+	handleMobile = () => {
+		let isMobile = window.innerWidth <= 768;
 		this.setState({
-			isMobile,
+			isMobile: isMobile
 		});
 	}
+	// handleDesktop = () => {
+	// 	console.log(window.innerWidth);
+	// 	let isMobile = window.innerWidth >= 768;
+	// 	this.setState({
+	// 		isMobile,
+	// 	});
+	// }
 
 	render() {
 
@@ -61,8 +68,12 @@ class EventsPage extends Component {
 		const { isMobile, } = this.state;
 		return (
 			<div className={styles.container}>
-			<Box>
-			<Heading align='center'>Events</Heading>
+			<Box size={{ width: 'large' }} align='center'>
+			<Heading
+			textAlign='center'
+			>
+			Events
+			</Heading>
 			</Box>
 			<Table selectable={false}>
 			<thead>
