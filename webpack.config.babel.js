@@ -13,9 +13,7 @@ const HOST = '0.0.0.0'; // Set to localhost if need be.
 
 module.exports = {
   devtool: isProduction ? '' : 'source-map',
-  entry: [
-    path.join(ROOT_PATH,'app/src/index.js')
-  ],
+  entry: './app/src/',
   node: {
     fs: "empty",
     net: "empty",
@@ -26,7 +24,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loaders: isProduction ? [] : [], // ['eslint']
-        include: path.join(ROOT_PATH, 'app/src/index')
+        include: './app/src/'
       }
     ],
     loaders: [{
