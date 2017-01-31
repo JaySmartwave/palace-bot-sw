@@ -26,7 +26,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loaders: isProduction ? [] : [], // ['eslint']
-        include: path.resolve(ROOT_PATH, './app')
+        include: path.resolve(ROOT_PATH, 'app/src/index')
       }
     ],
     loaders: [{

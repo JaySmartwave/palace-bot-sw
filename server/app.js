@@ -8,11 +8,10 @@ import cors from 'cors';
 
 // constants needed
 const isDeveloping = process.env.NODE_ENV !== 'production';
-console.log(process.env.NODE_ENV);
 const port = isDeveloping ? 1338 : process.env.PORT;
 const app = express();
-const graphqlHTTP = require('express-graphql');
-const query = 'query { employees { id, numemployees, location }}';
+// const graphqlHTTP = require('express-graphql');
+// const query = 'query { employees { id, numemployees, location }}';
 
 if (isDeveloping) {
   app.all('*', (req, res, next) => {
@@ -28,10 +27,10 @@ app.use(express.static(__dirname + '/public'));
 
 (async () => {
   try {
-    app.use(
-      '/api',
-      cors()
-    );
+    // app.use(
+    //   '/api',
+    //   cors()
+    // );
 
     app.get('*', (req, res) => {
       res.sendFile(path.join(__dirname, 'public/index.html'));
