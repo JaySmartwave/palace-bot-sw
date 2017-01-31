@@ -14,7 +14,7 @@ const HOST = '0.0.0.0'; // Set to localhost if need be.
 module.exports = {
   devtool: isProduction ? '' : 'source-map',
   entry: [
-    path.resolve(ROOT_PATH,'app/src/index')
+    path.resolve(ROOT_PATH,'app/src/index.js')
   ],
   node: {
     fs: "empty",
