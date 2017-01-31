@@ -3,9 +3,6 @@ import 'regenerator-runtime/runtime';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
-import { graphql } from 'graphql';
-import { introspectionQuery } from 'graphql/utilities';
-import schema from './schema';
 import morgan from 'morgan';
 import cors from 'cors';
 
@@ -32,8 +29,7 @@ app.use(express.static(__dirname + '/public'));
   try {
     app.use(
       '/api',
-      cors(),
-      graphqlHTTP({ schema, pretty: true, graphiql: true })
+      cors()
     );
 
     app.get('*', (req, res) => {
@@ -44,9 +40,13 @@ app.use(express.static(__dirname + '/public'));
       if (err) { return console.warn(err); };
       return console.info(
         `==> 😎 Listening on port ${port}.
-          Open http://0.0.0.0:${port}/ in your browser.`
-      );
+        Open http://0.0.0.0:${port}/ in your browser.`
+        );
     });
 
+  }
+  catch(err) {
+
+  }
 })();
 /* eslint-enable */

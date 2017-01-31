@@ -119,7 +119,9 @@
     "subscriptions-transport-ws": "^0.2.2",
     "svg-react-loader": "^0.3.6",
     "utils": "^0.3.1",
-    "webpack": "1.14.0"
+    "npm-install-webpack-plugin": "^4.0.3",
+    "webpack": "1.14.0",
+    "webpack-visualizer-plugin": "0.1.10"
   },
   "devDependencies": {
     "babel-eslint": "5.0.1",
@@ -150,7 +152,6 @@
     "mocha": "^2.3.4",
     "morgan": "^1.7.0",
     "nock": "^8.0.0",
-    "npm-install-webpack-plugin": "^4.0.3",
     "null-loader": "0.1.1",
     "plop": "1.5.0",
     "react-css-modules": "^3.7.6",
@@ -159,7 +160,6 @@
     "redux-mock-store": "^1.2.0",
     "regenerator-runtime": "^0.9.5",
     "reselect": "^2.5.4",
-    "webpack-dev-server": "1.16.2",
-    "webpack-visualizer-plugin": "0.1.10"
+    "webpack-dev-server": "1.16.2"
   }
 }
