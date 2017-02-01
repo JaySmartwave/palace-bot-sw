@@ -54,13 +54,6 @@ class EventsPage extends Component {
 			isMobile: isMobile
 		});
 	}
-	// handleDesktop = () => {
-	// 	console.log(window.innerWidth);
-	// 	let isMobile = window.innerWidth >= 768;
-	// 	this.setState({
-	// 		isMobile,
-	// 	});
-	// }
 
 	render() {
 
@@ -69,9 +62,7 @@ class EventsPage extends Component {
 		return (
 			<div className={styles.container}>
 			<Box size={{ width: 'large' }} align='center'>
-			<Heading
-			textAlign='center'
-			>
+			<Heading>
 			Events
 			</Heading>
 			</Box>

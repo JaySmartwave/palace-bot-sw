@@ -67,8 +67,8 @@ class SchedulePage extends Component {
     const { isMobile, } = this.state;
     return (
       <div className={styles.container}>
-      <Box pad={{ vertical: 'medium' }}>
-      <Heading align='center'> Event Schedule </Heading>
+      <Box size={{ width: 'xlarge' }}>
+        <Heading align='center'> Event Schedule </Heading>
       </Box>
       <Header justify='between'>
       <Heading> </Heading>

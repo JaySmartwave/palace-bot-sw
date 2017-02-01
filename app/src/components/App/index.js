@@ -66,7 +66,8 @@ class Main extends Component {
             }
           </Header>
           {React.cloneElement(this.props.children, this.props)}
-        </SidebarNav> : <LoginPage /> }
+        </SidebarNav>
+         : <LoginPage /> }
         
       </App>
     );

@@ -67,7 +67,7 @@ class VenuesPage extends Component {
     const { isMobile, } = this.state;
     return (
       <div className={styles.container}>
-        <Box pad={{ vertical: 'medium' }}>
+        <Box size={{ width: 'large' }}>
           <Heading align='center'> Venues Setup </Heading>
         </Box>
         <Header justify='between'>

@@ -260,6 +260,7 @@ class ManageTableTypesPage extends Component {
       variants,
     } = this.state;
     return (
+      <Box size={{ width: 'large' }}>
       <div className={styles.container}>
         <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
         {this.state.confirm !== false ? 
@@ -273,7 +274,7 @@ class ManageTableTypesPage extends Component {
         </Layer>
         : null
         }
-      <Box>
+      <Box size={{ width: 'large' }}>
         {this.state.tableTypeId !== null ? 
           <Heading align="center">
             Edit Table Type
@@ -284,7 +285,7 @@ class ManageTableTypesPage extends Component {
           </Heading>
         }
       </Box>
-			<Box direction="row" justify="center" align="center" wrap={true} margin="small">
+			<Box size={{ width: 'large' }} direction="row" justify="center" align="center" wrap={true} margin="small">
 				<Form>
 				<FormFields>
 					<fieldset>
@@ -306,15 +307,15 @@ class ManageTableTypesPage extends Component {
 					  </FormField>
             <FormField label="Image">
             {this.state.image ? 
-              <Box align="center" justify="center"> 
+              <Box size={{ width: 'large' }} align="center" justify="center"> 
                 <div> 
                   <img src={this.state.image.preview} width="200" />
                 </div>
-                <Box>
+                <Box size={{ width: 'large' }}>
                   <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
                 </Box>
               </Box> :
-              <Box align="center" justify="center">
+              <Box align="center" justify="center" size={{ width: 'large' }}>
                 <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
                   Drop image here or click to select image to upload. 
                 </Dropzone>
@@ -338,7 +339,9 @@ class ManageTableTypesPage extends Component {
         </Footer>
       </Form>
     </Box>
-  </div>);
+  </div>
+  </Box>
+  );
   }
 }
 
