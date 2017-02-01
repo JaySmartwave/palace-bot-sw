@@ -41,25 +41,8 @@ module.exports = {
       loader: 'json'
     },
     {
-      test: /\.module\.scss$/,
-      loader: !isProduction ?
-        'style-loader!css-loader?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]!resolve-url-loader!sass-loader'
-      :
-        ExtractTextPlugin.extract({
-          fallbackLoader: 'style-loader',
-          loader: 'css-loader?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]!resolve-url-loader!sass-loader'
-        }),
-    },
-    {
       test: /\.scss$/,
-      exclude: /\.module\.scss$/,
-      loader: !isProduction ?
-        'style-loader!css-loader!sass-loader'
-      :
-        ExtractTextPlugin.extract({
-          fallbackLoader: 'style-loader',
-          loader: '!css-loader!sass-loader'
-        }),
+      loader: ExtractTextPlugin.extract('css!sass')
     },
     {
       test: /\.css$/,
@@ -113,7 +96,7 @@ module.exports = {
   },
   plugins: isProduction ?
     [
-      new ExtractTextPlugin('[name].[contenthash].css'),
+      new ExtractTextPlugin('styles.css'),
       new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor',
         children: true,
