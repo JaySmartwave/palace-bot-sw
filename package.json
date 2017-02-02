@@ -73,7 +73,7 @@
     "express": "^4.14.0",
     "extract-text-webpack-plugin": "1.0.1",
     "file-loader": "^0.9.0",
-    "grommet": "1.2.1",
+    "grommet": "^0.6.12",
     "grommet-udacity": "^0.1.2",
     "history": "^1.14.0",
     "html-webpack-plugin": "^2.7.1",
