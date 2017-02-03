@@ -26,31 +26,32 @@ class TableTypesPage extends Component {
       organisationId: '5800471acb97300011c68cf7',
       isMobile: false,
       tableTypes: [],
-      filter: [],
-      activeFilter: '' 
+      filter: []
     };
   }
 
-  onFilterChange(event) {
+  onFilterChange = (event) => {
     let filterId = event.nativeEvent.target.selectedIndex;
     let filterCode = event.nativeEvent.target[filterId].value;
-    console.log('Selected Venue: ' + filterCode);
-    this.setState({
-      activeFilter: filterCode
-    }.bind(this));
-    console.log(this.state.activeFilter);
+
+    let options = {
+      organisationId: this.state.organisationId,
+      venue_id: filterCode
+    };
+
+    this.getTableTypes(options);
   }
 
-  getFilterOptions(){
+  getFilterOptions = () => {
 
     return this.state.filter.map(function(filter, i) {
       return (
         <option key={i} value={filter.value}> {filter.label} </option>
         );
-    }.bind(this));
+    });
   }
 
-  getVenues(options) {
+  getVenues = (options) => {
     PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
         var venues = [];
@@ -61,7 +62,7 @@ class TableTypesPage extends Component {
     });
   }
 
-  getTableTypes(options) {
+  getTableTypes = (options) => {
     PartyBot.tableTypes.getTableTypesInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
         console.log(body);
