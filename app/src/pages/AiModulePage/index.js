@@ -21,12 +21,14 @@ import { Link } from 'react-router'
 class AiModulePage extends Component {
   constructor() {
     super();
-    this.handleMobile = this.handleMobile.bind(this);
     this.state = {
     	organisationId: '5800471acb97300011c68cf7',
     	isMobile: false,
+      filter: [],
     	answered: [],
-    	unanswered: []
+    	unanswered: [],
+      page:1,
+      limit:25
     };
 
   }
@@ -34,33 +36,75 @@ class AiModulePage extends Component {
 
   }
   componentDidMount() {
-  	PartyBot.queries.getQueryPerOrganisation(this.state, (err, res, body) => {
-  		body.filter( (value) => {
-  			if(typeof value.reply === 'undefined' || value.reply == '') {
-  				this.setState({unanswered: this.state.unanswered.concat(value)});
-  			} else {
-  				this.setState({answered: this.state.answered.concat(value)});
-  			}
-  		});
-  	});
+  	
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.handleMobile);
     }
+    let getQueriesParams = {
+      organisationId: this.state.organisationId,
+      page: this.state.page,
+      limit: this.state.limit
+    }
+    this.getQueries(getQueriesParams);
+    this.getVenues(this.state)
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
       window.removeEventListener('resize', this.handleMobile);
     }    
   }
-  handleMobile() {
+  handleMobile = () => {
     const isMobile = window.innerWidth <= 768;
     this.setState({
       isMobile,
     });
   }
-  testFunc() {
-  	console.log('test');
+  
+  getQueries = (options) => {
+    this.setState({ unanswered: [], answered: [] });
+    PartyBot.queries.getQueryPerOrganisation(options, (err, res, body) => {
+      body.queries.filter( (value) => {
+        if(typeof value.reply === 'undefined' || value.reply == '') {
+          this.setState({unanswered: this.state.unanswered.concat(value)});
+        } else {
+          this.setState({answered: this.state.answered.concat(value)});
+        }
+      });
+    });
   }
+
+  getVenues = (options) => {
+    PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
+      if(response.statusCode == 200) {
+        var venues = [];
+        body.map((value, index) => {
+          this.setState({ filter: this.state.filter.concat([{value: value._id, label: value.name}]) });
+        });
+      }
+    });
+  }
+  
+  getFilterOptions = () => {
+
+    return this.state.filter.map((filter, i) => {
+      return (
+        <option key={i} value={filter.value}> {filter.label} </option>
+        );
+    });
+  }
+
+  onFilterChange = (event) => {
+    let venue = event.target.value;
+    console.log(venue);
+    let options = {
+      organisationId: this.state.organisationId,
+      venueId: venue
+    };
+
+    this.getQueries(options);
+
+  }
+
   render() {
     const { router, } = this.context;
     const { isMobile, } = this.state;
@@ -70,7 +114,13 @@ class AiModulePage extends Component {
       <Heading align='center'> AI Module </Heading>
       </Box>
       <Header justify='between'>
-      <Heading> </Heading>
+      <Heading>
+      <select name="filter"
+          onChange={this.onFilterChange}
+          className={styles.filSel}>
+          {this.getFilterOptions()}
+        </select>
+      </Heading>
       <Menu direction='row' align='center' responsive={false}>
           <Button className={styles.upCsv} label="Upload CSV" icon={<DocumentCsvIcon />} onClick={() => {}} />
       </Menu>
@@ -80,8 +130,9 @@ class AiModulePage extends Component {
 		    <Table selectable={false}>
 		      <thead>
 		      <tr>
-		      <th className={styles.queCol}> Query </th>
-		      <th> </th>
+		      <th className={styles.queCol}>Query</th>
+          <th>Venue</th>
+		      <th></th>
 		      </tr>
 		      </thead>
 		      <tbody>
@@ -89,6 +140,7 @@ class AiModulePage extends Component {
 		      	this.state.unanswered.map((result) => (
 		      		<tr key={result._id}>
 		      			<td className={styles.queCol}>{result.entity.join(', ')}</td>
+                <td>{(result.venue_id != null)? result.venue_id.name : `The Palace`}</td>
 		      			<td>
 		      			<Box justify="center" align="center">
                   <Link to={'/ai-module/'+result._id}>
@@ -134,6 +186,9 @@ class AiModulePage extends Component {
 		    </Table>
 		  </Tab>
 		</Tabs>
+    <div>
+      Do Paginate here
+    </div>
     </div>
     );
   }
