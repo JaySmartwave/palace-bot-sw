@@ -115,7 +115,7 @@ class AiModulePage extends Component {
       </Box>
       <Header justify='between'>
       <Heading>
-      <select name="filter"
+        <select name="filter"
           onChange={this.onFilterChange}
           className={styles.filSel}>
           {this.getFilterOptions()}

@@ -18,17 +18,17 @@ import Select from 'react-select';
 import { Link } from 'react-router';
 import moment from 'moment';
 
-let options = {
-  organisationId: '5800471acb97300011c68cf7',
-};
-
 class SchedulePage extends Component {
   constructor() {
     super();
     this.handleMobile = this.handleMobile.bind(this);
     this.state = {
+      organisationId: '5800471acb97300011c68cf7',
       isMobile: false,
-      events: []
+      filter: [ { value: 'all', label: 'All' }],
+      events: [],
+      page:1,
+      limit: 25
     };
 
   }
@@ -40,28 +40,67 @@ class SchedulePage extends Component {
       window.addEventListener('resize', this.handleMobile);
     } 
     // Get All Events In Venue In Organisation 
-    PartyBot.events.getEventsInOrganisation(options, function(err, response, body) {
-      if(!err && response.statusCode == 200) {
-        console.log(body);
-        this.setState({events: body});
-      }
-    }.bind(this));
+    let options = {
+      organisationId: this.state.organisationId
+    };
 
+    this.getEvents(options);
+    this.getVenues(options);
   }
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
       window.removeEventListener('resize', this.handleMobile);
     }    
   }
+
   handleMobile() {
     const isMobile = window.innerWidth <= 768;
     this.setState({
       isMobile,
     });
   }
-  testFunc() {
-
+  
+  getEvents = (options) => {
+    PartyBot.events.getEventsInOrganisation(options, (err, response, body) => {
+      console.log(body);
+      if(!err && response.statusCode == 200) {
+        this.setState({events: body});
+      }
+    });
   }
+
+  getFilterOptions = () => {
+
+    return this.state.filter.map((filter, i) => {
+      return (
+        <option key={i} value={filter.value}> {filter.label} </option>
+        );
+    });
+  }
+
+  getVenues = (options) => {
+    PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
+      if(response.statusCode == 200) {
+        var venues = [];
+        body.map((value, index) => {
+          this.setState({ filter: this.state.filter.concat([{value: value._id, label: value.name}]) });
+        });
+      }
+    });
+  }
+
+  onFilterChange = (event) => {
+    let venue = event.target.value;
+    let options = {};
+    (venue === 'all') ? options = { organisationId: this.state.organisationId } 
+      : options = {
+        organisationId: this.state.organisationId,
+        venue_id: venue
+      }
+
+    this.getEvents(options);
+  }
+
   render() {
     const { router, } = this.context;
     const { isMobile, } = this.state;
@@ -71,7 +110,13 @@ class SchedulePage extends Component {
         <Heading align='center'> Event Schedule </Heading>
       </Box>
       <Header justify='between'>
-      <Heading> </Heading>
+      <Heading>
+        <select name="filter"
+          onChange={this.onFilterChange}
+          className={styles.filSel}>
+          {this.getFilterOptions()}
+        </select>
+      </Heading>
       <Menu direction='row' align='center' responsive={false}>
         <Link to={'/event-schedule/add'}>
           <Button className={styles.addBut} label="Add" icon={<AddIcon />} onClick={function(){}} />
@@ -93,15 +138,15 @@ class SchedulePage extends Component {
         <tr key={result._id}>
         <td>{result.name}</td>
         <td><img src={result.image} width="200" /></td>
-        <td>{result.description}</td>
+        <td>{result.venue_id}</td>
         <td>{moment('10/17/2016', 'MM/DD/YYYY').format('dddd, MM/DD/YYYY')}</td>
         <td>
         	<Box justify="center" align="center">
             <Link to={`/event-schedule/${result._id}`} activeClassName="active">
-              <Button className={styles.button} label="Edit Event" icon={<EditIcon />} onClick={this.testFunc} />
+              <Button className={styles.button} label="Edit Event" icon={<EditIcon />} onClick={() => {}} />
             </Link>
             <Link to={'editTables'} activeClassName="active">
-              <Button className={styles.button} label="Edit Tables" icon={<EditIcon />} onClick={this.testFunc} />
+              <Button className={styles.button} label="Edit Tables" icon={<EditIcon />} onClick={() => {}} />
             </Link>
         	</Box>
         </td>
