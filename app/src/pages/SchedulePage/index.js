@@ -2,6 +2,7 @@ import PartyBot from 'partybot-http-client'; // Bots http client
 import React, { PropTypes, Component } from 'react';
 import cssModules from 'react-css-modules';
 import styles from './index.module.scss';
+import { MONTHS } from './constants.js';
 import Header from 'grommet/components/Header';
 import Heading from 'grommet/components/Heading';
 import Anchor from 'grommet/components/Anchor';
@@ -17,10 +18,10 @@ import AddIcon from 'grommet/components/icons/base/Add';
 import Select from 'react-select';
 import { Link } from 'react-router';
 import moment from 'moment';
-
 class SchedulePage extends Component {
-  constructor() {
-    super();
+  
+  constructor(props) {
+    super(props);
     this.handleMobile = this.handleMobile.bind(this);
     this.state = {
       organisationId: '5800471acb97300011c68cf7',
@@ -60,9 +61,16 @@ class SchedulePage extends Component {
     });
   }
   
+  // getEvents = (options) => {
+  //   PartyBot.events.getEventsInOrganisation(options, (err, response, body) => {
+  //     if(!err && response.statusCode == 200) {
+  //       this.setState({events: body});
+  //     }
+  //   });
+  // }
+
   getEvents = (options) => {
-    PartyBot.events.getEventsInOrganisation(options, (err, response, body) => {
-      console.log(body);
+    PartyBot.events.getSorted(options, (err, response, body) => {
       if(!err && response.statusCode == 200) {
         this.setState({events: body});
       }
@@ -134,24 +142,30 @@ class SchedulePage extends Component {
       </tr>
       </thead>
       <tbody>
-      {this.state.events.map((result) => (
-        <tr key={result._id}>
-        <td>{result.name}</td>
-        <td><img src={result.image} width="200" /></td>
-        <td>{result.venue_id}</td>
-        <td>{moment('10/17/2016', 'MM/DD/YYYY').format('dddd, MM/DD/YYYY')}</td>
-        <td>
-        	<Box justify="center" align="center">
-            <Link to={`/event-schedule/${result._id}`} activeClassName="active">
-              <Button className={styles.button} label="Edit Event" icon={<EditIcon />} onClick={() => {}} />
-            </Link>
-            <Link to={'editTables'} activeClassName="active">
-              <Button className={styles.button} label="Edit Tables" icon={<EditIcon />} onClick={() => {}} />
-            </Link>
-        	</Box>
-        </td>
+      {this.state.events.map((result) => {
+        var date = new Date(result.next_date);
+        var day = date.getDate();
+        var monthIndex = date.getMonth();
+        var year = date.getFullYear();
+        return (
+          <tr key={result._id}>
+            <td>{result.name}</td>
+            <td><img src={result.image} width="200" /></td>
+            <td>{result._venue_id.name}</td>
+            <td>{`${MONTHS[monthIndex]} ${day} ${year}`}</td>
+            <td>
+              <Box justify="center" align="center">
+                <Link to={`/event-schedule/${result._id}`} activeClassName="active">
+                  <Button className={styles.button} label="Edit Event" icon={<EditIcon />} onClick={() => {}} />
+                </Link>
+                <Link to={'editTables'} activeClassName="active">
+                  <Button className={styles.button} label="Edit Tables" icon={<EditIcon />} onClick={() => {}} />
+                </Link>
+              </Box>
+            </td>
         </tr>
-      ))}
+        )
+      })}
     </tbody>
     </Table>
     </div>
