@@ -17,16 +17,17 @@ import { Link } from 'react-router';
 
 // Pages map directly to Routes, i.e. one page equals on Route
 
-let options = {
-  organisationId: '5800471acb97300011c68cf7',
-};
+
 
 class EventsPage extends Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
+			organisationId: '5800471acb97300011c68cf7',
 			isMobile: true,
+			filter: [ { value: 'all', label: 'All' }],
+			venues: [],
 			events: []
 		};
 
@@ -35,13 +36,14 @@ class EventsPage extends Component {
 	componentDidMount() {
 		if (typeof window !== 'undefined') {
 			window.addEventListener('resize', this.handleMobile);
-			window.addEventListener('onload', this.handleMobile);
 		}
-		PartyBot.events.getSorted(options, (err, response, body) => {
-			if(!err && response.statusCode == 200) {
-				this.setState({events: body});
-			}
-		});
+		
+		let options = {
+			organisationId: '5800471acb97300011c68cf7',
+		};
+
+		this.getEvents(options);
+		this.getVenues(options);
 	}
 	componentWillUnmount() {
 		if (typeof window !== 'undefined') {
@@ -55,6 +57,45 @@ class EventsPage extends Component {
 		});
 	}
 
+	getVenues = (options) => {
+		PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
+			if(response.statusCode == 200) {
+				var venues = [];
+				body.map((value, index) => {
+					this.setState({ filter: this.state.filter.concat([{value: value._id, label: value.name}]) });
+				});
+			}
+		});
+	}
+
+	getEvents = (options) => {
+		PartyBot.events.getSorted(options, (err, response, body) => {
+			if(!err && response.statusCode == 200) {
+				this.setState({events: body});
+			}
+		});
+	}
+	getFilterOptions = () => {
+
+		return this.state.filter.map((filter, i) => {
+			return (
+				<option key={i} value={filter.value}> {filter.label} </option>
+				);
+		});
+	}
+
+	onFilterChange = (event) => {
+		let venue = event.target.value;
+		let options = {};
+		(venue === 'all') ? options = { organisationId: this.state.organisationId } 
+		: options = {
+			organisationId: this.state.organisationId,
+			venue_id: venue
+		}
+		console.log(options);
+		this.getEvents(options);
+	}
+
 	render() {
 
 		const { router, } = this.context;
@@ -65,6 +106,13 @@ class EventsPage extends Component {
 			<Heading>
 			Events
 			</Heading>
+			<Header>
+				<select name="filter"
+					onChange={this.onFilterChange}
+					className={styles.filSel}>
+					{this.getFilterOptions()}
+				</select>
+			</Header>
 			</Box>
 			<Table selectable={false}>
 			<thead>
