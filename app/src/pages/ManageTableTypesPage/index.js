@@ -18,6 +18,7 @@ import Section from 'grommet/components/Section';
 import Paragraph from 'grommet/components/Paragraph';
 import Select from 'react-select';
 import request from 'superagent';
+import Immutable from 'immutable';
 import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_UPLOAD_URL } from '../../constants';
 
 class ManageTableTypesPage extends Component {
@@ -75,8 +76,8 @@ class ManageTableTypesPage extends Component {
     });
   }
 
-  onVenueAdd = (selectedVenue) => {
-    this.setState({ selectedVenue: selectedVenue.value });
+  onVenueChange = (selectedVenue) => {
+    this.setState({ selectedVenue: selectedVenue.value, selectedEvents:[], eventVars: [] });
     let params = {
       organisationId: this.state.organisationId,
       venue_id: selectedVenue.value
@@ -84,14 +85,29 @@ class ManageTableTypesPage extends Component {
     this.getEvents(params)
   }
 
-  onEventAdd = (selectedEvents) => {
-    this.setState({ selectedEvents });
+  onEventAdd = (index, selectedEvents) => {
+    const CL = console.log;
+    // CL(selectedEvents);
+    let cloned = Immutable.List(this.state.eventVars);
+    let anIndex = Immutable.fromJS(cloned.get(index));
+    
+    let newIds = selectedEvents.map((value, index) => {  
+      return value.value
+    });
+
+    // let newMapped = ;
+    // console.log(newMapped);
+    anIndex = anIndex.set('_event_id', anIndex.get('_event_id').concat(newIds));
+    let newClone = cloned.set(index, anIndex);
+    console.log(newClone.toJS());
+    this.setState({eventVars: newClone})
+    this.setState({selectedEvents});
   }
 
   closeSetup = () => {
     this.setState({
-     confirm: false
-   });
+      confirm: false
+    });
     this.context.router.push('/table-types');
   }
 
@@ -106,15 +122,14 @@ class ManageTableTypesPage extends Component {
   addEvent = () => {
     this.setState({
       eventVars: this.state.eventVars.concat({
-        _venue_id: null,
+        _event_id: [],
         description: "Some Description",
         image: null
       })
     });
-    console.log(this.state.eventVars); 
   }
 
-  removeEvent = () => {
+  removeEvent = (index) => {
 
   }
 
@@ -242,7 +257,6 @@ class ManageTableTypesPage extends Component {
 
   getEvents = (options) => {
     PartyBot.events.getEventsInOrganisation(options, (err, response, body) => {
-      console.log(body);
       if(!err && response.statusCode == 200) {
         if(body.length > 0) {
           this.setState({eventId: body[0]._id});
@@ -282,6 +296,7 @@ class ManageTableTypesPage extends Component {
       }
     });
   };
+
   renderEventVars = () => {
     return this.state.eventVars.map((value, index) => {
     return (
@@ -291,9 +306,12 @@ class ManageTableTypesPage extends Component {
           name="events"
           options={this.state.events}
           value={this.state.selectedEvents}
-          onChange={this.onEventAdd}
+          onChange={this.onEventAdd.bind(this, index)}
           multi={true}
           />
+        <FormField label="Description" htmlFor="tableTypedescription">
+          <input id="tableTypedescription" type="text" onChange={() => {}} value/>
+        </FormField>
         <FormField label="Image">
         {this.state.image ? 
           <Box size={{ width: 'large' }} align="center" justify="center"> 
@@ -361,14 +379,14 @@ class ManageTableTypesPage extends Component {
                 name="promoterVenue"
                 options={this.state.venues}
                 value={this.state.selectedVenue}
-                onChange={this.onVenueAdd}
+                onChange={this.onVenueChange}
                 />
               <FormField label="Name" htmlFor="tableTypeName">
                 <input id="tableTypeName" type="text" onChange={this.setName} value={this.state.name}/>
               </FormField>
             </Box>
             {this.renderEventVars()}
-            <Box size={{width: 'medium'}}>
+            <Box size={{width: 'medium'}} align="center">
               <Button label="Add Event" primary={true} onClick={this.addEvent} />
             </Box>
           </fieldset>
