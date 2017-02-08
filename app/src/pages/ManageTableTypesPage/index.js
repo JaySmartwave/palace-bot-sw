@@ -24,18 +24,11 @@ class ManageTableTypesPage extends Component {
   constructor(props) {
     super(props);
     this.handleMobile = this.handleMobile.bind(this);
-    this.closeSetup = this.closeSetup.bind(this);
-    this.onDrop = this.onDrop.bind(this);
-    this.onRemoveImage = this.onRemoveImage.bind(this);
-    this.onVenueAdd = this.onVenueAdd.bind(this);
-    this.setName = this.setName.bind(this);
-    this.submitCreate = this.submitCreate.bind(this);
-    this.submitSave = this.submitSave.bind(this);
-    this.submitDelete = this.submitDelete.bind(this);
     this.state = {
       organisationId: '5800471acb97300011c68cf7',
       no_of_pax: 0,
       isMobile: false,
+      isBusy: 0,
       image: null,
       prevImage: null,
       isNewImage: false,
@@ -44,7 +37,10 @@ class ManageTableTypesPage extends Component {
       name: '',
       tags: 'tabletypes',
       venues: [],
-      selectedVenues: [],
+      events: [],
+      selectedVenue: [],
+      selectedEvents: [],
+      eventVars: []
     };
   }
 
@@ -72,45 +68,70 @@ class ManageTableTypesPage extends Component {
       window.removeEventListener('resize', this.handleMobile);
     }
   }
-  handleMobile() {
+  handleMobile = () => {
     const isMobile = window.innerWidth <= 768;
     this.setState({
       isMobile,
     });
   }
 
-  onVenueAdd(selectedVenues) {
-    this.setState({ selectedVenues });
+  onVenueAdd = (selectedVenue) => {
+    this.setState({ selectedVenue: selectedVenue.value });
+    let params = {
+      organisationId: this.state.organisationId,
+      venue_id: selectedVenue.value
+    };
+    this.getEvents(params)
   }
 
-  closeSetup(){
+  onEventAdd = (selectedEvents) => {
+    this.setState({ selectedEvents });
+  }
+
+  closeSetup = () => {
     this.setState({
      confirm: false
    });
     this.context.router.push('/table-types');
   }
 
-  setName(event) {
+  setName = (event) => {
     this.setState({name: event.target.value});
   }
 
   setNoOfPax = (event) => {
     this.setState({no_of_pax: event.target.value});
   };
-  onDrop(file) {
+
+  addEvent = () => {
+    this.setState({
+      eventVars: this.state.eventVars.concat({
+        _venue_id: null,
+        description: "Some Description",
+        image: null
+      })
+    });
+    console.log(this.state.eventVars); 
+  }
+
+  removeEvent = () => {
+
+  }
+
+  onDrop = (file) => {
     this.setState({
        image: file[0],
        isNewImage: true,
      });
   }
-  onRemoveImage() {
+  onRemoveImage = () => {
     this.setState({
       image: null,
       isNewImage: false,
     });
   }
 
-  handleImageUpload(file, callback) {
+  handleImageUpload = (file, callback) => {
     if(this.state.isNewImage) {
       let options = {
         url: CLOUDINARY_UPLOAD_URL,
@@ -138,7 +159,7 @@ class ManageTableTypesPage extends Component {
     } 
   }
 
-  submitDelete (event) {
+  submitDelete = (event) => {
     event.preventDefault();
     let params = _.pick(this.state, ['organisationId', 'tableTypeId']);
     PartyBot.tableTypes.deleteTableType(params, (error, response, body) => {
@@ -152,9 +173,9 @@ class ManageTableTypesPage extends Component {
     });
   }
 
-  submitSave(event) {
+  submitSave = (event) => {
     event.preventDefault();
-    let venuesArr = this.state.selectedVenues.map(function(value, index) {
+    let venuesArr = this.state.selectedVenue.map(function(value, index) {
       return value.value;
     });
     this.handleImageUpload(this.state.image, (err, imageLink) => {
@@ -181,35 +202,33 @@ class ManageTableTypesPage extends Component {
     });
   }
 
-  submitCreate(event) {
+  submitCreate = (event) => {
     event.preventDefault();
-    let venuesArr = this.state.selectedVenues.map(function(value, index) {
-      return value.value;
-    });
-    this.handleImageUpload(this.state.image, (err, imageLink) => {
-      if (err) {
-        console.log(err);
-      } else {
-        let objState = this.state;
-        let createParams = { 
-          organisationId: this.state.organisationId,
-          venue_id: venuesArr,
-          name: this.state.name,
-          no_of_pax: this.state.no_of_pax,
-          image: imageLink
-        };
-        PartyBot.tableTypes.create(createParams, (err, response, body) => {
-          if(response.statusCode == 200) {
-            this.setState({
-              confirm: true
-            });
-          }
-        });
-      }
-    });
+    console.log(this.state);
+    // this.handleImageUpload(this.state.image, (err, imageLink) => {
+    //   if (err) {
+    //     console.log(err);
+    //   } else {
+    //     let objState = this.state;
+    //     let createParams = { 
+    //       organisationId: this.state.organisationId,
+    //       venue_id: venuesArr,
+    //       name: this.state.name,
+    //       no_of_pax: this.state.no_of_pax,
+    //       image: imageLink
+    //     };
+    //     PartyBot.tableTypes.create(createParams, (err, response, body) => {
+    //       if(response.statusCode == 200) {
+    //         this.setState({
+    //           confirm: true
+    //         });
+    //       }
+    //     });
+    //   }
+    // });
   }
 
-  getVenues(options) {
+  getVenues = (options) => {
     PartyBot.venues.getAllInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
         let arr = [];
@@ -221,12 +240,28 @@ class ManageTableTypesPage extends Component {
     });
   }
 
-  getTableType(options) {
+  getEvents = (options) => {
+    PartyBot.events.getEventsInOrganisation(options, (err, response, body) => {
+      console.log(body);
+      if(!err && response.statusCode == 200) {
+        if(body.length > 0) {
+          this.setState({eventId: body[0]._id});
+        }
+        let arr = [];
+        body.map(function(value, index) {
+          arr.push({value: value._id, label: value.name});
+        });
+        this.setState({events: arr});
+      }
+    });
+  }
+
+  getTableType = (options) => {
     return PartyBot.tableTypes.getTableTypesInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
         body._venues.map((value, index) => {
           this.setState({
-            selectedVenues: this.state.selectedVenues.concat({
+            selectedVenue: this.state.selectedVenue.concat({
               label: value.name,
               value: value._id
             })
@@ -247,7 +282,38 @@ class ManageTableTypesPage extends Component {
       }
     });
   };
-
+  renderEventVars = () => {
+    return this.state.eventVars.map((value, index) => {
+    return (
+      <Box key={index} separator="all" pad={{"vertical": "medium"}}>
+        <FormField label="Event" htmlFor="event" />
+        <Select 
+          name="events"
+          options={this.state.events}
+          value={this.state.selectedEvents}
+          onChange={this.onEventAdd}
+          multi={true}
+          />
+        <FormField label="Image">
+        {this.state.image ? 
+          <Box size={{ width: 'large' }} align="center" justify="center"> 
+            <div> 
+              <img src={this.state.image.preview} width="200" />
+            </div>
+            <Box size={{ width: 'large' }}>
+              <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
+            </Box>
+          </Box> :
+          <Box align="center" justify="center" size={{ width: 'large' }}>
+            <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
+              Drop image here or click to select image to upload. 
+            </Dropzone>
+          </Box>
+        }
+        </FormField>
+      </Box>)
+    });
+  }
   render() {
     const {
       router,
@@ -261,7 +327,7 @@ class ManageTableTypesPage extends Component {
     } = this.state;
     return (
       <Box size={{ width: 'large' }}>
-      <div className={styles.container}>
+
         <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
         {this.state.confirm !== false ? 
         <Layer align="center">
@@ -289,39 +355,22 @@ class ManageTableTypesPage extends Component {
 				<Form>
 				<FormFields>
 					<fieldset>
-  	        <Box separator="all">
+            <Box separator="all">
               <FormField label="Venue" htmlFor="promoterVenue" />
               <Select 
                 name="promoterVenue"
                 options={this.state.venues}
-                value={this.state.selectedVenues}
+                value={this.state.selectedVenue}
                 onChange={this.onVenueAdd}
-                multi={true}
                 />
-         		</Box>
-					  <FormField label="Name" htmlFor="tableTypeName">
-					    <input id="tableTypeName" type="text" onChange={this.setName} value={this.state.name}/>
-					  </FormField>
-					  <FormField label="No. of Pax" htmlFor="tablePax">
-					    <NumberInput id="tablePax" min={0} max={99} onChange={this.setNoOfPax} value={this.state.no_of_pax}/>
-					  </FormField>
-            <FormField label="Image">
-            {this.state.image ? 
-              <Box size={{ width: 'large' }} align="center" justify="center"> 
-                <div> 
-                  <img src={this.state.image.preview} width="200" />
-                </div>
-                <Box size={{ width: 'large' }}>
-                  <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
-                </Box>
-              </Box> :
-              <Box align="center" justify="center" size={{ width: 'large' }}>
-                <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
-                  Drop image here or click to select image to upload. 
-                </Dropzone>
-              </Box>
-            }
-            </FormField>
+              <FormField label="Name" htmlFor="tableTypeName">
+                <input id="tableTypeName" type="text" onChange={this.setName} value={this.state.name}/>
+              </FormField>
+            </Box>
+            {this.renderEventVars()}
+            <Box size={{width: 'medium'}}>
+              <Button label="Add Event" primary={true} onClick={this.addEvent} />
+            </Box>
           </fieldset>
         </FormFields>
         <Footer pad={{"vertical": "medium"}}>
@@ -339,7 +388,7 @@ class ManageTableTypesPage extends Component {
         </Footer>
       </Form>
     </Box>
-  </div>
+
   </Box>
   );
   }
