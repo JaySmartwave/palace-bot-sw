@@ -19,6 +19,7 @@ import Paragraph from 'grommet/components/Paragraph';
 import Select from 'react-select';
 import request from 'superagent';
 import Immutable from 'immutable';
+import _ from 'underscore';
 import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_UPLOAD_URL } from '../../constants';
 
 class ManageTableTypesPage extends Component {
@@ -35,13 +36,15 @@ class ManageTableTypesPage extends Component {
       isNewImage: false,
       tableTypeId: props.params.table_type_id || null,
       confirm: false,
+      confirmBusy: false,
       name: '',
       tags: 'tabletypes',
       venues: [],
       events: [],
-      selectedVenue: [],
+      selectedVenue: {},
       selectedEvents: [],
-      eventVars: []
+      eventVars: [],
+      message: "Table Type successfully created."
     };
   }
 
@@ -86,22 +89,15 @@ class ManageTableTypesPage extends Component {
   }
 
   onEventAdd = (index, selectedEvents) => {
-    const CL = console.log;
     // CL(selectedEvents);
     let cloned = Immutable.List(this.state.eventVars);
     let anIndex = Immutable.fromJS(cloned.get(index));
-    
-    let newIds = selectedEvents.map((value, index) => {  
-      return value.value
-    });
-
-    // let newMapped = ;
-    // console.log(newMapped);
-    anIndex = anIndex.set('_event_id', anIndex.get('_event_id').concat(newIds));
+    anIndex = anIndex.set('_event_id',  selectedEvents);
     let newClone = cloned.set(index, anIndex);
-    console.log(newClone.toJS());
-    this.setState({eventVars: newClone})
-    this.setState({selectedEvents});
+
+    let selectedEventState = Immutable.List(this.state.selectedEvents);
+    let newSelectedEventState = selectedEventState.set(index, selectedEvents);
+    this.setState({selectedEvents: newSelectedEventState.toJS(), eventVars: newClone.toJS()});
   }
 
   closeSetup = () => {
@@ -111,34 +107,65 @@ class ManageTableTypesPage extends Component {
     this.context.router.push('/table-types');
   }
 
+  closeModal = () => {
+    this.setState({
+      confirmBusy: false
+    });
+  }
+
   setName = (event) => {
     this.setState({name: event.target.value});
   }
 
-  setNoOfPax = (event) => {
-    this.setState({no_of_pax: event.target.value});
-  };
+  setDescrpiption = (index, event) => {
+    let cloned = Immutable.List(this.state.eventVars);
+    let anIndex = Immutable.fromJS(cloned.get(index));
+    anIndex = anIndex.set('description', event.target.value);
+    let newClone = cloned.set(index, anIndex);
+    this.setState({eventVars: newClone.toJS()});
+  }
 
-  addEvent = () => {
+  onDrop = (index, file) => {
+    this.setState({ isBusy: true });
+    let upload = request.post(CLOUDINARY_UPLOAD_URL)
+    .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+    .field('file', file[0]);
+    console.log('dragged');
+    upload.end((err, response) => {
+      if (err) {
+
+      } else {
+        let cloned = Immutable.List(this.state.eventVars);
+        let anIndex = Immutable.fromJS(cloned.get(index));
+        anIndex = anIndex.set('image', file[0]);
+        anIndex = anIndex.set('imageUrl', response.body.secure_url);
+        let newClone = cloned.set(index, anIndex);
+        this.setState({eventVars: newClone.toJS(), isBusy: false});
+      }
+    });
+  }
+
+  addEventVar = () => {
     this.setState({
       eventVars: this.state.eventVars.concat({
         _event_id: [],
-        description: "Some Description",
-        image: null
+        description: "",
+        image: null,
+        imageUrl: ""
       })
     });
   }
 
-  removeEvent = (index) => {
+  removeEventVar = (index) => {
+    let clonedEv = Immutable.List(this.state.eventVars);
+    let deletedEv = clonedEv.delete(index);
 
+    let clonedE = Immutable.List(this.state.selectedEvents);
+    let deletedE = clonedE.delete(index);
+    this.setState({eventVars: deletedEv.toJS(), selectedEvents: deletedE.toJS()});
+    // console.log(this.state.selectedEvents[index]);
   }
 
-  onDrop = (file) => {
-    this.setState({
-       image: file[0],
-       isNewImage: true,
-     });
-  }
   onRemoveImage = () => {
     this.setState({
       image: null,
@@ -148,12 +175,7 @@ class ManageTableTypesPage extends Component {
 
   handleImageUpload = (file, callback) => {
     if(this.state.isNewImage) {
-      let options = {
-        url: CLOUDINARY_UPLOAD_URL,
-        formData: {
-          file: file
-        }
-      };
+
       let upload = request.post(CLOUDINARY_UPLOAD_URL)
       .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
       .field('file', file);
@@ -219,7 +241,28 @@ class ManageTableTypesPage extends Component {
 
   submitCreate = (event) => {
     event.preventDefault();
-    console.log(this.state);
+    if(!this.state.isBusy) {
+      let params = {
+        organisationId: this.state.organisationId,
+        name: this.state.name,
+        _venues: [this.state.selectedVenue],
+        _events: this.state.eventVars.map((value) => {
+          return {
+            _event_id: value._event_id.map((value)=>{
+              return value.value;
+            }),
+            description: value.description,
+            image: value.imageUrl || ''
+          }
+        })
+      }
+      console.log(params);
+    } else {
+      this.setState({confirmBusy: true, message: "An image is still uploading"});
+    }
+    
+
+    
     // this.handleImageUpload(this.state.image, (err, imageLink) => {
     //   if (err) {
     //     console.log(err);
@@ -299,40 +342,45 @@ class ManageTableTypesPage extends Component {
 
   renderEventVars = () => {
     return this.state.eventVars.map((value, index) => {
-    return (
-      <Box key={index} separator="all" pad={{"vertical": "medium"}}>
-        <FormField label="Event" htmlFor="event" />
-        <Select 
-          name="events"
-          options={this.state.events}
-          value={this.state.selectedEvents}
-          onChange={this.onEventAdd.bind(this, index)}
-          multi={true}
-          />
-        <FormField label="Description" htmlFor="tableTypedescription">
-          <input id="tableTypedescription" type="text" onChange={() => {}} value/>
-        </FormField>
-        <FormField label="Image">
-        {this.state.image ? 
-          <Box size={{ width: 'large' }} align="center" justify="center"> 
-            <div> 
-              <img src={this.state.image.preview} width="200" />
-            </div>
-            <Box size={{ width: 'large' }}>
-              <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
+      return (
+        <Box key={index} separator="all" pad={{"vertical": "medium"}}>
+          <FormField label="Event" htmlFor="event" />
+          <Select 
+            name="events"
+            options={this.state.events.filter((x) => {
+              let a = _.contains(_.uniq(_.flatten(this.state.selectedEvents)), x);
+              return !a;
+            })}
+            value={value._event_id}
+            onChange={this.onEventAdd.bind(this, index)}
+            multi={true}
+            />
+          <FormField label="Description" htmlFor="tableTypedescription">
+            <input id="tableTypedescription" type="text" onChange={this.setDescrpiption.bind(this, index)} value={value.description}/>
+          </FormField>
+          <FormField label="Image">
+          {value.image ? 
+            <Box size={{ width: 'large' }} align="center" justify="center"> 
+              <div> 
+                <img src={value.image.preview} width="200" />
+              </div>
+              <Box size={{ width: 'large' }}>
+                <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
+              </Box>
+            </Box> :
+            <Box align="center" justify="center" size={{ width: 'large' }}>
+              <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop.bind(this, index)} accept='image/*'>
+                Drop image here or click to select image to upload. 
+              </Dropzone>
             </Box>
-          </Box> :
-          <Box align="center" justify="center" size={{ width: 'large' }}>
-            <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
-              Drop image here or click to select image to upload. 
-            </Dropzone>
-          </Box>
-        }
-        </FormField>
-      </Box>)
+          }
+          <Button label="Remove" onClick={this.removeEventVar.bind(this, index)} primary={true} float="right"/>
+          </FormField>
+        </Box>)
     });
   }
   render() {
+    console.log(this.state);
     const {
       router,
     } = this.context;
@@ -345,15 +393,25 @@ class ManageTableTypesPage extends Component {
     } = this.state;
     return (
       <Box size={{ width: 'large' }}>
-
         <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
         {this.state.confirm !== false ? 
         <Layer align="center">
           <Header>
-            Table Type successfully created.
+            {this.state.message}
           </Header>
           <Section>
             <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
+          </Section>
+        </Layer>
+        : null
+        }
+        {this.state.confirmBusy !== false ? 
+        <Layer align="center">
+          <Header>
+            {this.state.message}
+          </Header>
+          <Section>
+            <Button label="Close" onClick={this.closeModal} plain={true} icon={<CloseIcon />}/>
           </Section>
         </Layer>
         : null
@@ -387,7 +445,7 @@ class ManageTableTypesPage extends Component {
             </Box>
             {this.renderEventVars()}
             <Box size={{width: 'medium'}} align="center">
-              <Button label="Add Event" primary={true} onClick={this.addEvent} />
+              <Button label="Add Event" primary={true} onClick={this.addEventVar} />
             </Box>
           </fieldset>
         </FormFields>
