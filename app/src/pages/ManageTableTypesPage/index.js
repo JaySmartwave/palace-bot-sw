@@ -256,13 +256,18 @@ class ManageTableTypesPage extends Component {
           }
         })
       }
-      console.log(params);
+      PartyBot.tableTypes.create(params, (err, response, body) => {
+        if(response.statusCode == 200) {
+          this.setState({
+            message: "Table Type successfully created.",
+            confirm: true
+          });
+        }
+      });
     } else {
       this.setState({confirmBusy: true, message: "An image is still uploading"});
     }
-    
 
-    
     // this.handleImageUpload(this.state.image, (err, imageLink) => {
     //   if (err) {
     //     console.log(err);
@@ -380,7 +385,6 @@ class ManageTableTypesPage extends Component {
     });
   }
   render() {
-    console.log(this.state);
     const {
       router,
     } = this.context;
