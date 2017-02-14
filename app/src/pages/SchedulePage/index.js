@@ -158,9 +158,9 @@ class SchedulePage extends Component {
                 <Link to={`/event-schedule/${result._id}`} activeClassName="active">
                   <Button className={styles.button} label="Edit Event" icon={<EditIcon />} onClick={() => {}} />
                 </Link>
-                <Link to={'editTables'} activeClassName="active">
-                  <Button className={styles.button} label="Edit Tables" icon={<EditIcon />} onClick={() => {}} />
-                </Link>
+                {/*<Link to={'editTables'} activeClassName="active">
+                                  <Button className={styles.button} label="Edit Tables" icon={<EditIcon />} onClick={() => {}} />
+                                </Link>*/}
               </Box>
             </td>
         </tr>
