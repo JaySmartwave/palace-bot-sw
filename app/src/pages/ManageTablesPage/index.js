@@ -17,8 +17,10 @@ import Header from 'grommet/components/Header';
 import Section from 'grommet/components/Section';
 import Paragraph from 'grommet/components/Paragraph';
 import request from 'superagent';
+import Select from 'react-select';
 import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_UPLOAD_URL } from '../../constants';
 import Immutable from 'immutable';
+import _ from 'underscore';
 class ManageTablesPage extends Component {
   constructor(props) {
     super(props);
@@ -39,6 +41,7 @@ class ManageTablesPage extends Component {
       venueId: '',
       events: [],
       eventId: '',
+      selectedEvents: [],
       tableTypes: [],
       tableTypeId: undefined,
       tags: 'table',
@@ -94,7 +97,7 @@ class ManageTablesPage extends Component {
             organisationId: this.state.organisationId,
             venue_id: this.state.venueId
           }
-          this.getEvents(ttOptions);
+          // this.getEvents(ttOptions);
           this.getTableTypes(ttOptions);
         }
         this.setState({venues: body, events: []});
@@ -154,12 +157,10 @@ class ManageTablesPage extends Component {
       venue_id: id
     };
     this.getTableTypes(options);
-    this.getEvents(options);
+    // this.getEvents(options);
   }
 
   onEventChange = (item, index, event) => {
-    // var id = event.nativeEvent.target.selectedIndex;
-    console.log(event.target.value);
     let variants = Immutable.List(this.state.variants);
     let mutated = variants.set(index, { _event: event.target.value, price: item.price});
     this.setState( { variants: mutated.toArray() } );
@@ -181,8 +182,10 @@ class ManageTablesPage extends Component {
   addVariant() { // will create then get?
     var newArray = this.state.variants.slice();    
     newArray.push({ 
-        _event: this.state.events[0]._event,
-        price: 0 // default value
+        _event_id: [],
+        description: "",
+        image: null,
+        imageUrl: ""
       });   
     this.setState({variants:newArray})
   }
@@ -190,14 +193,70 @@ class ManageTablesPage extends Component {
   removeVariant(index, event){ // delete variant ID
     let variants = Immutable.List(this.state.variants);
     let mutated = variants.remove(index);
-    console.log(mutated.toArray());
   }
 
+  onEventAdd = (index, selectedEvents) => { 
+    let cloned = Immutable.List(this.state.variants);
+    let anIndex = Immutable.fromJS(cloned.get(index));
+    anIndex = anIndex.set('_event_id',  selectedEvents);
+    let newClone = cloned.set(index, anIndex);
+
+    let selectedEventState = Immutable.List(this.state.selectedEvents);
+    let newSelectedEventState = selectedEventState.set(index, selectedEvents);
+    this.setState({selectedEvents: newSelectedEventState.toJS(), variants: newClone.toJS()});
+  }
+
+  setDescrpiption = (index, event) => {
+    let cloned = Immutable.List(this.state.variants);
+    let anIndex = Immutable.fromJS(cloned.get(index));
+    anIndex = anIndex.set('description', event.target.value);
+    let newClone = cloned.set(index, anIndex);
+    this.setState({variants: newClone.toJS()});
+  }
+
+  onDrop = (index, file) => {
+    this.setState({ isBusy: true });
+    let upload = request.post(CLOUDINARY_UPLOAD_URL)
+    .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+    .field('file', file[0]);
+    console.log('dragged');
+    upload.end((err, response) => {
+      if (err) {
+
+      } else {
+        let cloned = Immutable.List(this.state.eventVars);
+        let anIndex = Immutable.fromJS(cloned.get(index));
+        anIndex = anIndex.set('image', file[0]);
+        anIndex = anIndex.set('imageUrl', response.body.secure_url);
+        let newClone = cloned.set(index, anIndex);
+        this.setState({variants: newClone.toJS(), isBusy: false});
+      }
+    });
+  }
   onTypeChange = (event) => {
     var id = event.target.value;
+    let params = {
+      organisationId: this.state.organisationId,
+      venueId: this.state.venueId,
+      tableTypeId: id
+    }
 
-    this.setState({tableTypeId: id});
-    //this.setState
+    PartyBot.tableTypes.getTableType(params, (err, response, body) => {
+      let events = body._events.map((value) => {
+        return value._event_id.map((avalue) => {
+          return {
+            value: avalue._id,
+            label: avalue.name
+          }  
+        });
+      });
+
+      this.setState({
+        tableTypeId: id,
+        events: _.flatten(events)
+      });
+
+    });
   }
 
   setName = (event) => {
@@ -211,28 +270,65 @@ class ManageTablesPage extends Component {
   }
 
   getTableVariants = () => {
-    return this.state.variants.map( (item, index) => {
-      return <div key={index}>
-                <FormField label="Event" htmlFor="tableName">
-                  <select id="tableVenue" onChange={this.onEventChange.bind(this, item, index)} value={item._event||this.state.events[0]._event}>
-                  {
-                    this.state.events.map( (value, index) => {
-                      return (<option key={index} value={value._event}>{value.name}</option>)
-                    })
-                  }
-                  </select>
-                </FormField>
-                <FormField label="Price(Php)" htmlFor="tablePrice">
-                  <input type="number" onChange={this.onPriceChange.bind(this, item, index)} value={item.price}/>
-                </FormField>
-                <Footer pad={{"vertical": "small"}}>
-                   <Heading align="center">
-                    <Button className={styles.eventButton} label="Update" primary={true} onClick={() => {}} />
-                    <Button className={styles.eventButton} label="Remove" onClick={this.removeVariant.bind(this, index)} />
-                   </Heading>
-                 </Footer>
-             </div>;
+    return this.state.variants.map((value, index) => {
+      return (
+        <Box key={index} separator="all">
+          <FormField label="Event" htmlFor="events" />
+          <Select 
+            name="events"
+            options={this.state.events.filter((x) => {
+              let a = _.contains(_.uniq(_.flatten(this.state.selectedEvents)), x);
+              return !a;
+            })}
+            value={value._event_id}
+            onChange={this.onEventAdd.bind(this, index)}
+            multi={true}
+            />
+          <FormField label="Description" htmlFor="tableTypedescription">
+            <input id="tableTypedescription" type="text" onChange={this.setDescrpiption.bind(this, index)} value={value.description}/>
+          </FormField>
+          <FormField label="Image">
+          {value.image ? 
+            <Box size={{ width: 'large' }} align="center" justify="center"> 
+              <div> 
+                <img src={value.image.preview} width="200" />
+              </div>
+              <Box size={{ width: 'large' }}>
+                <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
+              </Box>
+            </Box> :
+            <Box align="center" justify="center" size={{ width: 'large' }}>
+              <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop.bind(this, index)} accept='image/*'>
+                Drop image here or click to select image to upload. 
+              </Dropzone>
+            </Box>
+          }
+          <Button label="Remove" onClick={this.removeVariant.bind(this, index)} primary={true} float="right"/>
+          </FormField>
+        </Box>)
     });
+    // return this.state.variants.map( (item, index) => {
+    //   return <div key={index}>
+    //             <FormField label="Event" htmlFor="tableName">
+    //               <select id="tableVenue" onChange={this.onEventChange.bind(this, item, index)} value={item._event||this.state.events[0]._event}>
+    //               {
+    //                 this.state.events.map( (value, index) => {
+    //                   return (<option key={index} value={value._event}>{value.name}</option>)
+    //                 })
+    //               }
+    //               </select>
+    //             </FormField>
+    //             <FormField label="Price(Php)" htmlFor="tablePrice">
+    //               <input type="number" onChange={this.onPriceChange.bind(this, item, index)} value={item.price}/>
+    //             </FormField>
+    //             <Footer pad={{"vertical": "small"}}>
+    //                <Heading align="center">
+    //                 <Button className={styles.eventButton} label="Update" primary={true} onClick={() => {}} />
+    //                 <Button className={styles.eventButton} label="Remove" onClick={this.removeVariant.bind(this, index)} />
+    //                </Heading>
+    //              </Footer>
+    //          </div>;
+    // });
   }
 
   onDrop(file) {
@@ -294,7 +390,6 @@ class ManageTablesPage extends Component {
   }
 
   submitSave() {
-    console.log("Sending Save");
     event.preventDefault();
     this.handleImageUpload(this.state.image, (err, imageLink) => { 
       if(err) {
@@ -323,32 +418,31 @@ class ManageTablesPage extends Component {
 
   submitCreate = () => {
     event.preventDefault();
-    this.handleImageUpload(this.state.image, (err, imageLink) => { 
-      if(err) {
-        console.log(err);
-      } else {
-        let createParams = {
-          name: this.state.name,
-          organisationId: this.state.organisationId,
-          venueId: this.state.venueId,
-          tags: this.state.tags,
-          table_type: this.state.tableTypeId,
-          image: imageLink,
-          prices: this.state.variants
-        };
-        // console.log(createParams);
-        PartyBot.products.create(createParams, (errors, response, body) => {
-          console.log(errors);
-          console.log(response.statusCode);
-          console.log(body);
-          if(response.statusCode == 200) {
-            this.setState({
-              confirm: true
-            });
-          }
-        });
-      }
-    });
+    console.log(this.state);
+    let params = {};
+    // this.handleImageUpload(this.state.image, (err, imageLink) => { 
+    //   if(err) {
+    //     console.log(err);
+    //   } else {
+    //     let createParams = {
+    //       name: this.state.name,
+    //       organisationId: this.state.organisationId,
+    //       venueId: this.state.venueId,
+    //       tags: this.state.tags,
+    //       table_type: this.state.tableTypeId,
+    //       image: imageLink,
+    //       prices: this.state.variants
+    //     };
+
+    //     PartyBot.products.create(createParams, (errors, response, body) => {
+    //       if(response.statusCode == 200) {
+    //         this.setState({
+    //           confirm: true
+    //         });
+    //       }
+    //     });
+    //   }
+    // });
   }
 
   render() {
@@ -364,80 +458,58 @@ class ManageTablesPage extends Component {
     } = this.state;
     return (
       <div className={styles.container}>
-      {this.state.confirm !== false ? 
-      <Layer align="center">
-        <Header>
-            Table successfully created.
-        </Header>
-        <Section>
-          <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
-        </Section>
-      </Layer>
-      :
-      null
-      }
-      <Box>
-        {this.state.tableId !== null ? 
-    	<Heading align="center">
-            Edit Table
-        </Heading>
-        : 
-    	<Heading align="center">
-            Add Table
-        </Heading>
-    	}
-          </Box>
-			<Box direction="row" justify="center" align="center" wrap={true} margin="small">
-				<Form>
-				<FormFields>
-					<fieldset>
-					  <FormField label="Venue" htmlFor="tableVenue">
-					    <select id="tableVenue" onChange={this.onVenueChange} value={this.state.venueId}>
-              {this.state.venues.map((value, index) => {
-                return <option key={index} value={value._id}>{value.name}</option>;
-              })}
-						  </select>
-					  </FormField>
-					  <FormField label="Table Type" htmlFor="tableType">
-					    <select id="tableType" onChange={this.onTypeChange} value={this.state.tableTypeId}>
-              {this.state.tableTypes.map((value, index) => {
-                return <option key={index} value={value._id}>{value.name}</option>;
-              })}
-						  </select>
-					  </FormField>
-					  <FormField label=" Name" htmlFor="tableName">
-					    <input id="tableName" type="text" onChange={this.setName} value={this.state.name}/>
-					  </FormField>
-          <FormField label="Image">
-          {this.state.image ? 
-            <Box align="center" justify="center"> 
-              <div> 
-                <img src={this.state.image.preview} width="200" />
-              </div>
-              <Box>
-                <Button label="Cancel" onClick={this.onRemoveImage.bind(this)} plain={true} icon={<CloseIcon />}/>
-              </Box>
-            </Box> :
-            <Box align="center" justify="center">
-              <Dropzone multiple={false} ref={(node) => { this.dropzone = node; }} onDrop={this.onDrop} accept='image/*'>
-                Drop image here or click to select image to upload. 
-              </Dropzone>
-            </Box>
-          }
-           </FormField>
-           </fieldset>
-           </FormFields>
-            <br/>
-            <Box>
-            Pricing:
-            </Box>
-            <Button label="Add Event" primary={true} onClick={this.addVariant} />
-            <br/>
-            <br/>
+      <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css"/>
+        {this.state.confirm !== false ? 
+        <Layer align="center">
+          <Header>
+              Table successfully created.
+          </Header>
+          <Section>
+            <Button label="Close" onClick={this.closeSetup} plain={true} icon={<CloseIcon />}/>
+          </Section>
+        </Layer>
+        :
+        null
+        }
+        <Box>
+          {this.state.tableId !== null ? 
+      	<Heading align="center">
+              Edit Table
+          </Heading>
+          : 
+      	<Heading align="center">
+              Add Table
+          </Heading>
+      	}
+        </Box>
+        <Box size={{ width: 'large' }} direction="row" justify="center" align="center" wrap={true} margin="small">
+  				<Form>
+    				<FormFields>
+    					<fieldset>
+    					  <FormField label="Venue" htmlFor="tableVenue">
+    					    <select id="tableVenue" onChange={this.onVenueChange} value={this.state.venueId}>
+                  {this.state.venues.map((value, index) => {
+                    return <option key={index} value={value._id}>{value.name}</option>;
+                  })}
+    						  </select>
+    					  </FormField>
+    					  <FormField label="Table Type" htmlFor="tableType">
+    					    <select id="tableType" onChange={this.onTypeChange} value={this.state.tableTypeId}>
+                  {this.state.tableTypes.map((value, index) => {
+                    return <option key={index} value={value._id}>{value.name}</option>;
+                  })}
+    						  </select>
+    					  </FormField>
+    					  <FormField label=" Name" htmlFor="tableName">
+    					    <input id="tableName" type="text" onChange={this.setName} value={this.state.name}/>
+    					  </FormField>
             {
             //Dynamic Price/Event Component
             this.getTableVariants()
             }
+              <Button label="Add Event" primary={true} onClick={this.addVariant} />
+              </fieldset>
+            </FormFields>
             <Footer pad={{"vertical": "medium"}}>
             {
               this.state.tableId !== null ? 
@@ -451,10 +523,10 @@ class ManageTablesPage extends Component {
               </Heading>
             }
             </Footer>
-            </Form>
-            </Box>
-            </div>
-            );
+          </Form>
+        </Box>
+      </div>
+    );
   }
 }
 

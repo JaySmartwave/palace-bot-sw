@@ -89,7 +89,6 @@ class ManageTableTypesPage extends Component {
   }
 
   onEventAdd = (index, selectedEvents) => {
-    // CL(selectedEvents);
     let cloned = Immutable.List(this.state.eventVars);
     let anIndex = Immutable.fromJS(cloned.get(index));
     anIndex = anIndex.set('_event_id',  selectedEvents);
