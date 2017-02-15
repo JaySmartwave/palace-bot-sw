@@ -122,9 +122,32 @@ class ManageTablesPage extends Component {
     PartyBot.tableTypes.getTableTypesInOrganisation(options, (errors, response, body) => {
       if(response.statusCode == 200) {
         if(body.length > 0) {
-          this.setState({tableTypeId: body[0]._id});
+
+          this.setState({tableTypes: body});
+
+          let params = {
+            organisationId: this.state.organisationId,
+            venueId: this.state.venueId,
+            tableTypeId: body[0]._id
+          }
+          PartyBot.tableTypes.getTableType(params, (aerr, aresponse, abody) => {
+            let events = abody._events.map((value) => {
+              return value._event_id.map((avalue) => {
+                return {
+                  value: avalue._id,
+                  label: avalue.name
+                }  
+              });
+            });
+
+            this.setState({
+              tableTypeId: body[0]._id,
+              events: _.flatten(events)
+            });
+
+          });
         }
-        this.setState({tableTypes: body});
+
       }
     });
   }
@@ -193,6 +216,12 @@ class ManageTablesPage extends Component {
   removeVariant(index, event){ // delete variant ID
     let variants = Immutable.List(this.state.variants);
     let mutated = variants.remove(index);
+
+    // let selectedEvents = Immutable.List(this.state.selectedEvents);
+    // let mutatedEvents = selectedEvents.remove(index);
+    this.setState({
+      variants: mutated.toJS(),
+    });
   }
 
   onEventAdd = (index, selectedEvents) => { 
@@ -224,7 +253,7 @@ class ManageTablesPage extends Component {
       if (err) {
 
       } else {
-        let cloned = Immutable.List(this.state.eventVars);
+        let cloned = Immutable.List(this.state.variants);
         let anIndex = Immutable.fromJS(cloned.get(index));
         anIndex = anIndex.set('image', file[0]);
         anIndex = anIndex.set('imageUrl', response.body.secure_url);
@@ -233,6 +262,7 @@ class ManageTablesPage extends Component {
       }
     });
   }
+
   onTypeChange = (event) => {
     var id = event.target.value;
     let params = {
@@ -253,6 +283,7 @@ class ManageTablesPage extends Component {
 
       this.setState({
         tableTypeId: id,
+        variants: [],
         events: _.flatten(events)
       });
 
